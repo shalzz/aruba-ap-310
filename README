@@ -1,0 +1,45 @@
+Copyright (C) [2016] Hewlett Packard Enterprise Development LP
+
+This package contains GPL packages that Aruba has included in its IAP8.3 A325
+product. In accordance with GPL obligations the modified code has been
+provided along with the GCC based toolchain and the Aruba build tools.
+
+A directory called LICENSES has been provided to make available all of the
+Copyright text for all of the gpl and non-gpl packages.
+
+Please note that the individual GPL packages provided are not designed to be
+built standalone. The build of the GPL packages is part of a system the has to
+be run in a particular order and a top down build script has been provided.
+
+The Aruba modified GPL packages require CentOS 6.8 as the operating system for
+the build server. No other operating system or version of CentOS is supported.
+
+To prepare for the building the Aruba modified GPL packages execute the
+install-gpl.sh script which will untar the GPL tarfiles into a working directory
+called "workspace."
+
+To build the Aruba modified GPL packages change directory to the workspace
+directory and invoke the makeall.sh script.
+
+The opensource-non-gpl packages are provided without obligation. The non-GPL
+packages are provided "as is" and can be built on the host by following the
+instructions provided within each tarfile. It is assumed that the "user" has
+knowledge of how to build Opensource packages in a Linux environment.
+
+Note:
+This release package is missing the commercial version of the wolfssl FIPS 3.6.8
+release which is required to build a number of the GPL packages. There will be
+build errors due to this missing wolfssl module.
+
+To address the build errors the user will have to procure this package from
+WolfSSL Inc. and install it into the build workspace.
+
+Please contact WolfSSL for instructions on how to procure their commercial
+version of the wolfssl FIPS 3.6.8 product.
+
+Website: https://www.wolfssl.com/wolfSSL/Contact.html
+
+Install the wolfssl module into the build workspace in a directory called
+cyassl/wolfssl-3.6.8 as the build rules expect the find the module files in that
+location.
+
