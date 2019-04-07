@@ -1,0 +1,16 @@
+ARUBA_TOOLS         := $(ARUBA_SRC)/tools/nebbiolo/toolchains/mipscross-1.00/crosstool/gcc-3.4.3-glibc-2.3.6/mipsisa32-xlr-linux/
+#ARUBA_TOOLS := $(ARUBA_SRC)/tools/nebbiolo/toolchains/mipscross/crosstool/mipsisa32-xlr-linux/gcc-3.4.3-glibc-2.3.2
+STRIP_OPTIONS := -R .pdr --strip-debug --strip-unneeded
+
+ARUBA_SYSROOT      := ${ARUBA_TOOLS}
+ARUBA_INCLUDE_DIR  := ${ARUBA_TOOLS}
+
+ARUBA_TOOLS_PREFIX  := $(ARUBA_TOOLS)/bin/mipsisa32-xlr-linux-
+SYSTEM_LIBS_PATH    := $(ARUBA_TOOLS)/mipsisa32-xlr-linux/lib          
+ARUBA_GCC_BASE      := -B$(ARUBA_TOOLS) -B$(ARUBA_TOOLS)/lib 
+PREFIX = mipsisa32-xlr-linux-
+export PREFIX
+
+KERNEL_TOOLS_PREFIX = ${ARUBA_TOOLS_PREFIX}
+
+ARUBA_TOOLS_INSTALL_PATH := ${ARUBA_TOOLS}/../../..

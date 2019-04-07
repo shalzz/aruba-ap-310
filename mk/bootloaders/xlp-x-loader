@@ -1,0 +1,2 @@
+xlp-x-loader:
+	cd platform/bootloader/netlogic/x-loader; ${MAKE} -f Makefile.releng allboards

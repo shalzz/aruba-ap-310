@@ -1,0 +1,56 @@
+include ${ARUBA_MK_MODULES}/ap
+
+include ${ARUBA_MK_MODULES}/bonding
+include ${ARUBA_MK_MODULES}/ppp
+include ${ARUBA_MK_MODULES}/pppoe
+include ${ARUBA_MK_MODULES}/mv_crypto
+include ${ARUBA_MK_MODULES}/usb
+
+# art 2 kernel module is installed by ART makefile; no need
+# to do it here
+
+modules_arran:
+
+	${MAKE} modules_ap
+	${MAKE} modules_bonding
+	${MAKE} modules_ppp
+	${MAKE} modules_pppoe
+	${MAKE} modules_mv_crypto
+ifdef FAT_AP
+ifdef TAMDHU
+	${MAKE} modules_usb
+
+	cp -f -p $(KERNEL_SRC)/drivers/usb/host/ehci-hcd.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/ehci-hcd.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/drivers/net/usb/qcnet/GobiNet.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/GobiNet.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/drivers/usb/serial/GobiSerial.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/GobiSerial.$(KMOD)
+endif
+else
+	${MAKE} modules_usb
+
+	cp -f -p $(KERNEL_SRC)/drivers/usb/host/ehci-hcd.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/ehci-hcd.$(KMOD)
+endif
+
+ifdef REGULATORY_TESTING
+	cp -f -p $(KERNEL_SRC)/drivers/scsi/sd_mod.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/sd_mod.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/fat/fat.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/fat.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/nls/nls_cp437.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/nls_cp437.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/nls/nls_iso8859-1.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/nls_iso8859-1.$(KMOD)
+endif
+
+ifdef FAT_AP
+ifdef TAMDHU
+	cp -f -p $(KERNEL_SRC)/fs/fat/vfat.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/vfat.$(KMOD)
+endif
+else
+	cp -f -p $(KERNEL_SRC)/fs/fat/vfat.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/vfat.$(KMOD)
+endif

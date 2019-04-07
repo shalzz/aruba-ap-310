@@ -1,0 +1,190 @@
+./LinuxDepend: FRC
+
+linux-depend:	./LinuxDepend
+ifdef KERNEL_SRC
+	cd sysdef; ${MAKE}
+ifdef KERNEL_CONFIG
+	@echo "  CONFIG  ${KERNEL_CONFIG}"
+	$(MAKE) -C $(KERNEL_SRC) $(KERNEL_CONFIG) MAKEFLAGS="$(shell echo ${MAKEFLAGS} | sed -e 's/-s//g')" ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+else
+	@echo "  CONFIG  ${ARUBA_IMAGE_TYPE}${KCONFIG_SUFFIX}"
+	cp -f -p $(KERNEL_SRC)/config.$(ARUBA_IMAGE_TYPE)${KCONFIG_SUFFIX} $(KERNEL_SRC)/.config
+endif
+ifdef REGULATORY_TESTING
+	-cp -f /dev/null ${DESTDIR}/reg-build
+else
+	-rm -f ${DESTDIR}/reg-build
+endif
+	$(MAKE) -C $(KERNEL_SRC) modules_prepare ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+endif
+	touch ./LinuxDepend
+	echo "  DEP"
+
+sshLinks:
+	rm -rf $(ARUBA_SRC)/ssh
+	ln -s $(ARUBA_SRC)/openssh-5.8p1-X509 $(ARUBA_SRC)/ssh
+
+mocanaCryptoCore:
+	rm -rf $(ARUBA_SRC)/isakmpd/mocana/src/crypto
+	rm -rf $(ARUBA_SRC)/isakmpd/mocana/src/common
+	rm -rf $(ARUBA_SRC)/isakmpd/mocana/src/asn1
+	rm -rf $(ARUBA_SRC)/isakmpd/mocana/src/harness
+	rm -rf $(ARUBA_SRC)/isakmpd/mocana/src/utils
+	rm -rf $(ARUBA_SRC)/sos/src/mocana/crypto    
+	rm -rf $(ARUBA_SRC)/sos/src/mocana/common    
+	rm -rf $(ARUBA_SRC)/sos/src/mocana/asn1    
+	rm -rf $(ARUBA_SRC)/sos/src/mocana/harness    
+	rm -rf $(ARUBA_SRC)/sos/src/mocana/utils    
+	rm -rf $(ARUBA_SRC)/soft-ap/mocana/src/crypto
+	rm -rf $(ARUBA_SRC)/soft-ap/mocana/src/common
+	rm -rf $(ARUBA_SRC)/soft-ap/mocana/src/asn1
+	rm -rf $(ARUBA_SRC)/soft-ap/mocana/src/harness
+	rm -rf $(ARUBA_SRC)/soft-ap/mocana/src/utils
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto $(ARUBA_SRC)/isakmpd/mocana/src/crypto
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/common $(ARUBA_SRC)/isakmpd/mocana/src/common
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/asn1 $(ARUBA_SRC)/isakmpd/mocana/src/asn1
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/harness $(ARUBA_SRC)/isakmpd/mocana/src/harness
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/utils $(ARUBA_SRC)/isakmpd/mocana/src/utils
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto $(ARUBA_SRC)/sos/src/mocana/crypto 
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/common $(ARUBA_SRC)/sos/src/mocana/common
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/asn1 $(ARUBA_SRC)/sos/src/mocana/asn1
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/harness $(ARUBA_SRC)/sos/src/mocana/harness
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/utils $(ARUBA_SRC)/sos/src/mocana/utils
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto $(ARUBA_SRC)/soft-ap/mocana/src/crypto
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/common $(ARUBA_SRC)/soft-ap/mocana/src/common
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/asn1 $(ARUBA_SRC)/soft-ap/mocana/src/asn1
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/harness $(ARUBA_SRC)/soft-ap/mocana/src/harness
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/utils $(ARUBA_SRC)/soft-ap/mocana/src/utils
+	rm -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/fips.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto/fips.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/fips.c
+	rm  -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/parsecert.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/asn1/parsecert.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/parsecert.c
+	rm  -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/debug_console.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/common/debug_console.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/debug_console.c
+ifndef MERLOT
+	rm  -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/sec_key.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto/sec_key.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/sec_key.c
+	rm  -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/gcm.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto/gcm.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/gcm.c
+	rm  -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/pkcs_common.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto/pkcs_common.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/pkcs_common.c
+	rm  -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/pkcs12.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto/pkcs12.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/pkcs12.c
+	rm  -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/pkcs7.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto/pkcs7.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/pkcs7.c
+	rm  -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/pkcs8.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto/pkcs8.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/pkcs8.c
+	rm  -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/aes_keywrap.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto/aes_keywrap.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/aes_keywrap.c
+	rm  -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/arc2.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto/arc2.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/arc2.c
+	rm  -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/rc2algo.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto/rc2algo.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/rc2algo.c
+	rm  -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/ansix9_63_kdf.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/crypto/ansix9_63_kdf.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/ansix9_63_kdf.c
+endif # !MERLOT
+ifdef FIPS_TEST	
+	rm -rf $(ARUBA_SRC)/isakmpd/mocana/src/examples/fipstest.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/examples/fipstest.c $(ARUBA_SRC)/isakmpd/mocana/src/examples/fipstest.c
+	rm  -f $(ARUBA_SRC)/soft-ap/mocana/src/ap/fipstest.c
+	ln -s $(ARUBA_SRC)/crypto/mss_2011_4_09_18021/src/examples/fipstest.c $(ARUBA_SRC)/soft-ap/mocana/src/ap/fipstest.c
+endif # FIPS_TEST 
+
+ifdef OCTOMORE
+ARUBA_KERNEL_HEADERS_PATH = ${ARUBA_INCLUDE_DIR}/include
+else
+ifdef GLENMORANGIE
+ARUBA_KERNEL_HEADERS_PATH = ${ARUBA_INCLUDE_DIR}/include
+else
+ARUBA_KERNEL_HEADERS_PATH = ${ARUBA_INCLUDE_DIR}/usr/include
+endif
+endif
+
+kernel-header-export:
+ifdef KERNEL_HEADERS_INSTALL_PATH
+	@rm -fr ${ARUBA_KERNEL_HEADERS_PATH}/asm
+	@rm -fr ${ARUBA_KERNEL_HEADERS_PATH}/linux
+	@rm -fr ${ARUBA_KERNEL_HEADERS_PATH}/asm-generic
+
+	@mkdir -p ${__KHDR_TMP}
+ifdef MASTERSON
+	# Need to make sure oemdefs are generated prior to kernel version.h generation
+	cd sysdef; ${MAKE}
+	${MAKE} -C ${KERNEL_SRC} headers_install ARCH=arm INSTALL_HDR_PATH=${__KHDR_TMP} MAKEFLAGS="$(shell echo ${MAKEFLAGS} | sed -e 's/-s//g')"
+else
+	${MAKE} -C ${KERNEL_SRC} headers_install ARCH=${MAIN_ARCH} INSTALL_HDR_PATH=${__KHDR_TMP} MAKEFLAGS="$(shell echo ${MAKEFLAGS} | sed -e 's/-s//g')"
+endif
+	-cd ${__KHDR_TMP}/include; rsync -ar asm linux asm-generic ${ARUBA_KERNEL_HEADERS_PATH}
+endif
+
+.PHONY: install_toolchain
+install_toolchain:
+ifeq ($(ARUBA_IMAGE_TYPE), x4)
+	$(INSTALL_TOOLCHAIN_SCRIPT) $(TOOLCHAIN_INSTALL_PATH); 
+endif
+ifdef FAT_AP
+ifeq ($(ARUBA_IMAGE_TYPE), octomore)
+	rm -rf $(ARUBA_SRC)/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr
+	rm -rf $(ARUBA_SRC)/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/include/rpc
+	mkdir -p $(ARUBA_SRC)/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr
+	mkdir -p $(ARUBA_SRC)/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr/lib
+	ln -s $(ARUBA_SRC)/aos-cmn/tools/armv7-linux-gnu-uClibc-0.9.30/usr/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/include/rpc ${ARUBA_SRC}/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/include/rpc
+	cp $(ARUBA_SRC)/aos-cmn/tools/armv7-linux-gnu-uClibc-0.9.30/usr/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/lib/libz.so.1.2.7  ${ARUBA_SRC}/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr/lib/
+	ln -s  ${ARUBA_SRC}/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr/lib/libz.so.1.2.7  ${ARUBA_SRC}/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr/lib/libz.so
+	ln -s  ${ARUBA_SRC}/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr/lib/libz.so.1.2.7  ${ARUBA_SRC}/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr/lib/libz.so.1
+endif
+ifeq ($(ARUBA_IMAGE_TYPE), glenmorangie)
+	rm -rf $(ARUBA_SRC)/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr
+	rm -rf $(ARUBA_SRC)/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/include/rpc
+	mkdir -p $(ARUBA_SRC)/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr
+	mkdir -p $(ARUBA_SRC)/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr/lib
+	ln -s $(ARUBA_SRC)/aos-cmn/tools/armv7-linux-gnu-uClibc-0.9.30/usr/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/include/rpc ${ARUBA_SRC}/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/include/rpc
+	cp $(ARUBA_SRC)/aos-cmn/tools/armv7-linux-gnu-uClibc-0.9.30/usr/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/lib/libz.so.1.2.7  ${ARUBA_SRC}/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr/lib/
+	ln -s  ${ARUBA_SRC}/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr/lib/libz.so.1.2.7  ${ARUBA_SRC}/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr/lib/libz.so
+	ln -s  ${ARUBA_SRC}/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr/lib/libz.so.1.2.7  ${ARUBA_SRC}/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/usr/lib/libz.so.1
+endif
+endif
+
+#for frame_constants.h
+# ifdef X86_TARGET_PLATFORM
+ifneq ($(or $(SPRINGBANK),$(X86_TARGET_PLATFORM),$(OCTOMORE),$(GLENMORANGIE),$(MASTERSON)),)
+# we swap on x86 and springbank
+	SWAP_OPT := -s
+else
+	SWAP_OPT :=
+endif 
+
+image: mocanaCryptoCore sshLinks install_toolchain kernel-header-export linux-depend
+	@echo "SUDOCP is $(SUDOCP)"
+ifdef FAST_IMAGE
+	echo "FAST_IMAGE is set"
+endif
+ifndef FAST_IMAGE
+ifdef SYMLINK_KERNEL_INCLUDES_TO_TOOLS
+	-rm -rf $(ARUBA_INCLUDE_DIR)/usr/include/asm
+	-rm -rf $(ARUBA_INCLUDE_DIR)/usr/include/linux
+	-rm -rf $(ARUBA_INCLUDE_DIR)/usr/include/asm-generic
+
+ifdef ASM_INCLUDES_UNDER_ARCH
+	ln -s $(KERNEL_SRC)/arch/${MAIN_ARCH}/include/asm $(ARUBA_INCLUDE_DIR)/usr/include/asm
+else
+	ln -s $(KERNEL_SRC)/include/asm-${MAIN_ARCH} $(ARUBA_INCLUDE_DIR)/usr/include/asm
+endif # ASM_INCLUDES_UNDER_ARCH
+	ln -s $(KERNEL_SRC)/include/asm-generic $(ARUBA_INCLUDE_DIR)/usr/include/asm-generic 
+	ln -s $(KERNEL_SRC)/include/linux $(ARUBA_INCLUDE_DIR)/usr/include/linux 
+endif # SYMLINK_KERNEL_INCLUDES_TO_TOOLS
+	$(MAKE) all
+ifneq ($(or $(PORFIDIO),$(X86_TARGET_PLATFORM),$(MILAGRO)),)
+ifndef NO_CRASHKERNEL_BUILD
+	$(MAKE) crashkernel
+endif 
+endif
+endif
+	$(MAKE) arubainstall
+ifdef KERNEL_SRC
+	$(MAKE) kernel TARGET_IMAGE=1
+endif
+#ifndef NO_KERNEL_SYMBOL_CHECK
+#	$(MAKE) check-symbols
+#endif
+#	@echo "  IMAGE   ${IMAGE_NAME}"

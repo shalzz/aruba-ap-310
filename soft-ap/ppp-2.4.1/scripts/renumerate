@@ -1,0 +1,37 @@
+#!/bin/sh
+# reorder_tty <dir> <TTY device>
+# ex. reorder_tty /dev/usb/6 ttyUSB0
+
+dir=$1
+min=1000
+
+# parse out device name
+dev=`echo $2 | sed 's/[0-9]//g'`
+
+# find the lowest numbered base tty device
+files=`ls -al $dir | grep $dev | cut -d '/' -f 3`
+for f in $files
+do
+  num=`echo $f | sed 's/[a-zA-Z]//g'`
+  if [ $num -lt $min ] ; then
+    min=$num
+  fi
+done
+
+# if no matching found, exit
+if [ $min -eq 1000 ] ; then
+  echo cant determine minimum
+  exit
+fi
+
+# reorder the links
+files=`ls $dir | grep $dev`
+idx=0
+for f in $files
+do
+  rm -f $dir/$f
+  ln -sf /dev/$dev$min $dir/$dev$idx
+  min=`expr $min + 1`
+  idx=`expr $idx + 1`
+done
+

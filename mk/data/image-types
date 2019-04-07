@@ -1,0 +1,42 @@
+#
+# adding a new image requires three entries in this file
+# 1: lower-case name in ARUBA_IMAGES; must match directory under mk/image-types
+# 2: export of the upper-case VARIABLE name
+# 3: entry in IMAGE_VARS of the form: <lower-case-name>_${UPPER_CASE_VAR}
+#
+# 2 and 3 are needed by the klunky logic in mk/core/aruba-image-type
+#
+
+# MERLOT and PALOMINO must remain here as this file is integrated back to the
+# sw branch where bootloaders are built and we still support MERLOT and
+# PALOMINO for pre-6.4 until at least 31-May-2018
+ARUBA_IMAGES=merlot amp nebbiolo palomino upgrader grenache talisker arran \
+	ardmore corvina porfidio shumway nnm bowmore springbank octomore x4 glenmorangie opusone \
+    milagro masterson kilchoman lagavulin
+
+# MERLOT and PALOMINO must remain here as this file is integrated back to the
+# sw branch where bootloaders are built and we still support MERLOT and
+# PALOMINO for pre-6.4 until at least 31-May-2018
+IMAGE_VARS=merlot_${MERLOT} amp_${AMP} nebbiolo_${NEBBIOLO} \
+	      palomino_${PALOMINO} upgrader_${UPGRADER} grenache_${GRENACHE} \
+              talisker_${TALISKER} arran_${ARRAN} corvina_${CORVINA} \
+	      ardmore_${ARDMORE} porfidio_${PORFIDIO} shumway_${SHUMWAY} nnm_${NNM} bowmore_${BOWMORE} \
+	      springbank_${SPRINGBANK} octomore_${OCTOMORE} x4_${X4} glenmorangie_${GLENMORANGIE} opusone_${OPUSONE} \
+		  milagro_${MILAGRO} masterson_${MASTERSON} kilchoman_${KILCHOMAN} lagavulin_${LAGAVULIN} 
+
+# MERLOT and PALOMINO must remain here as this file is integrated back to the
+# sw branch where bootloaders are built and we still support MERLOT and
+# PALOMINO for pre-6.4 until at least 31-May-2018
+export MERLOT AMP NEBBIOLO PALOMINO UPGRADER GRENACHE TALISKER ARRAN ARDMORE \
+	CORVINA PORFIDIO NNM BOWMORE SPRINGBANK OCTOMORE X4 GLENMORANGIE OPUSONE \
+	MILAGRO MASTERSON KILCHOMAN LAGAVULIN
+
+#
+# variants, which build a base image, but with some differences; currently
+# used to account for Talisker- and Arran-class APs with larger flash sizes
+#
+ARUBA_VARIANTS=tamdhu dalmore grappa eiger glenfiddich
+VARIANT_VARS=tamdhu_${TAMDHU} dalmore_${DALMORE} grappa_${GRAPPA} eiger_${EIGER} glenfiddich_${GLENFIDDICH}
+
+export ARUBA_IMAGES
+export ARUBA_VARIANTS

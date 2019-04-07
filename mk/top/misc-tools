@@ -1,0 +1,19 @@
+MKDIR= mkdir
+RM= rm
+FLEX= flex
+BISON= bison
+INSTALL = $(ARUBA_SRC)/tools/bin/install
+PERL = /usr/bin/perl
+TIME = $(ARUBA_SRC)/tools/bin/time
+
+define elapsed_time
+	${TIME} -f "  ELAPSED %E CPU %P L${MAKELEVEL} ${MAKECMDGOALS}:$(subst ${ARUBA_SRC}/,,${1})"
+endef
+
+#
+# For C prototypes generation used in /sap/*
+#
+PERLOPTS = -I/$(ARUBA_SRC)/tools
+GENPROTOS = $(ARUBA_SRC)/tools/genprotos.pl
+PROTOS_DIR = func_protos
+

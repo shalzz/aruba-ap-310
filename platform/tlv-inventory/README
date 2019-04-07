@@ -1,0 +1,5 @@
+This directory is not built.
+
+These files are symlink'd to from wherever they are needed.
+
+This allows us to keep the TLVs and other definitions the same.

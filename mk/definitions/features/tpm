@@ -1,0 +1,10 @@
+CFLAGS    += -DTPM_PLATFORM
+
+ifdef AP_PLATFORM
+CFLAGS    += -DTPM_AP
+TPM12_AP=yes
+endif
+
+ifdef SWITCH_PLATFORM
+CFLAGS    += -DTPM_CONTROLLER
+endif

@@ -1,0 +1,26 @@
+ifdef PROFILE_APPLICATION
+error this is not supported
+ARUBA_TOOLS        := $(ARUBA_SRC)/aos-cmn/tools/arm-5.3-uclibc-1.0.12-prof
+  else # PROFILE_APPLICATION
+ARUBA_TOOLS        := $(ARUBA_SRC)/aos-cmn/tools/arm-5.3-uclibc-1.0.12
+  endif # PROFILE_APPLICATION
+ARUBA_TOOLS_PREFIX := $(ARUBA_TOOLS)/usr/bin/arm-linux-
+ARUBA_SYSROOT      := ${ARUBA_TOOLS}/usr/arm-buildroot-linux-uclibcgnueabihf/sysroot
+ARUBA_INCLUDE_DIR  := ${ARUBA_SYSROOT}
+ARUBA_GCC_BASE     := -B$(ARUBA_TOOLS) -B$(ARUBA_TOOLS)/lib  --sysroot=${ARUBA_SYSROOT} -static-libgcc
+SYSTEM_LIBS_PATH   := $(ARUBA_SYSROOT)/lib ${ARUBA_SYSROOT}/usr/lib $(ARUBA_TOOLS)/usr/arm-buildroot-linux-uclibcgnueabihf/lib
+
+STRIP_OPTIONS := -R .pdr --strip-debug --strip-unneeded
+
+__GDB7 := yes
+
+# Turn off warnings or old behaviors: mainly used when upgrading 
+# to a more-restrictive GCC toolchain (to avoid too many changes in code as -Werror is ON)
+COMPAT_CFLAGS += -Wno-pointer-sign -Wno-strict-aliasing -Wno-unused-but-set-variable -fgnu89-inline
+
+# Little-Endian platform flag
+export ARUBA_LE=-le
+
+# Toolchain has g++/C++ support (need to compile C++ code, otherwise, BINs are checked in p4)
+export TOOLCHAIN_SUPPORTS_CXX=1
+

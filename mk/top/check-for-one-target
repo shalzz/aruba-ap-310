@@ -1,0 +1,10 @@
+#
+# Validate that one target is defined.
+#
+ifeq "$(filter ${TARGETS_WITH_NO_IMAGE_TYPE},$(MAKECMDGOALS))" ""
+ifndef FOUND_TARGET
+ifeq "$(findstring all_prom,$(MAKECMDGOALS))" ""
+$(error Error: no valid platform found, set one of $(shell ARUBA_IMAGES="${ARUBA_IMAGES}" ${ARUBA_MK_SCRIPTS}/show-image-type-list))
+endif
+endif
+endif

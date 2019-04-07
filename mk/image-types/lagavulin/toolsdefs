@@ -1,0 +1,5 @@
+ARUBA_TOOL_CHAIN=arm-toolchain
+KERNEL_TOOLS          := $(ARUBA_SRC)/aos-cmn/tools/aarch64-5.3-glibc-2.22
+_KERNEL_TOOLS_PREFIX  := $(KERNEL_TOOLS)/usr/bin/aarch64-buildroot-linux-gnu-
+override KERNEL_TOOLS_PREFIX = ${_KERNEL_TOOLS_PREFIX}
+

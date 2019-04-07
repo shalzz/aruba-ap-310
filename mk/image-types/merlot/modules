@@ -1,0 +1,23 @@
+include ${ARUBA_MK_MODULES}/ap
+
+include ${ARUBA_MK_MODULES}/bonding
+include ${ARUBA_MK_MODULES}/ppp
+include ${ARUBA_MK_MODULES}/pppoe
+include ${ARUBA_MK_MODULES}/usb
+
+modules_merlot:
+	${MAKE} modules_ap
+	${MAKE} modules_bonding
+	${MAKE} modules_ppp
+	${MAKE} modules_pppoe
+	${MAKE} modules_usb
+
+	cp -f -p $(KERNEL_SRC)/drivers/usb/host/uhci-hcd.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/uhci-hcd.$(KMOD)
+
+	cp -f -p $(KERNEL_SRC)/drivers/net/ar2313.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/ar2313.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/drivers/net/natsemi.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/natsemi.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/drivers/net/rc32434_eth.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/rc32434_eth.$(KMOD)

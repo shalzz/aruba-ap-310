@@ -1,0 +1,11 @@
+ifdef FAT_AP
+CFLAGS  += -D__FAT_AP__ 
+CFLAGS  += -ffunction-sections -fdata-sections
+CFLAGS  += -finline-limit=0
+ifdef FIPS_CERTIFIED
+CFLAGS  += -D__FIPS_CERTIFIED__
+endif
+LDFLAGS += -Wl,--gc-sections
+export REDIS_VERSION=4.0.11
+endif
+

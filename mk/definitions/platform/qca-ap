@@ -1,0 +1,5 @@
+include ${ARUBA_MK_DEFINITIONS}/platform/anul-ap
+include ${ARUBA_MK_DEFINITIONS}/features/ap-driver-auth-assoc
+QCA_AP=yes
+CFLAGS += -DQCA_AP
+

@@ -1,0 +1,12 @@
+#
+# file		copy?	directory				environment   max size
+# name                  path					variable
+#
+mips64.ari	yes	platform/os/linux-2.6.16		MIPS64_ARI    7340032
+mips32.ari	yes	platform/os/linux-2.6.16		MIPS32_ARI    7340032
+mips32-14mb.ari	no	platform/os/linux-2.6.16		MIPS32_ARI    14680064
+armv5te.ari	yes	platform/os/linux-2.6.32		ARMV5TE_ARI   7340032
+armv5te-14mb.ari no	platform/os/linux-2.6.32		ARMV5TE_ARI   14680064
+e500.ari	yes	aos-cmn/platform/os/linux-2.6.35	E500_ARI      14680064
+armv7ns.ari	yes	aos-cmn/platform/os/linux-2.6.35	ARMV7NS_ARI   14680064
+ipq806x.ari	no	aos-cmn/platform/os/linux-3.4.0		IPQ806x_ARI   14680064

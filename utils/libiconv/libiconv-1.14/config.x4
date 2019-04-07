@@ -1,0 +1,43 @@
+include $(ARUBA_SRC)/mk/Makefile.rules
+include $(ARUBA_SRC)/mk/Makefile.toolsdefs
+
+ifdef NO_OPENSSL
+SSL_INC=$(CYASSL_DIR)
+SSL_LIB_DIR=$(CYASSL_DIR)/src/.libs
+SSL_OPTION=--with-cyassl
+else
+SSL_INC=$(OPENSSL_DIR)/include
+SSL_LIB_DIR=$(OPENSSL_DIR)/$(OBJDIR)
+SSL_OPTION=--enable-openssl
+endif
+
+# Note: openssl should be compiled first if you want to use tls/ttls/peap, point
+# openssl library path to somewhere you put the openssl files.
+
+TOOLS_DIR=$(ARUBA_SRC)/aos-cmn/tools/ppce5500-fsl/sysroots
+TOOLS_PREFIX=$(TOOLS_DIR)/x86_64-fslsdk-linux/usr/bin/powerpc-fsl-linux/powerpc-fsl-linux-
+
+CC=$(TOOLS_PREFIX)gcc -B$(TOOLS_DIR) -B$(TOOLS_DIR)/ppce5500-fsl-linux-uclibc/ -static-libgcc 
+NM=$(TOOLS_PREFIX)nm
+CFLAGS=-Os -Wall -D_GNU_SOURCE -DFP_MAX_BITS=8192 --sysroot=${ARUBA_SYSROOT} -I$(SSL_INC)
+INCLUDES=-I$(TOOLS_DIR)/usr/lib/powerpc-fsl-linux/gcc/powerpc-fsl-linux/4.8.1/include
+LDFLAGS=-Wl,--gc-sections -ggdb -Wl,-rpath-link -L$(ARUBA_SRC)/usr/lib/aruba/$(OBJ_DIR) -Wl,-rpath-link -Wl,--no-undefined -Wl,--fatal-warnings
+LIBS=$(LDFLAGS) 
+CPP=$(TOOLS_PREFIX)cpp -B$(TOOLS_DIR) -B$(TOOLS_DIR)/ppce5500-fsl-linux-uclibc/
+CXXCPP=${CPP}
+CXXCPP=g++ -E
+CPPFLAGS=-Os -Wall -D_GNU_SOURCE -DFP_MAX_BITS=8192 --sysroot=${ARUBA_SYSROOT} -I$(ARUBA_SRC)/utils/zlib -I$(SSL_INC)
+
+export CPP
+export CXXCPP
+export CC
+export NM
+export CFLAGS
+export CPPFLAGS
+export LDFLAGS
+export ARUBA_SYSROOT
+
+myconfig:
+	./configure \
+	--host=powerpc-fsl-linux \
+	--with-gnu-ld

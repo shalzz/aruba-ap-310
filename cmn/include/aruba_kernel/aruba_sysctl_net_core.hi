@@ -1,0 +1,85 @@
+#ifndef ARUBA_SYSCTL_NET_CORE_HI
+#define ARUBA_SYSCTL_NET_CORE_HI
+
+/*!
+ * \file
+ * Centralized code for skb-leak display functionality.
+ * NOTE: this is inline code that should be included once in sysctl_net_core.c
+ *
+ * Description: sysctl/display part of skb-leak tracking feature, see
+ * companion file aruba_skbuff_leak.hi for full details.
+ * 
+ * \author: Aidan Doyle (factoring of work by Ramprakash Mohan, bug 94106).
+ *
+ * \copyright 
+ * Copyright (c) 2002-2017, Aruba Networks, an HPE company.
+ * All Rights Reserved.
+ * This software is an unpublished work and is protected by copyright and 
+ * trade secret law.  Unauthorized copying, redistribution or other use of 
+ * this work is prohibited.
+ *
+ * The above notice of copyright on this source code product does not indicate
+ * any actual or intended publication of such source code.
+ */
+
+#if defined(CONFIG_ARUBA_SKB_LEAK_DEBUGGING)
+#include <linux/seq_file.h>
+
+extern void *alloc_skb_seq_start(struct seq_file *seq, loff_t *pos);
+extern void *alloc_skb_seq_next(struct seq_file *seq, void *v, loff_t *pos);
+extern int alloc_skb_seq_show(struct seq_file *seq, void *v);
+extern void alloc_skb_seq_stop(struct seq_file *seq, void *v);
+extern void aruba_skb_leak_track_set(int val);
+extern int aruba_skb_leak_track_get(void);
+static struct seq_operations alloc_skb_seq_ops = {
+    .start = alloc_skb_seq_start,
+    .next  = alloc_skb_seq_next,
+    .stop  = alloc_skb_seq_stop,
+    .show  = alloc_skb_seq_show,
+};
+
+static int alloc_skb_seq_open(struct inode *inode, struct file *file)
+{
+    int res;
+
+	res = seq_open(file, &alloc_skb_seq_ops);
+    return res;
+}
+
+static struct file_operations alloc_skb_fops = {
+    .owner = THIS_MODULE,
+    .open  = alloc_skb_seq_open,
+    .read  = seq_read,
+    .llseek  = NULL, // TODO seq_lseek,
+    .release = seq_release,
+};
+
+int proc_doskbtrack(ctl_table *table, int write,
+                    void *buffer, size_t *lenp, loff_t *ppos)
+{
+	int r;
+    char mode;
+    char val[16];
+    int ret;
+    table->data = val;
+    table->maxlen = sizeof(val);
+	if (write) {
+        if (get_user(mode, (char *)buffer))  
+            return -EFAULT;          
+        if (mode == '0')             
+            aruba_skb_leak_track_set(0);
+        else 
+            aruba_skb_leak_track_set(1);
+        ret = *lenp;
+    } else {
+        sprintf(val, "%d", aruba_skb_leak_track_get());
+        ret = proc_dostring(table, write, buffer, lenp, ppos);
+    }
+
+	return ret;
+}
+
+#endif
+
+#endif
+

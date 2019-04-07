@@ -1,0 +1,110 @@
+# The emake parallel build app needs dependencies to determine 
+# the proper order in which targets are invoked.
+ifdef ARUBA_EMAKE
+arubainstall_deps = $(KERNEL_SRC)/drivers/usb/serial/usbserial.$(KMOD) \
+                    $(KERNEL_SRC)/drivers/usb/serial/option.$(KMOD) \
+                    $(KERNEL_SRC)/drivers/scsi/sr_mod.$(KMOD) \
+                    $(KERNEL_SRC)/drivers/cdrom/cdrom.$(KMOD) 
+ifdef AP_HAS_USB_FLASH_STORAGE_SUPPORT
+arubainstall_deps += $(KERNEL_SRC)/drivers/scsi/sd_mod.$(KMOD) \
+                     $(KERNEL_SRC)/fs/fat/fat.$(KMOD) \
+                     $(KERNEL_SRC)/fs/nls/nls_cp437.$(KMOD) \
+                     $(KERNEL_SRC)/fs/nls/nls_iso8859-1.$(KMOD) \
+                     $(KERNEL_SRC)/fs/ntfs/ntfs.$(KMOD)
+ifndef SPRINGBANK
+ifndef GLENMORANGIE
+arubainstall_deps += $(KERNEL_SRC)/fs/nls/nls_base.$(KMOD)
+endif # GLENMORANGIE
+endif # SPRINGBANK
+endif # AP_HAS_USB_FLASH_STORAGE_SUPPORT
+endif # ARUBA_EMAKE
+
+modules_usb: $(arubainstall_deps)
+# for Octomore, usbcore is built in kernel
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/core/usbcore.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/usbcore.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/drivers/usb/serial/usbserial.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/usbserial.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/serial/airprime.$(KMOD) $(DESTDIR)/../lib 2>/dev/null
+	-$(KSTRIP) $(DESTDIR)/../lib/airprime.$(KMOD) 2>/dev/null
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/serial/usb_wwan.$(KMOD) $(DESTDIR)/../lib 2>/dev/null
+	-$(KSTRIP) $(DESTDIR)/../lib/usb_wwan.$(KMOD) 2>/dev/null
+	cp -f -p $(KERNEL_SRC)/drivers/usb/serial/option.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/option.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/serial/cp210x.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/cp210x.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/class/cdc-acm.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/cdc-acm.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/serial/sierra.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/sierra.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/storage/usb-storage.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/usb-storage.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/drivers/scsi/scsi_mod.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/scsi_mod.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/drivers/scsi/sr_mod.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/sr_mod.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/drivers/scsi/sg.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/sg.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/drivers/cdrom/cdrom.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/cdrom.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/serial/hso.$(KMOD) $(DESTDIR)/../lib 2>/dev/null
+	-$(KSTRIP) $(DESTDIR)/../lib/hso.$(KMOD) 2>/dev/null
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/serial/ftdi_sio.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/ftdi_sio.$(KMOD)
+ifdef AP_HAS_FOUR_G_SUPPORT 
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_4G_USB_MODULE_PATH)/usbnet.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/usbnet.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_4G_USB_MODULE_PATH)/cdc_ether.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/cdc_ether.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_4G_USB_MODULE_PATH)/hw_cdc_driver.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/hw_cdc_driver.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/serial/GobiSerial.$(KMOD) $(DESTDIR)/../lib 
+	-$(KSTRIP) $(DESTDIR)/../lib/GobiSerial.$(KMOD) 
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_4G_USB_MODULE_PATH)/qcnet/GobiNet.$(KMOD) $(DESTDIR)/../lib 
+	-$(KSTRIP) $(DESTDIR)/../lib/GobiNet.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_4G_USB_MODULE_PATH)/rndis_host.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/rndis_host.$(KMOD)
+ifndef FAT_AP
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_4G_USB_MODULE_PATH)/pegasus.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/pegasus.$(KMOD)
+endif
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_4G_USB_MODULE_PATH)/pcd_driver/dgworks/dgworks.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/dgworks.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_4G_USB_MODULE_PATH)/pcd_driver/net/ptumlusbnet.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/ptumlusbnet.$(KMOD)
+ifdef FAT_AP
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_4G_USB_MODULE_PATH)/sierra_net.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/sierra_net.$(KMOD)
+
+else
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_4G_USB_MODULE_PATH)/sierra_net.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/sierra_net.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_4G_USB_MODULE_PATH)/pcd_driver/csp/PTUMLCsp.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/PTUMLCsp.$(KMOD)
+endif
+# As per Pantech, this driver/endpoint is need only for diagnostice purpose          
+#	cp -f -p $(KERNEL_SRC)/drivers/usb/net/pcd_driver/diag/PTUMLDiag.$(KMOD) $(DESTDIR)/../lib
+#	$(KSTRIP) $(DESTDIR)/../lib/PTUMLDiag.$(KMOD)
+endif
+ifdef AP_HAS_USB_FLASH_STORAGE_SUPPORT
+	cp -f -p $(KERNEL_SRC)/drivers/scsi/sd_mod.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/sd_mod.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/fat/fat.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/fat.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/fs/fat/vfat.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/vfat.$(KMOD)
+ifndef SPRINGBANK
+	-cp -f -p $(KERNEL_SRC)/fs/nls/nls_base.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/nls_base.$(KMOD)
+endif
+	cp -f -p $(KERNEL_SRC)/fs/nls/nls_cp437.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/nls_cp437.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/nls/nls_iso8859-1.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/nls_iso8859-1.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/ntfs/ntfs.$(KMOD) $(DESTDIR)/../lib 
+	$(KSTRIP) $(DESTDIR)/../lib/ntfs.$(KMOD) 
+endif
+       # for 2.6.32+, this is now required in order to load usbcore
+	-cp -f -p $(KERNEL_SRC)/fs/nls/nls_base.$(KMOD) $(DESTDIR)/../lib 2>/dev/null
+	-$(KSTRIP) $(DESTDIR)/../lib/nls_base.$(KMOD) 2>/dev/null
+

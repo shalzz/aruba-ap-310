@@ -1,0 +1,19 @@
+#!/bin/sh
+
+#
+# Checkout
+# - Makefile
+# - config.log
+# - config.status
+#
+
+# to build image
+ARUBA_TOOLS="$ARUBA_SRC/aos-cmn/tools/freescale-2010.09"
+export ARUBA_TOOL_PREFIX="${ARUBA_TOOLS}/bin/powerpc-linux-gnu"
+
+export CC="${ARUBA_TOOL_PREFIX}-gcc"
+export CXX="${ARUBA_TOOL_PREFIX}-c++"
+export AR="${ARUBA_TOOL_PREFIX}-ar"
+export LD="${ARUBA_TOOL_PREFIX}-ld"
+
+CFLAGS=-msoft-float ./configure --host=powerpc-linux --target=powerpc-linux

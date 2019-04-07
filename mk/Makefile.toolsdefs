@@ -1,0 +1,184 @@
+#
+# Copyright (C) 2002-2011 by Aruba Networks, Inc.
+# All Rights Reserved.
+# 
+# This software is an unpublished work and is protected by copyright and 
+# trade secret law.  Unauthorized copying, redistribution or other use of 
+# this work is prohibited.
+#
+# The above notice of copyright on this source code product does not indicate
+# any actual or intended publication of such source code.
+#
+#
+# Use this file to specify the CROSS in standard GNU configure
+# ARUBA_SRC is assumed in the environment.
+#
+# Use ARUBA_CC & co. below.
+#
+
+include ${ARUBA_SRC}/mk/core/path-vars
+include ${ARUBA_MK_ROOT}/Makefile.naming
+include ${ARUBA_MK_DATA}/targets-with-no-image-type
+
+LOW_OPTIMIZATION=-O0
+ifdef FAT_AP
+STANDARD_OPTIMIZATION=-Os
+else
+ifdef FIPS
+ifdef ARRAN
+STANDARD_OPTIMIZATION=-Os
+else
+STANDARD_OPTIMIZATION=-O2
+endif
+else
+STANDARD_OPTIMIZATION=-O2
+endif
+endif
+HIGH_OPTIMIZATION=-O3
+
+ifeq "$(filter ${TARGETS_WITH_NO_IMAGE_TYPE},$(MAKECMDGOALS))" ""
+include ${ARUBA_MK_CORE}/aruba-image-type
+include ${ARUBA_MK_IMAGE_TYPES}/${ARUBA_IMAGE_TYPE}/toolsdefs
+-include ${ARUBA_MK_IMAGE_TYPES}/${ARUBA_IMAGE_TYPE}/optimization
+endif
+
+ifeq "$(COMPILER_TOOLS)" ""
+	ifdef CCACHE
+		COMPILER_TOOLS := $(CCACHE)
+	endif
+endif
+
+#
+# Host application is defined in some directory as part of another platform build
+# to compile some simple tools running on build host.
+#
+ifdef HOST_APPLICATION
+
+__BIT64 := $(shell ${ARUBA_MK_SCRIPTS}/is-64bit)
+
+ARUBA_TOOLS         := /usr/local/bin
+ARUBA_TOOLS_PREFIX  := 
+ARUBA_GCC_BASE      := 
+SYSTEM_LIBS_PATH    := /usr/lib /lib /usr/lib64 /lib64
+PREFIX= 
+# WAR for GCC 4.4.2 on some systems
+CFLAGS += -fno-strict-aliasing
+HOST_XML_LIB:= ${ARUBA_SRC}/tools/hostcc/lib${__BIT64}
+export PREFIX
+
+else
+
+ifneq "${ARUBA_TOOL_CHAIN}" ""
+include ${ARUBA_MK_TOOL_CHAINS}/${ARUBA_TOOL_CHAIN}
+endif
+
+TOOLS := $(ARUBA_TOOLS)
+
+endif   # ifdef HOST_APPLICATION
+
+ARUBA_CC           := $(COMPILER_TOOLS) $(ARUBA_TOOLS_PREFIX)gcc $(ARUBA_GCC_BASE)
+
+ARUBA_CPP          := $(COMPILER_TOOLS) $(ARUBA_TOOLS_PREFIX)c++ $(ARUBA_GCC_BASE)
+ARUBA_LD           := $(ARUBA_TOOLS_PREFIX)ld
+ARUBA_AR           := $(ARUBA_TOOLS_PREFIX)ar
+ARUBA_RANLIB       := $(ARUBA_TOOLS_PREFIX)ranlib
+ARUBA_AS           := $(ARUBA_TOOLS_PREFIX)as
+ARUBA_STRIP        := $(ARUBA_TOOLS_PREFIX)strip $(STRIP_OPTIONS)
+ARUBA_OBJCOPY      := $(ARUBA_TOOLS_PREFIX)objcopy
+ARUBA_SIZE         := $(ARUBA_TOOLS_PREFIX)size
+
+export ARUBA_CC
+export ARUBA_CPP
+export ARUBA_LD 
+export ARUBA_AR 
+export ARUBA_RANLIB
+export ARUBA_AS
+export ARUBA_STRIP
+export ARUBA_OBJCOPY
+export ARUBA_SIZE
+
+#
+# For Java
+#
+JAVA_HOME:=$(ARUBA_SRC)/tools/jdk-7u21/usr/java/jdk1.7.0_21
+export JAVA_HOME
+
+JAVA		:= $(JAVA_HOME)/bin/java
+JAVAC		:= $(JAVA_HOME)/bin/javac
+JAVAH		:= $(JAVA_HOME)/bin/javah
+JAR		:= $(JAVA_HOME)/bin/jar
+JAVADOC		:= $(JAVA_HOME)/bin/javadoc
+RMIC		:= $(JAVA_HOME)/bin/rmic
+JARSIGNER	:= $(JAVA_HOME)/bin/jarsigner
+export JAVA
+export JAVAC
+export JAVAH
+export JAR
+export JAVADOC
+export RMIC
+
+# Maven
+ifndef M2_HOME
+M2_HOME:=$(ARUBA_SRC)/tools/apache-maven-3.0.5
+export M2_HOME
+endif # M2_HOME
+
+ifndef M2
+M2:=$(M2_HOME)/bin
+export M2
+endif # M2
+
+ANT_HOME := $(ARUBA_SRC)/tools/ant/apache-ant-1.6.2
+ANT_BIN := $(ANT_HOME)/bin/ant
+export ANT_HOME
+export ANT_BIN
+
+# common lisp tools
+CLISP_VER  := clisp-2.49a
+CLISP_PATH := ${ARUBA_SRC}/aos-cmn/tools/clisp/${CLISP_VER}
+CLISP_BIN  := ${CLISP_PATH}/bin/clisp
+CLISP_LIB  := ${CLISP_PATH}/lib/${CLISP_VER}
+CLISP_MSG  := ${CLISP_PATH}/share/locale
+CLISP_OPTS := -B${CLISP_LIB}
+LISP       := ${CLISP_BIN} ${CLISP_OPTS}
+export LISP
+
+# convenience macros
+ifndef TFTPDEST
+TFTPDEST=/tftpboot
+endif
+
+ifndef SUDOCP
+SUDOCP=sudo cp
+endif
+ifndef SUDOLN
+SUDOLN=sudo ln
+endif
+ifndef SUDORM
+SUDORM=sudo rm
+endif
+
+ifndef KERNEL_TOOLS_PREFIX
+KERNEL_TOOLS_PREFIX=${ARUBA_TOOLS_PREFIX}
+endif
+ifndef KERNEL_TOOLS
+KERNEL_TOOLS         := ${ARUBA_TOOLS}
+endif
+
+ARUBA_KSTRIP        := $(KERNEL_TOOLS_PREFIX)strip $(STRIP_OPTIONS)
+export ARUBA_KSTRIP
+
+export ARUBA_TOOLS
+export ARUBA_SYSROOT
+export ARUBA_INCLUDE_DIR
+
+# ruby
+RUBY = /usr/bin/ruby
+
+CMOCK_TOOLS=${ARUBA_SRC}/tools/cmock/cmock-2.4.2-3aa9f60
+UNITY_TOOLS=${ARUBA_SRC}/tools/unity/unity-2.3.0-b119
+ADT_TOOLS=/net/spindles/swtools/bin
+
+# Python
+
+export PYTHON=${ARUBA_SRC}/tools/python/python-2.7.8/bin/python2.7

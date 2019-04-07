@@ -1,0 +1,37 @@
+include $(ARUBA_SRC)/mk/Makefile.rules
+include $(ARUBA_SRC)/mk/Makefile.toolsdefs
+
+ifdef NO_OPENSSL
+SSL_INC=$(CYASSL_DIR)
+SSL_LIB_DIR=$(CYASSL_DIR)/src/.libs
+SSL_OPTION=--with-cyassl
+else
+SSL_INC=$(OPENSSL_DIR)/include
+SSL_LIB_DIR=$(OPENSSL_DIR)/$(OBJDIR)
+SSL_OPTION=--enable-openssl
+endif
+
+# Note: openssl should be compiled first if you want to use tls/ttls/peap, point
+# openssl library path to somewhere you put the openssl files.
+UCLIBC_TOOLS=$(ARUBA_SRC)/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2
+CC=$(UCLIBC_TOOLS)/bin/arm-openwrt-linux-gcc
+NM=$(UCLIBC_TOOLS)/bin/arm-openwrt-linux-nm
+CFLAGS=-B$(UCLIBC_TOOLS)/lib -B$(UCLIBC_TOOLS)/lib --sysroot=${ARUBA_SYSROOT} -I$(UCLIBC_TOOLS)/include -I$(SSL_INC)
+CPP=$(UCLIBC_TOOLS)/bin/arm-openwrt-linux-cpp -I$(UCLIBC_TOOLS)/include -I$(SSL_INC)
+CXXCPP=${CPP}
+CXXCPP=g++ -E
+CPPFLAGS=-B$(UCLIBC_TOOLS)/lib -B$(UCLIBC_TOOLS)/lib -I$(UCLIBC_TOOLS)/include -I$(ARUBA_SRC)/utils/zlib --sysroot=${ARUBA_SYSROOT}
+LDFLAGS= -B$(UCLIBC_TOOLS)/lib -B$(UCLIBC_TOOLS)/lib --sysroot=${ARUBA_SYSROOT}
+export CPP
+export CXXCPP
+export CC
+export NM
+export CFLAGS
+export CPPFLAGS
+export LDFLAGS
+export ARUBA_SYSROOT
+
+myconfig:
+	./configure \
+		--host=arm-linux \
+		--with-gnu-ld

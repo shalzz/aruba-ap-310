@@ -1,0 +1,14 @@
+BASE_IMAGE_TYPE=octomore
+EIGER=yes
+FAT_AP=yes
+FAT_AP_14MB=yes
+
+CFLAGS += -DCONFIG_EIGER
+
+IMAGE_NAME_BASE:=ipq806x-eiger
+
+export EIGER
+export FAT_AP_14MB FAT_AP
+export BASE_IMAGE_TYPE IMAGE_NAME_BASE
+
+include ${ARUBA_MK_DEFINITIONS}/features/dpi-ap

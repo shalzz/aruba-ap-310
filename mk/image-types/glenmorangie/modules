@@ -1,0 +1,42 @@
+include ${ARUBA_MK_MODULES}/ap
+
+include ${ARUBA_MK_MODULES}/bonding
+include ${ARUBA_MK_MODULES}/ppp
+include ${ARUBA_MK_MODULES}/pppoe
+include ${ARUBA_MK_MODULES}/usb
+
+modules_glenmorangie:
+	${MAKE} modules_ap
+	${MAKE} modules_bonding
+	${MAKE} modules_ppp
+	${MAKE} modules_pppoe
+	${MAKE} modules_usb
+
+	cp -f -p $(KERNEL_SRC)/drivers/net/ethernet/qcom/essedma/essedma.$(KMOD) $(DESTDIR)/../lib
+	echo "Copy essedma.ko to FS"
+	cp -f -p $(KERNEL_SRC)/drivers/crypto/msm/qcedev.$(KMOD) $(DESTDIR)/../lib
+	echo "Copy qcedev.ko to FS"
+	cp -f -p $(KERNEL_SRC)/drivers/crypto/msm/qcrypto.$(KMOD) $(DESTDIR)/../lib
+	echo "Copy qcrypto.ko to FS"
+	cp -f -p $(KERNEL_SRC)/drivers/net/usb/usbnet.$(KMOD) $(DESTDIR)/../lib
+	echo "Copy usbnet.ko to FS"
+	cp -f -p $(KERNEL_SRC)/drivers/net/usb/cdc_ether.$(KMOD) $(DESTDIR)/../lib
+	echo "Copy cdc_ether.ko to FS"
+	cp -f -p $(KERNEL_SRC)/drivers/net/usb/rndis_host.$(KMOD) $(DESTDIR)/../lib
+	echo "Copy rndis_host.ko to FS"
+	cp -f -p $(KERNEL_SRC)/drivers/net/usb/hw_cdc_driver.$(KMOD) $(DESTDIR)/../lib
+	echo "Copy hw_cdc_driver.ko to FS"
+	cp -f -p $(KERNEL_SRC)/drivers/scsi/sd_mod.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/sd_mod.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/fat/fat.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/fat.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/nls/nls_cp437.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/nls_cp437.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/nls/nls_iso8859-1.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/nls_iso8859-1.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/fat/vfat.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/vfat.$(KMOD)
+ifdef FIPS
+	cp -f -p $(KERNEL_SRC)/crypto/tcrypt.$(KMOD) $(DESTDIR)/../lib/modules
+	$(STRIP) $(DESTDIR)/../lib/modules/tcrypt.$(KMOD)
+endif

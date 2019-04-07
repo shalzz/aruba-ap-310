@@ -1,0 +1,21 @@
+PLATFORM_REQUIRES_SIGNED_IMAGES=yes
+include ${ARUBA_MK_PLATFORM_TYPES}/${ARUBA_PLATFORM_TYPE}/definitions
+include ${ARUBA_MK_DEFINITIONS}/platform/all-platforms
+include ${ARUBA_MK_DEFINITIONS}/platform/dpdk-platform
+include ${ARUBA_MK_DEFINITIONS}/features/uplink
+include ${ARUBA_MK_DEFINITIONS}/features/ipv6
+include ${ARUBA_MK_DEFINITIONS}/features/aps-driver
+include ${ARUBA_MK_DEFINITIONS}/features/image-signing
+include ${ARUBA_MK_DEFINITIONS}/features/factory-cert
+include ${ARUBA_MK_DEFINITIONS}/features/tpm
+include ${ARUBA_MK_DEFINITIONS}/features/new-license-scheme
+include ${ARUBA_MK_DEFINITIONS}/features/web_cc
+
+FILESYSTEM = ${ARUBA_IMAGE_TYPE}fs
+export FP_HWSRC = $(ARUBA_SRC)/fastpath/lvl7dev/${ARUBA_IMAGE_TYPE}_hw/src
+CFLAGS += -DCONFIG_OPUSONE
+CFLAGS += -DLSM_SUPPORTED
+CFLAGS += -DAPP_PERFORMANCE_MONITOR
+
+LSM_SUPPORTED=yes
+export LSM_SUPPORTED

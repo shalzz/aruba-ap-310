@@ -1,0 +1,2 @@
+apboot-einar:
+	cd platform/bootloader/apboot-einar; ${MAKE} -f Makefile.releng allboards

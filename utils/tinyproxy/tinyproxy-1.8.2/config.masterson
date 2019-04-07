@@ -1,0 +1,22 @@
+include $(ARUBA_SRC)/mk/Makefile.rules
+include $(ARUBA_SRC)/mk/Makefile.toolsdefs
+
+ifdef NO_OPENSSL
+SSL_DIR=-L$(CYASSL_DIR)/src/.libs -L$(ARUBA_SRC)/cmn/crypto-util/$(OBJDIR)
+SSL_LIB=-lcyassl -laruba-crypto-util
+SSL_INC= -I$(CYASSL_DIR) -I$(CYASSL_DIR)/cyassl -I$(ARUBA_SRC)/cmn/crypto-util/cyassl
+D_FLAG = -D__NO_OPENSSL__ -D__FAT_AP__
+else
+SSL_INC=-I$(ARUBA_SRC)/openssl/include -I$(ARUBA_SRC)/cmn/crypto-util
+SSL_DIR=-L$(OPENSSL_DIR)/$(OBJDIR) -L$(ARUBA_SRC)/cmn/crypto-util/$(OBJDIR)
+SSL_LIB=-lssl -lcrypto -laruba-crypto-util
+endif
+
+ifdef TBUILD
+D_FLAG += -D__EXPERIMENTAL_BUILD__
+endif
+
+TOOLS_DIR=$(ARUBA_SRC)/aos-cmn/tools/arm-5.3-uclibc-1.0.12
+
+myconfig:
+	CC="$(TOOLS_DIR)/usr/bin/arm-linux-gcc" CFLAGS="-B$(TOOLS_DIR) -B$(TOOLS_DIR)/usr/lib --sysroot=${ARUBA_SYSROOT} $(D_FLAG) -fgnu89-inline" CPPFLAGS="-I$(TOOLS_DIR)/usr/include -I${ARUBA_SYSROOT}/usr/include $(SSL_INC) -I$(ARUBA_SRC)/cmn" LDFLAGS="-Wl,-rpath-link $(ARUBA_SRC)/usr/lib/aruba/$(OBJDIR) -L$(ARUBA_SRC)/cmn/util/$(OBJDIR) -L$(ARUBA_SRC)/cmn/mmon/$(OBJDIR) -L$(ARUBA_SRC)/sap/flash/$(OBJDIR) $(SSL_DIR)" LIBS="-lmmon $(SSL_LIB)" ./configure --host=arm-linux --enable-transparent=yes --enable-regexcheck=no --prefix=

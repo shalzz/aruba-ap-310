@@ -1,0 +1,4 @@
+ifdef CBUILD
+CFLAGS += -D__CUSTOMER_BUILD__
+endif
+

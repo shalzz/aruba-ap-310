@@ -1,0 +1,22 @@
+The different flags that are used fot crypto libraries in IAP are below
+
+FIPS: Used for IAP FIPS builds. Only used in makefiles
+__FIPS_BUILD__ : This is a define using which FIPS code gets compiled. This flag is set if FIPS flag is set
+
+NO_OPENSSL: Used for IAP builds with CyaSSL. Setting this flag in mk/definitions/core/fips builds IAP with CyaSSL. Not setting this flag builds IAP with OpenSSL. Presently, this flag is set only in IAP FIPS builds. It is set by default in IAP FIPS builds.
+
+__NO_OPENSSL__: This is a define using which CyaSSL code gets compiled in IAP. This flag is set only if NO_OPENSSL flag is set.
+
+
+Q: How should I make a IAP FIPS build?
+A: Do a make image with FAT_AP=yes and FIPS=1. This will automatically set NO_OPENSSL and make a IAP FIPS build with CyaSSL and no OpenSSL
+
+Q: How should I make a IAP FIPS build with OpenSSL
+A:  Do a make image with FAT_AP=yes and FIPS=1. Unset the NO_OPENSSL flag in the following places
+    1) mk/definitions/core/fips
+    2) utils/freeradius/freeradius-server-2.1.9  Make.inc.arm OR Make.inc.mips OR Make.inc.powerpc depending on the platform that you are building for. 
+    TODO: Going forward, the radius makefiles should also take build variables from mk/definitions/core/fips. If this is cleanly done, unsetting the NO_OPENSSL flag in freeradius can be avoided. The flag will just be picked up - whatever its value.
+
+Q: What are the changes done as part of the CyaSSL porting?
+A: Refer the Bug-91640 for details
+

@@ -1,0 +1,92 @@
+#
+# Rules to generate test code with CMock.
+#
+# Generating a mock library:
+#
+# SECTIONS := MOCK_FOOLIB
+# ifdef MOCK_FOOLIB
+# CMOCK_CONFIG = cmock_config.yml          # optional
+# CMOCK_HEADERS = foo.h                    # all the headers that should be mocked.
+# CMOCK_SOURCE_DIR = path/to/foo_direcotry # default: ..
+# LIBRARY = cmock_foo
+# endif
+#
+# This creates a library libcmock_foo.a. When linking a test, use -lcmock_foo.
+# To test calls to the mock library, include the generated headers mock_foo.h
+# and use the macros defined by cmock, such as foofunction_ExpectAndReturn(args..., return_value).
+# The test section should also define UNITY_USE_CMOCK to generate the appropriate code.
+
+# compile the mock directories if ARUBA_UNITTEST is defined
+ifdef ARUBA_UNITTEST
+ifdef MOCK_DIRS
+DIRS += $(MOCK_DIRS)
+
+# if there are also test dirs, compile the mocks first.
+ifdef TEST_DIRS
+$(TEST_DIRS) : $(MOCK_DIRS)
+endif
+
+# also compile all sections before creating mocks.
+# this allows to create mocks for generated headers.
+ifdef SECTIONS
+$(MOCK_DIRS) : $(SECTIONS)
+endif
+endif
+endif
+
+# ----------------------------
+# Rules to use exiting mocks
+
+ifneq "$(strip $(TEST_MOCKED_HEADERS))" ""
+
+# For each mocked cfile, transform it from path/to/cfile.c to 
+# path/to/mocks/<platform_dir>/mock_cfile.o and include that in EXTRA_OBJ
+
+# the directory and filename parts are processed separately then joined back. 
+_TMP_MOCK_DIRS = $(patsubst  %/,%/mocks/$(OBJDIR)/,$(dir $(TEST_MOCKED_HEADERS)))
+_TMP_MOCK_FILES = $(patsubst  %.h,mock_%.o,$(notdir $(TEST_MOCKED_HEADERS)))
+EXTRA_OBJS += $(join $(_TMP_MOCK_DIRS), $(_TMP_MOCK_FILES))
+endif
+
+ifneq "$(strip $(TEST_MOCKED_LIBC_HEADERS))" ""
+LIBC_MOCK_OBJDIR = $(CMOCK_TOOLS)/libc_mocks/mocks/$(OBJDIR)
+EXTRA_OBJS += $(patsubst %.h,$(LIBC_MOCK_OBJDIR)/mock_%_proto.o,$(TEST_MOCKED_LIBC_HEADERS))
+INCS_LOCAL += -I$(CMOCK_TOOLS)/libc_mocks/mocks -I$(CMOCK_TOOLS)/libc_mocks -iquote$(CMOCK_TOOLS)/libc_mocks/mocks
+endif
+
+# ----------------------------
+# Rules to create mocks
+ifneq "$(strip $(CMOCK_HEADERS))" ""
+
+# Path to the CMock script to use.
+ifeq "$(strip $(CMOCK))" ""
+CMOCK := $(CMOCK_TOOLS)/lib/cmock.rb
+endif
+
+# By default, get the headers from the parent directory
+ifeq "$(strip $(CMOCK_SOURCE_DIR))" ""
+CMOCK_SOURCE_DIR := ..
+endif
+
+ifndef CMOCK_INCLUDES
+CMOCK_INCLUDES = -I$(CMOCK_TOOLS)/src -I$(UNITY_TOOLS)/src -I$(CMOCK_SOURCE_DIR)
+endif
+
+# Use the default config if not overridden
+ifeq "$(strip $(CMOCK_CONFIG))" ""
+CMOCK_CONFIG := $(CMOCK_TOOLS)/default_config.yml
+endif
+
+# List of files to generate
+CMOCK_GENERATED_CFILES = $(patsubst %.h,mock_%.c,$(CMOCK_HEADERS))
+
+$(CMOCK_GENERATED_CFILES): mock_%.c : $(CMOCK_SOURCE_DIR)/%.h $(CMOCK) $(CMOCK_CONFIG)
+	@echo "Generating " $@
+	UNITY_DIR=$(UNITY_TOOLS) CMOCK_DIR=$(CMOCK_TOOLS) $(RUBY) $(CMOCK) -o$(CMOCK_CONFIG) $(CMOCK_SOURCE_DIR)/$(patsubst mock_%.c,%.h,$@)
+	@echo "Generated " $@
+
+GENERATED_CFILES += $(CMOCK_GENERATED_CFILES)
+GENERATED_HEADERS += $(patsubst %.c,%.h,$(CMOCK_GENERATED_CFILES))
+INCS_LOCAL += $(CMOCK_INCLUDES)
+endif
+

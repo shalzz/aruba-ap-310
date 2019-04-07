@@ -1,0 +1,14 @@
+230400 # speed
+debug
+defaultroute # default gateway used only on APs
+usepeerdns
+-detach # keep pppd in the foreground
+lcp-echo-failure 0
+ipcp-max-failure 4
+ipcp-accept-local
+ipcp-accept-remote
+crtscts
+noauth
+noipdefault
+connect "/usr/sbin/chat -V -f /etc/ppp/peers/modem-connect"
+disconnect "/usr/sbin/chat -V -f /etc/ppp/peers/modem-disconnect"

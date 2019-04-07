@@ -1,0 +1,43 @@
+#!/bin/sh
+# ppp-dial ttyUSB0 call modem connect "/usr/sbin/chat -V -f /etc/ppp/peers/evdo_us
+# ppp_dial <port> <script> [-t tries] [-m max] [-u user]
+
+usage="Usage: $0 <port> <script> [-t tries] [-m max] [-u user] [-p password]"
+
+if [ $# -lt 2 ]; then
+  echo $usage
+  exit 1
+fi
+
+port=$1
+script=$2
+
+# we don't have getopts, bummer
+tries=1
+max=1
+shift 2
+while [ $# -ge 1 ]; do
+  case $1 in 
+    -t) shift; tries=$1 ;;
+    -m) shift; max=$1 ;;
+    -u) shift; user="user $1" ;;
+    -p) shift; pass="password $1" ;;
+  esac
+  shift
+done
+
+date=`date`
+echo $date: Connecting $port to $script
+echo ==================================================================
+echo
+echo Dialing attempt $tries of $max ...
+
+chats="/usr/sbin/chat -V -f /etc/ppp/peers/$script"
+
+/usr/sbin/npppd $port call modem $user $pass connect "$chats" 
+rc=$?
+date=`date`
+echo
+echo ===============================================
+echo $date: Session completed 
+exit $rc

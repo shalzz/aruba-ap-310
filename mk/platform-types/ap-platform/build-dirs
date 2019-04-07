@@ -1,0 +1,18 @@
+CRYPTO_DIR = ${OPENSSL_DIR} ${XYSSL}
+
+ifdef NO_OPENSSL
+CRYPTO_DIR = ${CYASSL_DIR}/..
+endif
+
+DIRS +=                          \
+        build/ap-fs              \
+        cmn                      \
+        ${CRYPTO_DIR}            \
+        utils/libiconv           \
+        utils/libwebsockets      \
+        soft-ap                  \
+        platform                 \
+        utils                    \
+        $(INSTALL_LIBS_BASE_DIR) \
+        $(TOOLS)
+

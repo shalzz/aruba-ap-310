@@ -1,0 +1,22 @@
+include ${ARUBA_MK_DEFINITIONS}/platform/all-platforms
+include ${ARUBA_MK_DEFINITIONS}/platform/switch-platform
+include ${ARUBA_MK_DEFINITIONS}/features/image-signing
+include ${ARUBA_MK_DEFINITIONS}/features/diagnostics
+include ${ARUBA_MK_DEFINITIONS}/features/timer-wheel
+include ${ARUBA_MK_DEFINITIONS}/features/cpss
+
+ifndef HOST_APPLICATION
+UC_CROSS=yes
+export UC_CROSS
+endif
+
+ARUBA_BUILD_DIRS=${ARUBA_MK_PLATFORM_TYPES}/${ARUBA_PLATFORM_TYPE}/build-dirs${DIAG_SUFFIX}
+
+SWITCH_PLATFORM=yes
+ARUBA_PLATFORM_TYPE_LC=switch-platform
+
+CFLAGS += -DSWITCH_PLATFORM
+CFLAGS += -DUC_CROSS -DSTRAP
+TARGET_FILESYSTEM = $(ARUBA_SRC)/$(FILESYSTEM)/target
+DESTDIR = ${TARGET_FILESYSTEM}/mswitch
+PKGDIR = ${TARGET_FILESYSTEM}/pkg

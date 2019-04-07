@@ -1,0 +1,9 @@
+# The emake parallel build app needs dependencies to determine 
+# the proper order in which targets are invoked.
+ifdef ARUBA_EMAKE
+arubainstall_deps = $(KERNEL_SRC)/drivers/net/bonding/bonding.$(KMOD)
+endif
+
+modules_bonding: $(arubainstall_deps)
+	cp -f -p $(KERNEL_SRC)/drivers/net/bonding/bonding.$(KMOD) $(DESTDIR)/../lib/
+	$(KSTRIP) $(DESTDIR)/../lib/bonding.$(KMOD)

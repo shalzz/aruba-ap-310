@@ -1,0 +1,9 @@
+__LOGMSGS = ${TFTPDEST}/log-msgs/${SW_NAME}_${FINAL_VERSION}_logmsgs.zip
+log_build:
+ifdef LABELID
+ifeq (${OEM},aruba)
+	${ARUBA_SRC}/tools/perl/log2txt ${LABELID} ${__LOGMSGS}
+endif
+else
+	@true
+endif

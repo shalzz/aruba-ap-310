@@ -1,0 +1,7 @@
+arubainstall:
+ifdef KERNEL_SRC
+	${MAKE} modules_${ARUBA_IMAGE_TYPE}
+endif
+
+cleaninstall:
+	@true

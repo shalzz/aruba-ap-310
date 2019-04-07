@@ -1,0 +1,19 @@
+#
+# Some More useful definitions for AP applications.
+#
+
+MLIBDDIRS := \
+        -L$(ARUBA_SRC)/cmn/util \
+        -L$(ARUBA_SRC)/cmn/dispatcher \
+        -L$(ARUBA_SRC)/cmn/papi \
+        -L$(ARUBA_SRC)/cmn/mgmt \
+        -L$(ARUBA_SRC)/cmn/largePapi \
+		-L$(ARUBA_SRC)/cmn/largeReply \
+        -L$(ARUBA_SRC)/amapi \
+        -L$(ARUBA_SRC)/amapi/cmn
+
+MINCDIRS :=  -I. -I$(ARUBA_SRC) \
+		-I$(ARUBA_SRC)/cmn \
+		-I$(ARUBA_SRC)/cmn/util \
+		-I$(ARUBA_SRC)/cmn/mgmt \
+		-I$(ARUBA_SRC)/cmn/include

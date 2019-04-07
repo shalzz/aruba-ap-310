@@ -1,0 +1,6 @@
+ARUBA_TOOL_CHAIN=powerpc-e500-toolchain
+
+KERNEL_TOOLS         := $(ARUBA_SRC)/aos-cmn/tools/freescale-2010.09
+_KERNEL_TOOLS_PREFIX  := $(KERNEL_TOOLS)/bin/powerpc-linux-gnu-
+override KERNEL_TOOLS_PREFIX := ${_KERNEL_TOOLS_PREFIX}
+export KERNEL_TOOLS

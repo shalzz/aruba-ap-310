@@ -1,0 +1,15 @@
+#
+# dir recursion for all recursive targets.  That's it!
+# This will stop on error in any subdir and this also
+# supports make -k and make -j properly.
+#
+DIRS += ${DIRS_yes}
+EXCLUDE_DIRS += ${EXCLUDE_DIRS_yes}
+
+SUBDIRS := $(filter-out ${EXCLUDE_DIRS},$(DIRS))
+
+.PHONY: subdirs $(SUBDIRS)
+subdirs: $(SUBDIRS)
+$(SUBDIRS):
+	$(ARQUIET)$(call elapsed_time,${PARENT}$@) \
+	    $(MAKE) $(RECURSION_OPTIONS) -C $@ $(MAKECMDGOALS) PARENT="${PARENT}$(subst ${ARUBA_SRC}/,,$@)/" ARMK_FLAGS="${ARMK_FLAGS} ${ARMK_LFLAGS}"

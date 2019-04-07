@@ -1,0 +1,2 @@
+#!/bin/sh
+PKG_CONFIG_LIBDIR=${PKG_CONFIG_LIBDIR:-/var/tmp/tool-chains/buildroot-2012.11-4.7.2-arm/host/usr/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/lib/pkgconfig:/var/tmp/tool-chains/buildroot-2012.11-4.7.2-arm/host/usr/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/share/pkgconfig} PKG_CONFIG_SYSROOT_DIR=${PKG_CONFIG_SYSROOT_DIR:-/var/tmp/tool-chains/buildroot-2012.11-4.7.2-arm/host/usr/arm-buildroot-linux-uclibcgnueabi/sysroot} $(dirname $0)/pkgconf $@

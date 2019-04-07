@@ -1,0 +1,5 @@
+ifndef CTAGS_OPTIONS
+CTAGS_OPTIONS= -L cscope.files
+ETAGS_OPTIONS= -e --recurse=yes
+CSCOPE_OPTIONS= -bqk
+endif

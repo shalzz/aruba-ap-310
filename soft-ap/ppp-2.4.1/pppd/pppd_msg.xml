@@ -1,0 +1,52 @@
+<!DOCTYPE messages SYSTEM "../../../cmn/syslog/messages.dtd">
+<messages>
+
+<!-- SYSTEM LOGS -->
+
+<!-- USER LOGS -->
+
+<!-- SECURITY LOGS -->
+
+<!-- NETWORK LOGS -->
+
+  <log>
+    <id>236400</id>
+    <category>network</category>
+    <name>PPPD_ERR</name>
+    <severity>LOG_ERR</severity>
+    <description>[log_msg:%s]</description>
+    <documentation>Wrapper for opensource pppd syslogs</documentation>
+  </log>
+  <log>
+    <id>236401</id>
+    <category>network</category>
+    <name>PPPD_WARN</name>
+    <severity>LOG_WARNING</severity>
+    <description>[log_msg:%s]</description>
+    <documentation>Wrapper for opensource pppd syslogs</documentation>
+  </log>
+  <log>
+    <id>236402</id>
+    <category>network</category>
+    <name>PPPD_NOTICE</name>
+    <severity>LOG_NOTICE</severity>
+    <description>[log_msg:%s]</description>
+    <documentation>Wrapper for opensource pppd syslogs</documentation>
+  </log>
+  <log>
+    <id>236403</id>
+    <category>network</category>
+    <name>PPPD_INFO</name>
+    <severity>LOG_INFO</severity>
+    <description>[log_msg:%s]</description>
+    <documentation>Wrapper for opensource pppd syslogs</documentation>
+  </log>
+  <log>
+    <id>236404</id>
+    <category>network</category>
+    <name>PPPD_DEBUG</name>
+    <severity>LOG_DEBUG</severity>
+    <description>[log_msg:%s]</description>
+    <documentation>Wrapper for opensource pppd syslogs</documentation>
+  </log>
+</messages>

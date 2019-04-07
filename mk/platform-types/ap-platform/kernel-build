@@ -1,0 +1,8 @@
+kernel:
+	${ARUBA_MK_SCRIPTS}/getversion ${SW_NAME} > ${KERNEL_SRC}/.arubaversion
+	rm -f $(KERNEL_SRC)/.version; echo $(VERSION) > $(KERNEL_SRC)/.version ; chmod 444 $(KERNEL_SRC)/.version
+	-rm -f $(KERNEL_SRC)/$(K_IMG_NAME)
+	rm -f ${__COMPILE_H}
+	$(MAKE) -C $(KERNEL_SRC) $(K_IMG_NAME) ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+
+

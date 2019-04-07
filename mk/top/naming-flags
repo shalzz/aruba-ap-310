@@ -1,0 +1,4 @@
+
+CFLAGS += -D__SW_NAME__='"${SW_NAME}"'
+CFLAGS += -D__OEM__='"${OEM}"' -D__OEM_${OEM}__
+

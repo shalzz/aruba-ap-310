@@ -1,0 +1,4 @@
+#define ARUBA_BUILD_STRING \
+    ARUBA_SW " version " ARUBA_VERSION " for " ARUBA_PRODUCT \
+    " (" LINUX_COMPILE_BY "@" LINUX_COMPILE_HOST ")" \
+    " (" LINUX_COMPILER ") " UTS_VERSION

@@ -1,0 +1,111 @@
+; initialize system
+;SYStem.RESet
+
+
+; disable the id check because the cpu does not send the debugger the pattern the debugger expects
+sys.option noircheck on
+    
+; other 946 cpu bug fix seen also on 926
+sys.option MULTIPLESFIX on
+
+ 
+   
+   SYStem.CPU 88FR331
+   SYStem.Option BigEndian OFF
+   
+   ;start debugger. This will also reset the board.
+   SYStem.JtagClock 1MHz
+   SYStem.mode attach
+   SYStem.Up
+
+   SYStem.JtagClock 10MHz
+   Data.Set C15:1 %LONG 0x00052078
+
+    ; dram init
+
+    d.s 0xD0001400 %LONG 0x4301503E;  DDR SDRAM Configuration Register
+    d.s 0xD0001404 %LONG 0x39943000;  Dunit Control Low Register
+    d.s 0xD0001408 %LONG 0x33137773;  DDR SDRAM Timing (Low) Register
+    d.s 0xD000140C %LONG 0x1600023a ;  DDR SDRAM Timing (High) Register
+    d.s 0xD0001410 %LONG 0x0600000C ;  DDR SDRAM Address Control Register
+    d.s 0xD0001414 %LONG 0x00000000 ;  DDR SDRAM Open Pages Control Register
+    d.s 0xD0001418 %LONG 0x00000000 ;  DDR SDRAM Operation Register
+    d.s 0xD000141C %LONG 0x00000672 ;  DDR SDRAM Mode Register
+    d.s 0xD0001420 %LONG 0x00000004 ;  DDR SDRAM Extended Mode Register
+    d.s 0xD0001424 %LONG 0x0000F17F;  Dunit Control High Register
+    d.s 0xD0001428 %LONG 0x000C6610 ;  Dunit Control High Register
+    d.s 0xD000147c %LONG 0x0000A771 ;  Dunit Control High Register
+    d.s 0xD0001504 %LONG 0x0FFFFFF1 ;  CS[0]n Size Register
+    d.s 0xD0001508 %LONG 0x10000000;  CS[1]n Base Register
+    d.s 0xD000150C %LONG 0x0FFFFFF0 ;  CS[1]n Size Register
+    d.s 0xD0001514 %LONG 0x00000000 ;  CS[2]n Size Register
+    d.s 0xD000151C %LONG 0x00000000 ;  CS[3]n Size Register
+    d.s 0xD0001494 %LONG 0x00120012;  DDR2 SDRAM ODT Control (Low) Register
+    d.s 0xD0001498 %LONG 0x00000000 ;  DDR2 SDRAM ODT Control (High) Register
+    d.s 0xD000149C %LONG 0x0000E403;  DDR2 Dunit ODT Control Register
+    d.s 0xD00015D0 %LONG 0x00000630;  DDR3 MR0 Register
+    d.s 0xD00015D4 %LONG 0x00000046;  DDR3 MR1 Register
+    d.s 0xD00015D8 %LONG 0x00000008;  DDR3 MR2 Register
+    d.s 0xD00015DC %LONG 0x00000000;  DDR3 MR3 Register
+    d.s 0xD00015E0 %LONG 0x00000023;  DDR3 Rank Control Register
+    d.s 0xD00015E4 %LONG 0x00203C18;  ZQC Configuration Register
+    d.s 0xD0001480 %LONG 0x00000001 ;  DDR SDRAM Initialization Control Register
+    d.s 0xD0020204 %LONG 0x00000000 ;  Main IRQ Interrupt Mask Register
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s	0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+
+; set program counter at program start
+Register.Set pc 0xFFFF0000
+ 
+; open some windows
+ winpos 0% 0% 100% 50%
+ Data.List
+ winpos 0% 50% 50% 50%
+ SYStem
+ 
+ enddo
+
+
+
+
+
+
+
+
+
+
+

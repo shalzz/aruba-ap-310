@@ -1,0 +1,2 @@
+SDN_AP=yes
+CFLAGS += -D__SDN_AP__

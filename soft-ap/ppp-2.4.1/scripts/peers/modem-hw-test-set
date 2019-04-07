@@ -1,0 +1,13 @@
+
+ECHO ON
+TIMEOUT 10
+ABORT 'BUSY'
+ABORT 'ERROR'
+
+'' 'at!entercnd="A710"'
+'OK' 'at!sku?'
+'OK' 'at+cpin?'
+'OK' 'at!iccid?'
+'OK' 'at+cimi'
+'OK' 'at!DAFTMACT'
+'OK' ''

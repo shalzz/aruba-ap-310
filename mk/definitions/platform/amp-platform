@@ -1,0 +1,25 @@
+#
+# Some More useful definitions for amp applications.
+#
+
+ifdef AMP
+MLIBDIRS :=  \
+	-L$(ARUBA_SRC)/postgres/src/interfaces/libpq
+endif
+
+MINCDIRS :=  -I. \
+	-I$(ARUBA_SRC) \
+	-I${OPENSSL_DIR} \
+	-I${OPENSSL_DIR}/include \
+	-I$(ARUBA_SRC)/cmn \
+	-I$(ARUBA_SRC)/cmn/util \
+	-I$(ARUBA_SRC)/cmn/mgmt \
+	-I$(ARUBA_SRC)/cmn/dispatcher \
+	-I$(ARUBA_SRC)/cmn/papi \
+	-I$(ARUBA_SRC)/cmn/include \
+	-I$(ARUBA_SRC)/cmn/syslog
+	
+ifdef AMP
+MINCDIRS += -I$(ARUBA_SRC)/postgres/src/include \
+	-I$(ARUBA_SRC)/postgres/src/interfaces/libpq
+endif

@@ -1,0 +1,9 @@
+#!/bin/sh
+#OS=../../os/linux-2.6.16
+
+unset	CONFIG_SHELL HPATH HOSTCC HOSTCFLAGS CROSS_COMPILE \
+	AS LD CC CPP AR NM STRIP OBJCOPY OBJDUMP \
+	MAKE
+unset	TEXT_BASE PLATFORM_CPPFLAGS PLATFORM_RELFLAGS CPPFLAGS CFLAGS AFLAGS
+make -C ../../../sysdef
+make -C ../../addVersion clean all BOOT_CODE=1 BUILD_STRING="`tr -d '\012' < include/${BOOT_TYPE_LC}_version.txt`" BOOT_VERSION=${VERSION}

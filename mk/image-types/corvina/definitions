@@ -1,0 +1,14 @@
+PLATFORM_REQUIRES_SIGNED_IMAGES=yes
+include ${ARUBA_MK_PLATFORM_TYPES}/${ARUBA_PLATFORM_TYPE}/definitions
+include ${ARUBA_MK_DEFINITIONS}/platform/all-platforms
+include ${ARUBA_MK_DEFINITIONS}/features/uplink
+include ${ARUBA_MK_DEFINITIONS}/features/ipv6
+include ${ARUBA_MK_DEFINITIONS}/features/image-signing
+include ${ARUBA_MK_DEFINITIONS}/features/factory-cert
+include ${ARUBA_MK_DEFINITIONS}/features/cpss
+include ${ARUBA_MK_DEFINITIONS}/features/ssm
+include ${ARUBA_MK_DEFINITIONS}/features/tpm
+include ${ARUBA_MK_DEFINITIONS}/features/new-license-scheme
+
+FILESYSTEM = ${ARUBA_IMAGE_TYPE}fs
+export FP_HWSRC = $(ARUBA_SRC)/fastpath/lvl7dev/${ARUBA_IMAGE_TYPE}_hw/src

@@ -1,0 +1,53 @@
+#
+# Here we make tar of source code list for FIPS certification purposes
+# this is not saved in /tftpboot or in symbols directory
+#
+# The source code tar is created when LABELID is set. i.e only for official builds
+# Idea is to get this tar file, encrypt them and send to the certification lab.
+#
+fipsworld:
+	@if [ -n "$(FIPS)" ]; then \
+		if [ -n "$(LABELID)" ]; then \
+			export AR_SRC_TAR_FILE=Aruba_$(ARUBA_VERSION)_source_code.tar; \
+			export AR_CFG_LIST_FILE=Aruba_$(ARUBA_VERSION)_configuration_list.txt; \
+			if [ ! -f $$AR_SRC_TAR_FILE ]; then \
+				printf "\nCreating Source Code List : $$AR_SRC_TAR_FILE ..." ; \
+				tar -cf $$AR_SRC_TAR_FILE Makefile mk \
+					aaa am amapi apache-cp arci aruba-login aruba_filter auth ble \
+					certmgr cfe cfgm cmn dbbk dhcpd dialer fastpath/lvl7dev ospf fpdist freeswan-1.95 \
+					ip isakmpd l2tpd-0.67 licensemgr mobility mysql \
+					ntp openssl openssl-0.9.8n openssl-f openssl-fips/openssl-0.9.8n \
+					openssl-fips/openssl-fips-1.2 pim platform ppp-2.4.1/pppd pppoed \
+					pptpd-1.1.3 profmgr rft sap setup site-survey slb snmp/src soft-ap sos \
+					ssh sshwrap stm slb sysdef sysmgr utils/cpu utils/dnsmasq-2.38 utils/utelnetd-0.1.3 \
+					utils/curl-7.15.5 utils/ntpclient utils/unzip-5.51 utils/wget-1.10.2 webui wms/wms \
+					utils/dnsmasq-2.45 utils/busybox-1.01 ; \
+				printf "completed"; \
+			fi; \
+			if [ ! -f $$AR_CFG_LIST_FILE ]; then \
+				printf "\nCreating configuration list : $$AR_CFG_LIST_FILE ..." ; \
+				ls -fgGhAR Makefile mk \
+					aaa am amapi \
+		            apache-cp arci aruba-login aruba_filter auth ble certmgr cfe cfgm cmn dbbk dhcpd \
+                    dialer fastpath/lvl7dev ospf fpdist freeswan-1.95 ip isakmpd l2tpd-0.67 \
+					licensemgr mobility mysql ntp openssl openssl-0.9.8n \
+					openssl-f openssl-fips/openssl-0.9.8n openssl-fips/openssl-fips-1.2 pim \
+					platform ppp-2.4.1/pppd pppoed pptpd-1.1.3 profmgr rft sap setup \
+					site-survey slb snmp/src soft-ap sos ssh sshwrap stm slb sysdef sysmgr \
+					 utils/cpu utils/dnsmasq-2.38 utils/utelnetd-0.1.3 utils/curl-7.15.5 utils/ntpclient utils/unzip-5.51 \
+					utils/wget-1.10.2 webui wms/wms utils/busybox-1.01 utils/dnsmasq-2.45 > $$AR_CFG_LIST_FILE; \
+				printf "completed \n\n"; \
+			fi; \
+		fi; \
+		${MAKE} world OEM=aruba SW_NAME=ArubaOS FIPS=yes ;\
+	else \
+		printf "\n\tPlease set FIPS variable in your environment\n\n"; \
+	fi
+
+cleanfipsworld:
+	@if [ -n "$(FIPS)" ]; then \
+		${MAKE} cleanworld OEM=aruba SW_NAME=ArubaOS FIPS=yes ;\
+	else \
+		printf "\n\tPlease set FIPS variable in your environment\n\n"; \
+	fi
+

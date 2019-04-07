@@ -1,0 +1,153 @@
+#
+# ---------------------------------------------------------------------
+# Implicit rules.
+#
+
+# 
+# This generates a dependency file (.d) for each C source file,
+# Which are in turn included in Makefile.bottom.  This is what
+# triggers c files compilation.
+#
+ifdef SYSTEM_HEADERS_DEP
+depflags := -M
+else
+depflags := -MM
+endif
+ifdef GENERATED_HEADERS
+depflags += -MG
+endif
+
+$(OBJDIR)%.d : %.c $(MSG_HEADERS)
+	@mkdir -p $(dir $@)
+	$(do_protos)
+	-@echo -en $(aruba_print_dependency);
+ifndef MULTI_DIRS
+	-$(ARQUIET)$(CC) $(depflags) -MT "$(@:.d=.o) $@" -o $@ $(ALLCFLAGS) $(ALLINCS) $<
+else 
+	-$(ARQUIET)$(CC) $(depflags) -MT "$(@:.d=.o) $@" -o $(OBJDIR)$(notdir $@) $(ALLCFLAGS) $(ALLINCS) $<
+endif
+
+#
+# c++, used in fastpath, dhcpdwrap
+#
+$(OBJDIR)%.d : %.cpp
+ifdef OBJDIR
+	@mkdir -p $(OBJDIR)
+endif
+ifdef OBJSUBDIRS
+	@mkdir -p $(OBJSUBDIRS)
+endif
+	-@echo -en $(aruba_print_dependency);
+	-$(ARQUIET)$(CC) $(depflags) -MT "$(@:.d=.o) $@" -o $@ $(filter-out -Wno-pointer-sign, $(ALLCFLAGS)) $(ALLINCS) $<
+
+$(OBJDIR)%.d : %.cc
+ifdef OBJDIR
+	@mkdir -p $(OBJDIR)
+endif
+	-@echo -en $(aruba_print_dependency);
+	-$(ARQUIET)$(CC) $(depflags) -MT "$(@:.d=.o) $@" -o $@  $(ALLCFLAGS) $(ALLINCS) $<
+	
+#
+# Rules for compiling sources.  
+#
+
+$(OBJDIR)%.o : %.c 
+	@echo -en $(aruba_print_compile_src);
+	@mkdir -p $(dir $@)
+ifdef ARUBA_SAVE_CPP_OUTPUT
+	$(ARQUIET)$(CC) -dD -E $< $(ALLCFLAGS) $(ALLINCS) -o $@.p
+endif
+ifndef MULTI_DIRS
+	$(ARQUIET)$(CC) -c $< $(ALLCFLAGS) $(ALLINCS) -o $@
+else
+	$(ARQUIET)$(CC) -c $< $(ALLCFLAGS) $(ALLINCS) -o $(OBJDIR)$(notdir $@)
+endif
+
+$(OBJDIR)%.o : %.cpp
+	@echo -en $(aruba_print_compile_cpp);
+	$(ARQUIET)$(CC) -c $< $(filter-out -Wno-pointer-sign, $(ALLCFLAGS)) $(ALLINCS) -o $@
+
+$(OBJDIR)%.o : %.cc
+	@echo -en $(aruba_print_compile_cpp);
+	$(ARQUIET)$(CXX) -c $< $(ALLCFLAGS) $(ALLINCS) -o $@
+
+$(OBJDIR)%.o : %.S
+	@echo -en $(aruba_print_compile_asm);
+ifdef ARUBA_SAVE_CPP_OUTPUT
+	$(ARQUIET)$(CC) -dD -E $< $(ALLCFLAGS) $(ALLINCS) -o $@.p
+endif
+	$(ARQUIET)$(CC) -c $< $(ALLCFLAGS) $(ALLINCS) -o $@
+
+%.i : %.c
+	@echo -en $(aruba_print_compile_src);
+	$(ARQUIET)$(CC) -E -c $< $(ALLCFLAGS) $(ALLINCS) ${MINCDIRS} -o $@
+
+%.i : %.cpp
+	@echo -en $(aruba_print_compile_cpp);
+	$(ARQUIET)$(CC) -E -c $< $(ALLCFLAGS) $(ALLINCS) ${MINCDIRS} -o $@
+	
+%.i : %.cc
+	@echo -en $(aruba_print_compile_cpp);
+	$(ARQUIET)$(CC) -E -c $< $(ALLCFLAGS) $(ALLINCS) ${MINCDIRS} -o $@	
+	
+
+%.asmout : %.c
+	@echo -en $(aruba_print_compile_asm);
+	$(ARQUIET)$(CC) -S -c $< $(ALLCFLAGS) $(ALLINCS) ${MINCDIRS} -o $@
+
+%.splint : %.c
+	@echo -en $(aruba_print_convert);
+	$(ARQUIET)splint +gnuextensions -warnposix -systemdirerrors $< $(ALLINCS) > $@
+
+%.yy.c : %.l
+	@echo -en $(aruba_print_compile_yacc);
+	$(ARQUIET)$(FLEX) $(FLEXFLAGS) -o$@ $< 
+
+%.tab.c %.tab.h : %.y
+	@echo -en $(aruba_print_compile_tab);
+	$(ARQUIET)$(BISON) $(BISONFLAGS) -d  $<
+
+%.h : %.xml
+ifndef NATIVE_GNU_MAKE
+	$(if $(findstring $*,${MSGFILES}), \
+	@echo -en $(aruba_print_compile_xml);  \
+	$(MAKE) -C $(ARUBA_SRC)/cmn/syslogutils STOP_RECURSION_HERE=1 GENLOGS=1 XMLFILE=$(addprefix $(shell pwd)/,$(MSGFILES)) all, \
+	test -f $@ || exit 1)
+else # NATIVE_GNU_MAKE
+	$(if $(findstring $*,${MSGFILES}), \
+	@echo -en $(aruba_print_compile_xml);  \
+	$(MAKE) -C $(ARUBA_SRC)/cmn/syslogutils STOP_RECURSION_HERE=1 GENLOGS=1 XMLFILE=$(addprefix $(subst /cygdrive/c,c:,$(shell pwd))/,$(MSGFILES)) all, \
+	test -f $@ || exit 1)
+endif # NATIVE_GNU_MAKE
+
+#
+# Rules for updating archives.
+#
+(%.o) : %.o
+ifdef OBJDIR
+	@mkdir -p $(LIBRARY_PATH)
+endif
+ifndef MULTI_DIRS
+	$(ARQUIET)$(ARUBA_AR) $(ARFLAGS) $@ $%
+else
+	$(ARQUIET)$(ARUBA_AR) $(ARFLAGS) $@ $(OBJDIR)$(notdir $%)
+endif
+
+ifdef OBJDIR
+(%.obj) : %.obj
+	@mkdir -p $(LIBRARY_PATH)
+endif
+
+#
+# cancel SCCS and RCS rules
+#
+%:: %,v
+
+%:: RCS/%,v
+
+%:: RCS/%
+
+%:: s.%
+
+%:: SCCS/s.%
+

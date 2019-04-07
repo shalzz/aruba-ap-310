@@ -1,0 +1,24 @@
+
+ARUBA_TOOLS        := $(ARUBA_SRC)/aos-cmn/tools/ppce5500-fsl/sysroots
+ARUBA_TOOLS_PREFIX := $(ARUBA_TOOLS)/x86_64-fslsdk-linux/usr/bin/powerpc-fsl-linux/powerpc-fsl-linux-
+ARUBA_SYSROOT      := ${ARUBA_TOOLS}/ppce5500-fsl-linux-uclibc/
+
+ARUBA_INCLUDE_DIR  := ${ARUBA_SYSROOT}
+ARUBA_GCC_BASE     := -mcpu=e5500 -B$(ARUBA_SYSROOT)/lib --sysroot=${ARUBA_SYSROOT} -static-libgcc 
+#ARUBA_GCC_BASE     := -B$(ARUBA_SYSROOT) -B$(ARUBA_SYSROOT)/lib  -mcpu=e5500 --sysroot=${ARUBA_SYSROOT} -static-libgcc -B${ARUBA_SYSROOT}/usr/lib
+SYSTEM_LIBS_PATH   := $(ARUBA_SYSROOT)/lib $(ARUBA_SYSROOT)/usr/lib 
+
+STRIP_OPTIONS := -R .pdr  --strip-debug --strip-unneeded
+COMPAT_CFLAGS += -Wno-pointer-sign -Wno-strict-aliasing -fno-strict-aliasing -Wno-sizeof-pointer-memaccess -Wno-error=unused-but-set-variable -Wno-error=unused-but-set-parameter -Wno-unused-parameter
+
+
+KERNEL_TOOLS_PREFIX = ${ARUBA_TOOLS_PREFIX}
+
+# currently used by openssl only, may expand at some point
+ARUBA_LE=-e5500
+export ARUBA_LE
+export ARUBA_TOOLS_PREFIX
+export ARUBA_SYSROOT
+
+__GDB7 := yes
+

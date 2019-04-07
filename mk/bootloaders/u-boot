@@ -1,0 +1,2 @@
+u-boot:
+	cd platform/bootloader/u-boot; ${MAKE} -f Makefile.releng allboards

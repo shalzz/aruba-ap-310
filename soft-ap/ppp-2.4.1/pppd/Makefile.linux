@@ -1,0 +1,192 @@
+#
+# pppd makefile for Linux
+# $Id: Makefile.linux,v 1.41 2001/03/08 05:00:35 paulus Exp $
+#
+
+# Default installation locations
+include $(ARUBA_SRC)/mk/Makefile.rules
+
+BINDIR = /usr/sbin
+MANDIR = /usr/man
+
+PPPDSRCS = main.c magic.c fsm.c lcp.c ipcp.c upap.c chap.c md5.c ccp.c \
+	   ipxcp.c auth.c options.c sys-linux.c md4.c chap_ms.c cbcp.c \
+	   demand.c utils.c multilink.c tdb.c tty.c
+HEADERS =  callout.h pathnames.h patchlevel.h chap.h md5.h chap_ms.h md4.h \
+	   ipxcp.h cbcp.h tdb.h
+MANPAGES = pppd.8
+PPPDOBJS = main.o magic.o fsm.o lcp.o ipcp.o upap.o chap.o md5.o ccp.o \
+	   auth.o options.o demand.o utils.o sys-linux.o ipxcp.o multilink.o \
+	   tdb.o tty.o
+
+ifneq ($(or $(GRENACHE),$(PORFIDIO)),)
+PPPDSRCS += hooks.c fcrypt.c set_key.c
+HEADERS  += hooks.h des_locl.h des.h podd.h sk.h
+PPPDOBJS += hooks.o fcrypt.o set_key.o
+endif
+
+all: pppd
+
+#
+# include dependancies if present and backup if as a header file
+ifeq (.depend,$(wildcard .depend))
+include .depend
+endif
+
+# CC = gcc
+#
+ifdef PORFIDIO
+COPTS= -mabi=32 -march=xlp -O2 -pipe -Wall -g
+else
+COPTS = -O2 -pipe -Wall -g
+endif
+LIBS =
+
+#ifneq ($(wildcard /usr/lib/libcrypt.*),)
+#LIBS += -lcrypt
+#endif
+
+#ifneq ($(wildcard $(TOOLS)/lib/libcrypt.*),)
+LIBS += -lcrypt
+#endif
+
+# Uncomment the next 2 lines to include support for Microsoft's
+# MS-CHAP authentication protocol.
+#CHAPMS=y
+USE_CRYPT=y
+ifneq ($(wildcard $(TOOLS)/lib/libcrypt.*),)
+HAVE_CRYPT_H=y
+endif
+
+# Uncomment the next line to include support for PPP packet filtering.
+# This requires that the libpcap library and headers be installed
+# and that the kernel driver support PPP packet filtering, which it
+# doesn't yet.
+#FILTER=y
+
+#HAS_SHADOW=y
+#USE_PAM=y
+#HAVE_INET6=y
+
+PLUGIN=y
+
+INCLUDE_DIRS= -I../include
+
+COMPILE_FLAGS= -D_linux_=1 -DHAVE_PATHS_H -DIPX_CHANGE -DHAVE_MULTILINK -DHAVE_MMAP
+
+CFLAGS += $(COPTS) $(COMPILE_FLAGS) $(INCLUDE_DIRS)
+ifdef FIPS
+CFLAGS_LOCAL += -I $(ARUBA_SRC)/cmn/crypto-util -I$(OPENSSL_DIR)/include -I$(ARUBA_SRC)/sap/flash
+ifdef NO_OPENSSL
+INCLUDE_DIRS += -I$(CYASSL_DIR) -I$(CYASSL_DIR)/cyassl
+endif#ifdef NO_OPENSSL
+else
+CFLAGS += -I$(ARUBA_SRC)/sap/flash
+endif
+
+#LDFLAGS += --static
+
+ifneq ($(or $(GRENACHE),$(PORFIDIO)),)
+LDFLAGS += -L$(OPENSSL_DIR)/$(OBJDIR)
+LIBS     := -lcrypto
+endif
+
+ifdef CHAPMS
+CFLAGS   += -DCHAPMS=1
+ifndef USE_CRYPT
+LIBS     := -ldes $(LIBS)
+else
+CFLAGS   += -DUSE_CRYPT=1
+ifneq ($(wildcard $(TOOLS)/include/crypt.h),)
+CFLAGS   += -DHAVE_CRYPT_H=1
+endif
+endif
+PPPDOBJS += md4.o chap_ms.o
+ifdef MSLANMAN
+CFLAGS   += -DMSLANMAN=1
+endif
+endif
+
+ifdef HAS_SHADOW
+CFLAGS   += -DHAS_SHADOW
+#LIBS     := -lshadow $(LIBS)
+endif
+
+# For "Pluggable Authentication Modules", see ftp.redhat.com:/pub/pam/.
+ifdef USE_PAM
+CFLAGS   += -DUSE_PAM
+LIBS     := -lpam -ldl $(LIBS)
+endif
+
+# Lock library binary for Linux is included in 'linux' subdirectory.
+ifdef LOCKLIB
+LIBS     := -llock $(LIBS)
+CFLAGS   += -DLOCKLIB=1
+endif
+
+ifdef PLUGIN
+CFLAGS	+= -DPLUGIN
+LDFLAGS	+= -Wl,-E
+LIBS	+= -ldl
+endif
+
+ifdef FILTER
+LIBS    += -lpcap
+CFLAGS  += -DPPP_FILTER -I/usr/include/pcap
+endif
+
+ifdef FIPS
+ifdef NO_OPENSSL
+LIBS += -L$(INSTALL_LIBS_DIR) -L$(CYASSL_DIR)/src/.libs -laruba-crypto-util -lpppoe_plugin 
+#ifneq ($(OEM), siemens)
+LIBS += -lcyassl
+#endif
+else
+LIBS += -L$(INSTALL_LIBS_DIR) -L${OPENSSL_DIR}/${OBJDIR} -laruba-crypto-util -lcrypto -lpppoe_plugin 
+endif
+else
+LIBS += -L$(INSTALL_LIBS_DIR) -laruba-crypto-util -lpppoe_plugin 
+endif
+
+ifndef FAT_AP
+LIBS += -loem
+endif
+ifneq ($(OEM), siemens)
+LIBS += -lsyslog
+endif
+
+ifdef ARUBA_GCOV
+LIBS += -lgcov
+endif
+
+ifdef HAVE_INET6
+     PPPDSRCS += ipv6cp.c eui64.c
+     HEADERS  += ipv6cp.h eui64.h
+     PPPDOBJS += ipv6cp.o eui64.o
+     CFLAGS   += -DINET6=1
+endif
+
+
+INSTALL= install -o root
+
+install: pppd
+	mkdir -p $(BINDIR) $(MANDIR)
+	$(INSTALL) -s -c -m 555 pppd $(BINDIR)/pppd
+	if chgrp pppusers $(BINDIR)/pppd 2>/dev/null; then \
+	  chmod o-rx,u+s $(BINDIR)/pppd; fi
+	$(INSTALL) -c -m 444 pppd.8 $(MANDIR)/man8
+
+pppd: $(PPPDOBJS)
+	@echo "  EXE     $@"
+	$(CC) $(CFLAGS) $(LDFLAGS) -o pppd $(PPPDOBJS) $(LIBS)
+
+clean:
+	@echo "  CLEAN   pppd"
+	${ARQUIET}rm -f $(PPPDOBJS) pppd *~ #* core
+
+depend:
+	$(CPP) -M $(CFLAGS) $(PPPDSRCS) >.depend
+
+%.o:	%.c
+	@echo "  CC      $<"
+	${ARQUIET} ${CC} -c ${CFLAGS} $<

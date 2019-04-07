@@ -1,0 +1,3 @@
+ifdef DEBUG_BUILD
+CFLAGS += -D__DEBUG_BUILD__
+endif

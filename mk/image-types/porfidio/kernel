@@ -1,0 +1,12 @@
+export __ARUBA_KERNEL=2.6.32
+ifdef GRAPPA
+KERNEL_CONFIG=aruba_grappa_defconfig
+KERNEL_CRASH_CONFIG=aruba_grappa_crash_kernel_defconfig
+KERNEL_CONFIG_DIAG=aruba_grappa_diag_defconfig
+else
+KERNEL_CONFIG=aruba_porfidio_defconfig
+KERNEL_CRASH_CONFIG=aruba_porfidio_crash_kernel_defconfig
+KERNEL_CONFIG_DIAG=aruba_porfidio_diag_defconfig
+endif
+KERNEL_CONFIG_LTT=aruba_porfidio_ltt_defconfig
+K_IMG_NAME:=vmlinux.strip

@@ -1,0 +1,130 @@
+ifndef K_IMG_TARGET
+# platforms that use vmlinux.strip build vmlinux
+K_IMG_TARGET := vmlinux
+endif
+
+ifdef OPUSONE
+# Add package name here per platform
+PACKAGES=airgroup ucm wms arm_cm web_cc nbapi_helper airmatch appRF
+endif
+
+kernel:
+ifneq ($(or $(MIPS_XLP_PLATFORM),$(X86_TARGET_PLATFORM)),)
+ifndef TARGET_IMAGE
+	@echo Building filesystem to take in crash kernel
+#	$(MAKE) -C $(FILESYSTEM) fs_and_kernel __PKG_FILESYSTEM=yes
+endif
+endif
+
+ifdef KERNEL_CONFIG
+	@echo "  CONFIG  ${KERNEL_CONFIG}"
+	@$(call elapsed_time,kernel_config) $(MAKE) -C $(KERNEL_SRC) $(KERNEL_CONFIG) MAKEFLAGS="$(shell echo ${MAKEFLAGS} | sed -e 's/-s//g')" ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+else
+	@echo "  CONFIG  ${ARUBA_IMAGE_TYPE}${KCONFIG_SUFFIX}"
+	@$(call elapsed_time,kernel_config) cp -f -p $(KERNEL_SRC)/config.$(ARUBA_IMAGE_TYPE)${KCONFIG_SUFFIX} $(KERNEL_SRC)/.config
+endif
+	${ARUBA_MK_SCRIPTS}/getversion ${SW_NAME} > ${KERNEL_SRC}/.arubaversion
+	rm -f $(KERNEL_SRC)/.version; echo $(VERSION) > $(KERNEL_SRC)/.version ; chmod 444 $(KERNEL_SRC)/.version
+	rm -f ${__COMPILE_H}
+
+	rm -f $(KERNEL_SRC)/vmlinux $(KERNEL_SRC)/vmlinux.strip 
+ifdef ARUBA_MAKE_VERBOSE
+	@$(call elapsed_time,${K_IMG_TARGET}) $(MAKE) V=1 -C $(KERNEL_SRC) ${K_IMG_TARGET} MAKEFLAGS=" --no-print-directory " ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+else
+	@$(call elapsed_time,${K_IMG_TARGET}) $(MAKE) -C $(KERNEL_SRC) ${K_IMG_TARGET} MAKEFLAGS=" --no-print-directory " ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+endif
+	@$(call elapsed_time,addVersion) $(MAKE) -C platform/addVersion clean all
+	@echo "  SIGN    ${IMAGE_NAME}"
+	@$(call elapsed_time,signature) $(ARUBA_SRC)/platform/addVersion/addVersion $(K_IMG_DIR_SRC)/${K_IMG_NAME} $(K_IMG_DIR)/$(IMAGE_NAME) -o ${OEM} -h 3
+
+	if [ -f $(K_IMG_DIR)/$(ARUBA_IMAGE_TYPE)_ancillary_files.tar ]; then \
+		echo "  ANCIL   ${IMAGE_NAME}"; \
+		$(call elapsed_time,signature_ancil) $(ARUBA_SRC)/platform/addVersion/addVersion $(K_IMG_DIR)/$(ARUBA_IMAGE_TYPE)_ancillary_files.tar $(K_IMG_DIR)/$(ARUBA_IMAGE_TYPE)_ancillary_img -t OS_ANCILLARY -o ${OEM} -h 3&& \
+		cat $(K_IMG_DIR)/$(ARUBA_IMAGE_TYPE)_ancillary_img >> $(K_IMG_DIR)/$(IMAGE_NAME); \
+	fi
+
+######################################
+# Build Packages
+#####################################
+ifdef LSM_SUPPORTED
+	for file in $(PKGDIR)/*; do \
+		if [ -f $$file ]; then \
+			for pkg in $(PACKAGES); do \
+				tmp=`basename $$file`; \
+				if [[ "$$tmp" == *$${pkg}* ]]; then \
+					$(call elapsed_time,signature_pkg) $(ARUBA_SRC)/platform/addVersion/addVersion $$file $(PKGDIR)/tmp_pkg -t LSM_PKG -o ${OEM}; \
+					if [[ -n "$(LABELID)" ]]; then \
+						$(SUDOCP) -f $(PKGDIR)/tmp_pkg $(TFTPDEST)/$(IMG)_$(ARUBA_VERSION)_$${pkg}_$(LABELID); \
+						echo "  PACKAGE $(TFTPDEST)/$(IMG)_$(ARUBA_VERSION)_$${pkg}_$(LABELID)"; \
+					else \
+						$(SUDOCP) -f $(PKGDIR)/tmp_pkg $(TFTPDEST)/$(IMG)_$(ARUBA_VERSION)_$${pkg}.$(P4CLIENT); \
+						echo "  PACKAGE $(TFTPDEST)/$(IMG)_$(ARUBA_VERSION)_$${pkg}.$(P4CLIENT)"; \
+					fi; \
+					rm -f $(PKGDIR)/tmp_pkg; \
+					break; \
+				fi;\
+			done;\
+		fi;\
+	done    
+endif
+
+	@echo "  COPY    ${IMAGE_NAME} -> ${TFTPDEST}"
+
+	$(SUDOCP) -f $(K_IMG_DIR)/$(IMAGE_NAME) $(TFTPDEST)
+ifndef LABELID
+	$(SUDOCP) -f $(K_IMG_DIR)/$(IMAGE_NAME) $(TFTPDEST)/$(IMAGE_NAME).$(P4CLIENT)
+endif
+
+
+crashkernel:
+	@echo "Building crash kernel"
+	#Install essentials needed by crashkernel
+	#for 64bit milagro, we are still resorting to 32bit kernel_core_splitter
+	#which is pre-compiled and placed at /mswitch/bin. Reason: statfs64 api
+	#for 64 bit is broken and returns negative return value; hence it precludes core-collection
+	#in rescue-kernel
+ifndef MILAGRO
+	@$(call elapsed_time,"arubainstall:utils/kernel_core_splitter") $(MAKE) -C $(ARUBA_SRC)/utils/kernel_core_splitter arubainstall
+endif
+	@$(call elapsed_time,"arubainstall:utils/busybox-1.01") $(MAKE) -C $(ARUBA_SRC)/utils/busybox-1.01/ arubainstall
+ifdef X86_TARGET_PLATFORM
+	@$(call elapsed_time,"arubainstall:openssl") $(MAKE) -C $(ARUBA_SRC)/openssl/ arubainstall
+	@$(call elapsed_time,"arubainstall:utils/udev") $(MAKE) -C $(ARUBA_SRC)/utils/udev/ arubainstall
+	@$(call elapsed_time,"arubainstall:platform/utils/set-reboot-status") $(MAKE) -C $(ARUBA_SRC)/platform/utils/set-reboot-status/ arubainstall
+	@$(call elapsed_time,"arubainstall:platform/rebootCause") $(MAKE) -C $(ARUBA_SRC)/platform/rebootCause/ arubainstall
+	@$(call elapsed_time,"arubainstall:cmn/util") $(MAKE) -C $(ARUBA_SRC)/cmn/util/ arubainstall
+	@$(call elapsed_time,"arubainstall:cmn/oem") $(MAKE) -C $(ARUBA_SRC)/cmn/oem/ arubainstall
+	@$(call elapsed_time,"arubainstall:cmn/wifi") $(MAKE) -C $(ARUBA_SRC)/cmn/wifi/ arubainstall
+	@$(call elapsed_time,"arubainstall:cmn/papi") $(MAKE) -C $(ARUBA_SRC)/cmn/papi/ arubainstall
+	@$(call elapsed_time,"arubainstall:cmn/ph") $(MAKE) -C $(ARUBA_SRC)/cmn/ph/ arubainstall
+	@$(call elapsed_time,"arubainstall:cmn/syslog") $(MAKE) -C $(ARUBA_SRC)/cmn/syslog/ arubainstall
+	@$(call elapsed_time,"arubainstall:cmn/dispatcher") $(MAKE) -C $(ARUBA_SRC)/cmn/dispatcher/ arubainstall
+	@$(call elapsed_time,"arubainstall:cmn/mm") $(MAKE) -C $(ARUBA_SRC)/cmn/mm/ arubainstall
+	@$(call elapsed_time,"arubainstall:${TOOLS}") $(MAKE) -C $(TOOLS)/ arubainstall
+else    
+	@$(call elapsed_time,arubainstall) $(MAKE) -C $(TOOLS)/.. arubainstall
+endif
+	@$(call elapsed_time,"arubainstall:$platform/kexec-tools-2.0.3") $(MAKE) -C $(ARUBA_SRC)/platform/kexec-tools-2.0.3/ arubainstall
+	cp  -f -p $(ARUBA_SRC)/utils/zlib/$(OBJDIR)/libz.a $(DESTDIR)/../lib 
+
+ifdef X86_TARGET_PLATFORM    
+	$(MAKE) -C $(FILESYSTEM) CRASH_KERNEL=1 fs_and_kernel __PKG_FILESYSTEM=yes
+else    
+	$(MAKE) -C $(FILESYSTEM) PORF_CRASH_KERNEL=1 fs_and_kernel __PKG_FILESYSTEM=yes
+endif    
+
+ifdef KERNEL_CONFIG
+	$(MAKE) -C $(KERNEL_SRC) $(KERNEL_CRASH_CONFIG) MAKEFLAGS="$(shell echo ${MAKEFLAGS} | sed -e 's/-s//g')" ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+endif
+	rm -f $(KERNEL_SRC)/.version; echo $(VERSION) > $(KERNEL_SRC)/.version ; chmod 444 $(KERNEL_SRC)/.version
+	rm -f ${KERNEL_SRC}/include/linux/compile.h
+
+	rm -f $(KERNEL_SRC)/vmlinux $(KERNEL_SRC)/vmlinux.strip 
+ifdef X86_TARGET_PLATFORM    
+	$(MAKE) -C $(KERNEL_SRC) bzImage MAKEFLAGS=" --no-print-directory " ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+	cp $(KERNEL_SRC)/arch/x86/boot/bzImage $(DESTDIR)/bin/vmlinux.crash
+else    
+	$(MAKE) -C $(KERNEL_SRC) vmlinux MAKEFLAGS=" --no-print-directory " ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+	cp $(KERNEL_SRC)/vmlinux.strip $(DESTDIR)/bin
+endif    
+	@echo "Crash kernel done"

@@ -1,0 +1,16 @@
+ECHO ON
+# time out is 40 because sometimes the card takes a little while to initalize
+TIMEOUT 40
+ABORT 'BUSY'
+ABORT 'NO ANSWER'
+ABORT 'NO CARRIER'
+ABORT 'NO DIAL TONE'
+ABORT DELAYED
+
+'' 'AT'
+'OK' 'AT+cfun=1'
+'OK' 'at+cgdcont=PID,"IP","APN"'
+'OK' 'at!scprof=PID,"",0,0,0,0'
+'OK' 'at!scact=1,PID'
+'OK' 'at!scpaddr=PID'
+'OK' ''

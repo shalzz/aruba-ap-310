@@ -1,0 +1,39 @@
+#
+# directories that are common between platforms but that must
+# be recompiled when building another platform.   cleaned
+# by "cleancommon" target.
+#
+COMMON_DIRS =                   \
+	ssh                     \
+	sshwrap
+
+ifdef PORFIDIO
+COMMON_DIRS +=                  \
+	contrib/marvell/cpss-3.03p1	\
+	fastpath/lvl7dev/mrvl_swt	\
+	utils/eject		\
+	utils/udev		
+endif
+
+COMMON_DIRS += utils/busybox-1.01
+
+# nothing should be built before sysdef
+DIRS +=  \
+	sysdef			\
+	${ZVMDIR}               \
+	${OPENSSL_DIR}          \
+	wms/evparser            \
+	cmn/syslogutils         \
+	cmn/mgmt                \
+	wms/evlib               \
+	cmn                     \
+	amapi/build             \
+	cmn/ncfg/upgrade	\
+	sysmgr                  \
+	${COMMON_DIRS}          \
+	platform                \
+	$(EXTRA_DIRS)	        \
+	$(INSTALL_LIBS_BASE_DIR) \
+
+DIRS_${MIPS_XLR_PLATFORM} += $(TOOLS)/../../..
+DIRS_${MIPS_XLP_PLATFORM} += platform/xlp $(TOOLS)/..

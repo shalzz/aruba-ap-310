@@ -1,0 +1,14 @@
+
+ECHO ON
+TIMEOUT 10
+ABORT 'BUSY'
+ABORT 'ERROR'
+
+'' 'AT!CHAN=384,0'
+'OK' 'AT!RX=1'
+'OK' 'AT!RXAGC?'
+'OK' 'AT!RX2=1'
+'OK' 'AT!RX2AGC?'
+'OK' 'AT!RX=0'
+'OK' 'AT!RX2=0'
+'OK' ''

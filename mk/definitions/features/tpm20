@@ -1,0 +1,7 @@
+CFLAGS    += -DTPM_PLATFORM
+
+ifdef AP_PLATFORM
+CFLAGS    += -DTPM_AP
+TPM20_AP=yes
+endif
+

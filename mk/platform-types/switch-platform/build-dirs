@@ -1,0 +1,274 @@
+#
+# directories that are common between platforms but that must
+# be recompiled when building another platform.   cleaned
+# by "cleancommon" target.
+#
+
+ifdef MILAGRO
+COMMON_DIRS += platform/xlp7xx9xx
+endif
+
+COMMON_DIRS +=                   \
+	ssh                     \
+	sshwrap		  	\
+	pptpd-1.1.3             \
+        radvd                   \
+        radvd/aruba             \
+        pppoed                  \
+        utils/eject		\
+        utils/udev		\
+        utils/ozerocdoff	\
+        utils/busybox-1.01  
+
+ifdef LSM_SUPPORTED
+COMMON_DIRS +=		\
+	infra/lsm
+endif
+
+SDN_DIRS_${SDN_PLATFORM} += cmn/ofcommon cmn/ofml ofa
+
+ifdef PORFIDIO
+COMMON_DIRS +=                          \
+	contrib/marvell/cpss-3.03p1
+endif
+
+ifdef OPUSONE
+COMMON_DIRS +=                  \
+	infra/dpi/Qosmos/SDK    
+endif
+
+EXTRA_DIRS = utils/dnsmasq-2.75
+
+ifneq ($(or $(GRENACHE),$(PORFIDIO)),)
+EXTRA_DIRS += soft-ap/rp-pppoe-3.5/src \
+	      soft-ap/ppp-2.4.1 \
+	      utils/usb-modeswitch-1.1.6 \
+	      utils/4g_utils/pcd_tool/cmapp \
+	      utils/4g_utils/pcd_tool/dgwatchnet \
+	      samba/install/mips-rmi
+endif
+
+ifneq ($(or $(MILAGRO),$(PORFIDIO),$(WEB_CC)),)
+EXTRA_DIRS += web_cc
+endif
+
+ifdef OPUSONE
+DIRS += tools/protobuf
+endif
+
+DIRS +=  \
+        ${CMOCK_TOOLS}          \
+	${UNITY_TOOLS}/src      \
+	${OPENSSL_DIR}          \
+	${ZVMDIR}               \
+	3rd/gpl                 \
+	sysmgr                  \
+	cmn                     \
+        amapi/build             \
+        cmn/amp                 \
+	snmp/src		\
+	aruba_filter            \
+	sap                     \
+    cmn/ncfg/validate/profile       \
+    cmn/ncfg/validate/non-profile   \
+    cmn/papisec   \
+	$(COMMON_DIRS)          \
+    platform/x86/rng-mgr    \
+        ${DPDK_DIR}             \
+        ${DPI_DIR}              \
+        sos/build               \
+        ${SDN_DIRS_yes}         \
+        utils/apcp              \
+    cli/cliauth \
+        utils/utelnetd-0.1.3    \
+        utils/unzip-5.51        \
+        isakmpd                 \
+        profmgr/cnodeutils      \
+        utils/jansson-2.7       \
+        platform                \
+        platform/memory         \
+        fpdist                  \
+        profmgr/cdevice         \
+        setup                   \
+        cmn/syslogdwrap         \
+        wms/wms                 \
+        dhcpd                   \
+        stm                     \
+        arm                     \
+        slb                     \
+        pim/validate            \
+        pim                     \
+        auth                    \
+        mobility                \
+        ppp-2.4.1/pppd          \
+        l2tpd-0.67              \
+        ntp                     \
+        ip                      \
+        aaa                     \
+        arci/mkchanlist         \
+        webui                   \
+        webui/arubacpuload      \
+        appRF                   \
+        dot1x   \
+        upload_sync_mgr		\
+	wpa3_sae   
+
+ifdef OPUSONE
+DIRS += tools/mongo \
+	tools/mongo-c-driver \
+	tools/redis \
+	tools/jzmq \
+	tools/boost	\
+	nbapi/objects	\
+	nbapi/publisher	\
+	openflow_controller \
+	java/tomcat  \
+	java/ale/proto \
+	java/sc_nbapi   \
+	mcell \
+	mcell/mcell_recv \
+	cluster_upgrade_mgr \
+	sdwan
+endif
+
+
+DIRS +=	arci                    \
+    profmgr/datastore \
+        mon_serv                \
+        arci/tools/libharu/src  \
+    tools/jansson \
+        arci/cgi                \
+        fastpath/lvl7dev        \
+        fpapps                  \
+        lagm                  \
+    cpconsole   \
+    cli    \
+    ctrl-mgmt   \
+    cfgdist                \
+    upgrademgr              \
+        cfgm                    \
+        arci/cli-helper         \
+    arci/webd           \
+        licensemgr              \
+        certmgr                 \
+        dbbk                    \
+        mysql                   \
+        pgsql                   \
+        protocols/mdns          \
+        auth/validate \
+        bocmgr/validate \
+        cmn/ncfg/upgrade        \
+        profmgr                 \
+        rft                     \
+        util_proc               \
+        amon            \
+        misc-proc               \
+        ctamon               \
+        utild                   \
+    ip_flow_export      \
+        ospf                    \
+        lldpd                   \
+        cpsec                   \
+        cmn/vclock              \
+        spectrum                \
+        wms/evparser            \
+        wms/evlib               \
+        phonehome               \
+        via                     \
+        infra                   \
+        activate                \
+        iapmgr                  \
+        extifmgr                \
+        ha                      \
+        cluster_mgr             \
+        sc_replication_mgr          \
+        utils/iperf             \
+    3rd/non-gpl/python/arubainstall \
+        rsync                   \
+        bocmgr                  \
+        cert_downld_mgr              \
+        hcm                     \
+        ble                     \
+        im                      \
+        apache-cp               \
+        nginx/nginx-1.10.1      \
+    $(EXTRA_DIRS)               \
+        tunneled_node_mgr     \
+        policymgr               \
+        vrrp/osapi              \
+        vrrp/vrrpmap            \
+        vrrp                    \
+		user_visibility \
+
+
+ifneq ($(or $(PORFIDIO),$(MILAGRO)),)
+EXTRA_DIRS += central_agent \
+	utils/dropbear 
+endif
+
+ifdef SHUMWAY
+EXTRA_DIRS += central_agent 
+endif
+
+ifdef MILAGRO
+DIRS += pfe/build
+DIRS += platform/diagd
+DIRS += utils/rng-tools-4/arubainstall
+endif
+
+ifdef PORFIDIO
+DIRS_${MIPS_XLP_PLATFORM} += platform/xlp platform/kexec-tools-2.0.3 utils/kernel_core_splitter 
+endif
+
+ifdef MILAGRO
+DIRS_${MIPS_XLP_PLATFORM} += platform/kexec-tools-2.0.3
+endif
+
+ifndef FIPS
+    DIRS_${PORFIDIO} += utils/freeradius
+    DIRS_${SHUMWAY} += utils/freeradius
+    DIRS_${MILAGRO} += utils/freeradius
+endif
+
+#ifdef OPUSONE
+#DIRS += mon-agent 
+#endif
+ 
+EXCLUDE_DIRS_${GRENACHE} += iapmgr protocols/mdns extifmgr dds bocmgr hcm ble pgsql tools/jansson 3rd/non-gpl/python/arubainstall profmgr/datastore cluster_mgr tunneled_node_mgr im user_visibility policymgr
+EXCLUDE_DIRS_${NEBBIOLO} += utils/eject utils/udev utils/ozerocdoff tools/jansson 3rd/non-gpl/python/arubainstall profmgr/datastore cluster_mgr ble tunneled_node_mgr im user_visibility policymgr
+EXCLUDE_DIRS_${PORFIDIO} += utils/ozerocdoff im
+EXCLUDE_DIRS_${X86_TARGET_PLATFORM} += utils/ozerocdoff 
+EXCLUDE_DIRS_${OPUSONE} += ip_flow_export rtpa cluster_mgr activate tunneled_node_mgr policymgr
+EXCLUDE_DIRS_${SHUMWAY} += bocmgr im
+EXCLUDE_DIRS_${MILAGRO} += utils/ozerocdoff im
+
+DIRS_${MIPS_XLP_PLATFORM} += utils/slog_flash
+DIRS_${X86_TARGET_PLATFORM} += utils/rng-tools-4/arubainstall platform/kexec-tools-2.0.3 utils/kernel_core_splitter utils/jitterentropy-rngd
+DIRS += ${ARUBA_TOOLS_INSTALL_PATH}
+
+ifdef FIPS
+DIRS += tpm
+endif
+
+ifdef TPM_INIT
+DIRS += tpm
+endif
+
+ifdef CODE_SIGNER
+DIRS += tpm
+endif
+
+DIRS += ucm
+DIRS += rtpa
+
+# kludge. we need to run arubainstall in there but
+# nothing else.
+ifdef MIPS_XLR_PLATFORM
+ifneq "$(findstring arubainstall,$(MAKECMDGOALS))" ""
+DIRS += tools/e2fsprogs-1.36/arubainstall \
+	    utils/curl/arubainstall \
+	    utils/rng-tools-4/arubainstall \
+	    utils/rsync-3.0.9/arubainstall \
+        platform/memory
+endif
+endif

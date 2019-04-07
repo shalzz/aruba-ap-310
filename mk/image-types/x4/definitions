@@ -1,0 +1,18 @@
+include ${ARUBA_MK_PLATFORM_TYPES}/${ARUBA_PLATFORM_TYPE}/definitions
+include ${ARUBA_MK_DEFINITIONS}/platform/11n-aps
+include ${ARUBA_MK_DEFINITIONS}/platform/11ac-aps
+include ${ARUBA_MK_DEFINITIONS}/platform/qca-ap
+include ${ARUBA_MK_DEFINITIONS}/features/spectrum-fft
+include ${ARUBA_MK_DEFINITIONS}/platform/powerpc-platform
+include ${ARUBA_MK_DEFINITIONS}/features/tpm
+include ${ARUBA_MK_DEFINITIONS}/features/ipv6
+include ${ARUBA_MK_DEFINITIONS}/features/atheros-edma
+include ${ARUBA_MK_DEFINITIONS}/features/smp-ap
+include ${ARUBA_MK_DEFINITIONS}/features/sysfs-temp-sensors
+include ${ARUBA_MK_DEFINITIONS}/features/4g_lte_only
+ifdef FAT_AP
+include ${ARUBA_MK_DEFINITIONS}/features/dpi-ap
+endif
+include ${ARUBA_MK_DEFINITIONS}/features/sdn-ap
+ATH_PERF_PWR_OFFLOAD=1
+

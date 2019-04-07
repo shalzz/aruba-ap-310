@@ -1,0 +1,22 @@
+#!/bin/sh
+
+echo "this currently doesn't work due to lack of C++ support in our toolchain"
+echo "use the Marvell SDK to build this"
+exit 1
+#
+# Checkout
+# - Makefile
+# - config.log
+# - config.status
+#
+
+# to build image
+ARUBA_TOOLS="${ARUBA_SRC}/tools/armeb-linux-gnu-uClibc-0.9.30/"
+export ARUBA_TOOL_PREFIX="${ARUBA_TOOLS}/usr/bin/armeb-linux"
+
+export CC="${ARUBA_TOOL_PREFIX}-gcc --sysroot=${ARUBA_TOOLS}"
+export CXX="${ARUBA_TOOL_PREFIX}-c++ --sysroot=${ARUBA_TOOLS}"
+export AR="${ARUBA_TOOL_PREFIX}-ar --sysroot=${ARUBA_TOOLS}"
+export LD="${ARUBA_TOOL_PREFIX}-ld --sysroot=${ARUBA_TOOLS}"
+
+./configure --host=armeb-linux --target=armeb-linux ac_cv_c_bigendian=yes

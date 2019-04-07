@@ -1,0 +1,45 @@
+#!/bin/sh
+# vim:set ts=4 sw=4 expandtab:
+if [ $# = 0 ]; then
+    echo "$0: usage: build-image-type-list <dir> [dir, ...]"
+    exit 1
+fi
+
+while [ $# -gt 0 ]; do
+
+    if [ ! -d $1 ]; then
+        echo "$0: directory $1 does not exist"
+        exit 1
+    fi
+    
+    list="$list `/bin/ls -1 $1`"
+    shift
+done
+
+list=`echo $list | tr ' ' '\n' | sort -u`
+
+printf "#ifndef __image_type_list_h__\n"
+printf "#define __image_type_list_h__\n\n"
+printf "static image_class_t image_classes[] = {\n"
+
+for i in $list; do
+    uc=$(echo $i | tr a-z A-Z)
+    grep ARUBA_IMAGE_${uc} $ARUBA_SRC/cmn/util/aruba_image.h | awk '{print $2}' | while read foo; do
+        if [ $foo = __OS_IMAGE_TYPE -o $foo = __BOOT_IMAGE_TYPE ]; then
+            continue
+        fi
+        if [ $foo = __SECONDARY_OS_IMAGE_TYPE ]; then
+            continue
+        fi
+        if [ X$foo = X ]; then
+            continue
+        fi
+        printf "\t{ \"%s\",\t%s\t},\n" $i $foo
+    done
+done
+
+printf "};\n\n"
+
+printf "static int n_image_classes = sizeof(image_classes) / sizeof(image_classes[0]);\n\n"
+
+printf "#endif /* __image_type_list_h__ */\n"

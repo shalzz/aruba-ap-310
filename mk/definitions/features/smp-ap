@@ -1,0 +1,2 @@
+SMP_AP=yes
+CFLAGS += -D__SMP_AP__

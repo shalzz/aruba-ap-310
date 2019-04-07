@@ -1,0 +1,33 @@
+#!/bin/sh
+set -x
+if ! test -d $1; then
+	echo $1 does not exist
+	exit 1
+fi
+if ! test -d $2; then
+	echo $2 does not exist
+	exit 1
+fi
+
+src=$1
+dst=$2
+
+cd $src/output/host
+rm -fr /tmp/4999
+mkdir /tmp/4999
+find . -print | cpio -dumpv /tmp/4999
+
+set -x
+
+for i in usr; do
+	find $i -print | cpio -dumpv $dst
+done
+rm -fr ./usr/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/include/asm
+rm -fr ./usr/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/include/linux
+rm -fr ./usr/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/include/asm-generic
+
+cd ..
+find target -print | cpio -dumpv $dst
+
+#cp ./usr/include/bits/uClibc_config.h $dst/usr/include/bits
+#cp ./usr/include/bits/uClibc_arch_features.h  $dst/usr/include/bits

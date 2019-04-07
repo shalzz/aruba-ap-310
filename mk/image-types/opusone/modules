@@ -1,0 +1,21 @@
+MOD_INST_DIR=${DESTDIR}/../lib/modules
+
+modules_opusone:
+	${MAKE} -C $(KERNEL_SRC) modules ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+
+	@-mkdir -p ${MOD_INST_DIR}
+	cp -f ${KERNEL_SRC}/drivers/net/l3tun_intf.ko ${MOD_INST_DIR}
+	${STRIP} ${MOD_INST_DIR}/l3tun_intf.ko
+	cp -f ${KERNEL_SRC}/drivers/net/tsgw.ko ${MOD_INST_DIR}
+	${STRIP} ${MOD_INST_DIR}/tsgw.ko
+	cp -f ${KERNEL_SRC}/drivers/net/aruba_rtd.ko ${MOD_INST_DIR}
+	${STRIP} ${MOD_INST_DIR}/aruba_rtd.ko
+	cp -f ${KERNEL_SRC}/drivers/net/ethernet/intel/ixgbevf/ixgbevf.ko ${MOD_INST_DIR}
+	${STRIP} ${MOD_INST_DIR}/ixgbevf.ko
+	cp -f ${KERNEL_SRC}/drivers/net/ethernet/intel/igbvf/igbvf.ko ${MOD_INST_DIR}
+	${STRIP} ${MOD_INST_DIR}/igbvf.ko
+	cp -f ${KERNEL_SRC}/drivers/net/ethernet/intel/i40e/i40e.ko ${MOD_INST_DIR}
+	${STRIP} ${MOD_INST_DIR}/i40e.ko
+	cp -f ${KERNEL_SRC}/drivers/net/ethernet/intel/i40evf/i40evf.ko ${MOD_INST_DIR}
+	${STRIP} ${MOD_INST_DIR}/i40evf.ko
+

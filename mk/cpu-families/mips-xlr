@@ -1,0 +1,9 @@
+MAIN_ARCH=mips
+MAIN_ARCH_MOCANA=MIPS
+export MIPS_XLR_PLATFORM=yes
+
+ifeq (${GRENACHE},)
+    export CPU_SUPPORTS_ZVM=yes
+endif
+
+CFLAGS += -DMIPS_XLR_PLATFORM  -DNEB_EVAL_HW -I$(ARUBA_TOOLS)/mipsisa32-xlr-linux/sys-include

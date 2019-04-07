@@ -1,0 +1,2215 @@
+v1.5.7.2
+     - Toba/Sierra/Glenfaclas/Octomore
+     - Fix the "ubi_io_read error -74" issue caused by bitflip on the erased nand flash page.     
+v1.5.7.1
+     - Toba:
+     - change watchdog enable gpio to be active low according to P2 hw change.
+     - add phy reset operation per hw requirement.
+v1.5.7.0
+     - Toba:
+     - Add new board Toba support
+Vv1.5.6.4
+     - Ardmore:
+     - Fix support for dual Ethernet interfaces
+v1.5.6.3
+     - if fips flag is set in inventory, set fips_certified variable in
+       environmnet, per IAP team request
+v1.5.6.2
+     - Sierra:
+      -configure GPIO 66 as INPUT GPIO as  BLE RESET PIN
+v1.5.6.1
+     - Sierra:
+      -add sierra board support
+	  -swap PCIE1 RST pin and PCIE2 RST pin according to hw desgin
+	  -use GMAC3 SGMII for eth0 port
+v1.5.6.0
+     - Add a workaroud fix for 98989 for AP-20x
+v1.5.5.9
+     - add "MAX EIRP" TLV in inventory for storing EIRP limit for 2G/5G radios
+       per aviation customer requirement
+v1.5.5.8
+     - add "Scalance No" TLV in inventory for storing OEM serial number
+v1.5.5.7
+     - Octomore/Glenfarclas:
+      - rebuild UBIFS partition after factory reset is issued, don't need an 
+        extra reboot anymore
+v1.5.5.6
+     - support SHA2 signature verification
+v1.5.5.5
+    - Octomore/Glenfarclas:
+     - change AOS image size limitation to 24M from 14M per IAP request
+v1.5.5.4
+    - Akronite:
+     - Modify the threshold used to report ECC bit-flips errors from the NAND layer to the UBI layer
+       Only report 4 or more bit-flips
+v1.5.5.3
+    - Glenfarclas:
+     - Disable extended page tranmsission in 802.3 auto-negotiation
+       Fixes link establishment issue with HP 5412Rzl2 2.5G switch
+     - Set the AR8033 RGMII pins in high impedence
+     - Fix "ubi info" command so that we can see the output.
+v1.5.5.2
+    - Glenfarclas:
+     - Remove ETH1 per PLM decision
+     - Add support for I2C (to debug ISL28022 power monitor).
+v1.5.5.1
+    - Octomore:
+     - apply a patch to fix a crash when no enough PEBs reserved for wear-leveling and bad PEB
+       handling, see
+       http://git.denx.de/?p=u-boot.git;a=commit;h=76c1637e95f738add192aa6d338c2f90a981d661
+     - reserve 4 more PEBs for bad PEB handling for Octomore, Glenfarclas, Eiger
+     - reserve 1 PEB for wear-leveling if the available PEBs are not enough to
+       avoid ubi init error
+     - remove port speed info when initialize eth ports
+v1.5.5.0
+    - Glenfarclas:
+     - Add Cascade AR9983 radio ID
+     - Reverse ETH0 and ETH1 (PoE port on ETH0)
+     - Remove QFPROM support
+     - Remove link to Ethernet switch driver.
+     - Remove unused config.mk
+     - Ethernet: Change PHY addresses
+     - Fix whitespace issues
+     - Initial changes
+v1.5.4.14
+    - Springbank:
+     - fix the start.S file after the merge from octomore
+       broke the apboot. chnages are there for both octomore and springbank.
+     - fix the upgrade command on springbank which was failing
+       because of merge from octomore.
+v1.5.4.13
+    - Eiger: changes for Eiger P1.x board
+     - add QUP i2c support
+     - add SFP support
+     - add misc i2c devices support
+v1.5.4.12
+    - Octomore:
+     - comsetic eth link speed and duplex message.
+v1.5.4.11
+    - Octomore:
+     - add a variable named "fips" in inventory information to define the AP is FIPS or
+       non-FIPS.
+     - hold the BLE device in reset if the AP is FIPS.
+v1.5.4.10
+    - Eiger: changes for Eiger P1.x board
+     - add QUP i2c support
+     - add SFP support
+     - add misc i2c devices support
+    - Ardmore:
+     - support Spansion flash.
+     - enable buffered writes to speed up writes to the flash.
+v1.5.4.9
+    - Octomore:
+     - add a “checkcal” command to ensure the calibration data is good
+     - “osinfo” command should display the OEM identifier (Aruba, Dell, ALU)
+v1.5.4.8
+    - Octomore:
+     - configure SOC_BLE_RST_L(GPIO 2) as input mode per HW
+     - change status LED as green blinking from green/amber alternating per PRD
+     - change smem partition table size per QCA SDK CS1
+     - integrate changelist 389262 to enable FIPS
+v1.5.4.7
+    - Octomore:
+     - support MICRON N25Q032A NOR flash
+     - port a patch from QCA to clear L2 cache errors
+v1.5.4.6
+    - Octomore:
+     - remove POE+ detection for P2 build
+v1.5.4.5
+    - Octomore:
+     - add 'mtdids' and 'mtdparts' in default environment
+     - calculate the checksum for the whole AOS image when executing clear os
+     - change radio0/1 SN to 5g/2g SN for better understanding
+     - add erase cache partitions in NOR flash in 'clear cache'
+     - enable external WDT
+v1.5.4.4
+    - Octomore:
+     - solve compile error for other AP platforms
+     - cp *.mbn to /tftpboot
+     - we can build offical version on build server now
+v1.5.4.3
+    - Octomore:
+     - add PCIE support
+     - add radio check
+     - print reboot reason (cold reset or WDT timeout)
+     - add radio serial number TLV into inventory info
+     - service tag TLV can be deleted
+     - cosmetic changes to bootup messages 
+v1.5.4.2
+    - Octomore:
+     - fix 'clear cache' command
+     - add watchdog support
+     - status LEDs are working
+     - support TAB for command auto complete
+     - add idle time out support
+     - support factory reset button
+     - set WD_LATCH_CLR_L to '1' before init the GPIO
+     - disable ext WDT until adding support in Linux WDT driver
+     - modify memset and memcpy to speed up memory operation (32bits)
+     - decrease tftp retry count to 5 (was 100)
+     - clean up the debugging messages
+     - enable D-cache and cached descriptor in ipq eth driver
+     - change compiler option to -Os from -O0 to fix a hang issue when
+       disabling D-cache
+v1.5.4.1
+    - Octomore: changes for Aruba P1 board
+     - SPI NOR flash size is changed to 4MB
+     - support for NOR flash MX25U3235F
+     - support Marvell PHY 88E1514
+     - add GPIO definitions per HW design
+     - init GPIOs
+     - add gpio_pins command to show GPIO input pins status
+     - add mii command to read/write PHY registers
+     - set console baudrate to 9600
+     - fix NAND partition
+     - check the link status and configure GMAC before sending
+     - clean up the debugging messages
+     - change model name back AP32x
+v1.5.4.0
+    - Octomore: first APBoot version for QCA AP148 reference board
+     - port IPQ806x support from QSDK LN 1.0.1
+     - support both SPI NOR and NAND flash
+     - support MTD device, UBI device
+     - new flash partitions for NOR+NAND
+     - boot AOS from NAND flash
+     - model name AP23x
+     - networking function
+     - add GPIO related APIs and commands
+     - changes for upgrade os/boot, osinfo, clear os
+v1.5.3.24
+    - Balvenie/Springbank
+      - fix for tftp timeout.
+        increase the number of rx descriptors to 32.
+v1.5.3.23
+    - Talisker/Springbank/Ardmore
+      - enable FIPS KAT for apboot without setting FIPS=1 on AP10x/11x/2xx
+        build.
+v1.5.3.22
+    - Balvenie/Springbank
+      - GMAC will append FCS for eth frame, we don't need to add 4 bytes for
+        FCS in driver anymore
+v1.5.3.21
+    - Hazelburn
+      - set AG7240_ETH_CFG register to fix the issue that APBoot can't upgrade
+        AOS image with 1G link on some boards reported by CIG
+v1.5.3.20
+    - Balvenie
+      - Hardware changed the polarity of PSE enable gpio pin on P2 boards,
+        need to change the same in software
+v1.5.3.19
+    - Balvenie
+      - add capabilities to program the inventory information for the power
+        board on the Balvenie.
+v1.5.3.18
+    - Balvenie
+      - keep the PSE port in disabled state per PLM.
+v1.5.3.17
+    - Balvenie
+      - display the link status when the link comes up or down. 
+      - on Balvenie we were reading the wrong phy hence the link was 
+        always coming as zero. define the right phy page and with that
+        the link status is read correctly(if its down it reads down and vice
+        versa).
+      - theres an issue where if the link partner speed is 100 and we try to
+        set the speed on mac to 100 it cannot send/receive traffice however if we set
+        the link to 1g it comes up fine and cand send traffic with no issues.
+v1.5.3.16
+    - Balvenie
+      - change the image type for Balvenie to 41, because Octomore is using 40
+        in wave2 branch.
+      - keep the ethernet ports 1,2,3 and 4 in disabled state in apboot,
+        since enabling them causes no traffic including ping to go through.
+        once the linux starts booting we enable these except port 2 which is not
+        used.
+      - disable and enable usb power in apboot.
+      - enable wireless mac tag to be passed to the linux.
+v1.5.3.15
+    - Balvenie
+      - APBoot support for Balvenie platform
+      - addVersion support
+      - GPIO pins definition for Balvenie.
+      - ddr and pci support to detect the radios on PCI bus.
+      - ddr settings simiar to springbank.
+      - board specific changes to detect POE power
+      - DC is not verified since HW is not ready.
+      - disable USB power on bootup the same will be set by AOS
+        depending on input power.
+      - do not turn of PSE led.
+      - do not turn off the three ethernet ports for Balvenie.
+v1.5.3.14
+    - Springbank
+      - support Spansion S25FL256S_64K flash part with non-uniform sector size
+            
+v1.5.3.13
+    - Springbank
+     - Issue :- instant image which is 9 MB takes around 8 mins to install
+     - removed the unnecessary delays during the spi read/write operations.
+     - do a 4-byte compare instead of a byte compare when the image is
+       downloaded. this reduces the time to copmare the image in flash. 
+     - increase the spi clock to 40 Mhz, SPI can run at a max of 54Mhz
+       but keeping at 40 to be safe.
+    - this reduces instant image download and install time by 60%.
+v1.5.3.12
+    - Springbank
+     - apboot hangs while rebooting and displays error
+       DDR PHY not up.
+     - adding three mov assmebly instruction which is a no operation
+       but changes the image size, in earlier case(without these changes)
+       we think the image size is not aligned with certain size and hence 
+       we see the issue. 
+     - this seems to fix although we dont know the root cause.
+v1.5.3.11
+    - Springbank
+     - factory_reset command not erasing data on higher address(above
+       16M) of 32M flash. switch the bank when reading and accessing 
+       region beyond 16M.
+v1.5.3.10
+    - Hazelburn-h(AP-103H)
+     - Per HW, the core voltage of AR9344 is a bit low on some AP-103H, 
+        which could cause the AP reboots randomly when performance testing.
+        CIG is recommending increase the core voltage by 50mV to fix
+v1.5.3.9
+    - Tomatin
+     - change DDR settings based on recommendation of WNC.
+v1.5.3.8
+    - Springbank: fix erase fail issue for 16M flash
+v1.5.3.7
+    - Tomatin
+        - Fix watchdog don't reset the board until code relocate to RAM
+v1.5.3.6
+    - Tomatin/Springbank
+      - support 16MB flash on Tomatin and Springbank
+      - the image name will be ap20x-16mb-x.x.x.x-xxxxx
+            and ap21x-16mb-x.x.x.x-xxxxx
+v1.5.3.5
+    -Springbank
+        - Turn off compilation optimization
+        - Enforce strong order of execution after DRAM init.
+v1.5.3.4
+    - Tomatin
+        - Fix inventory write corrupt radio calibration data issue.
+v1.5.3.3
+    - Springbank
+        - turn off optimization on certain low level routine files. 
+          GCC -O2 has created timing issues.
+v1.5.3.2
+	- add Service Tag field in inventory TLV for Dell OEM
+v1.5.3.1
+	- Tomatin
+	  - set gpio pin as output for usb power.
+          - enable usb power.
+v1.5.3.0
+	- Hazelburn_h(AP-103H): 
+	  - initiate APBoot support
+	  - addVersion support
+	  - 16M flash and 64M DDR RAM support
+	  - GPIO pins definition
+	  - ETH_CFG setting for 1000M
+v1.5.2.12
+   - Tomatin
+	  - enable the command to verify the calibration data.
+v1.5.2.11
+   - Tomatin
+	  - initiate APBoot support
+	  - addVersion support
+	  - GPIO pins definition for tomatin.
+	  - phy driver changes for 1512 in tsec driver.
+          - ddr and pci support to detect the radios on PCI bus.
+v1.5.2.10
+        - Springbank/K2
+         - add a command to verify the calibration data.
+v1.5.2.9
+        - Springbank
+         - display POWER input in apboot.
+           springbank can only display DC or non DC.
+           we cannot distinguish between AF,POE+,AT.
+v1.5.2.8
+        - Springbank
+         - disable DMA during the ethclose for the ethernet driver
+           otherwise we might have some network packets in pipeline
+           which woould overwrite the memory thereby corrupting the memory.
+         - this was causing memory corruption and we would see lots
+           of AOS crashes during boot up because of this issue.
+           - this should fix the crash while uncompressing the linux
+             kernel on springbank which would result in data abort.
+           - this should fix the crash while uncompressing the root
+             file system on springbank which would result in unlzma
+             crashes.
+           - this should also fix random crashes while booting up the 
+             image at different modules mainly ethernet driver.
+           - most likely this should also fix the flash corruption when
+             booting the image from the Flash and rebooting several times.
+v1.5.2.7
+        - Hazelburn: allow OS image type to be ARUBA_IMAGE_DALMORE
+          in case we need this for IAP 14MB support
+v1.5.2.6
+        - Hazelburn
+         - switch to flash bank 1 if failed to boot from bank 2
+         - turn power red led off during booting up per the latest PRD. 
+           only works for P2 board onwards.
+         - swap GPIO_PHY_RESET and GPIO_CONFIG_CLEAR gpio per HW, only works for P2c board
+           onwards.
+         - fix the bank command to display the right bank when selected.
+v1.5.2.5
+        - K2
+         - increase red LED on duration during boot up.
+         - decrease boot delay time
+        - Hazelburn
+         - set 0 to turn off red LED. only works for P2 board
+           onwards.
+v1.5.2.4
+        - Hazelburn
+         - change DDR clock to 215MHz to avoid the interference
+           to 2.4G radio.
+         - change LED gpios for status green and red. only works for P2 board
+           onwards.
+         - control Eth LEDs for AR8035.
+v1.5.2.3
+        - Springbank
+         - change LED gpio to not blink Red Led. this only works
+           for P3 builds onwards.
+         - fix the 10/100 MB issue by removing the Phy address.
+         - fix the board reset twice when we issue the reset command.
+v1.5.2.2
+        - Ardmore
+         - change PCIE reset time to 80ms from 30ms
+v1.5.2.1
+        - K2: change PCIE reset time to 80ms from 30ms
+v1.5.2.0
+	- Hazelburn: 
+	  - initiate APBoot support
+	  - addVersion support
+	  - GPIO pins definition
+	  - model check for ar7240 drivers
+	  - ETH XMII setting for 10/100M
+	  - PHY AR8035 support 
+v1.5.1.17
+        - K2: updated DDR settings per Sercomm
+v1.5.1.16
+	- Springbank: 
+	  - invalidate I-cache when doing flush_cache(), to make sure that
+	    the CPU sees the right instructions after a boot operation; 
+	    was missing from BRCM code (note, not 100% sure that this
+	    is needed)
+	  - apply part of upstream commit
+	    99ffccbd3e5b7bc715e2eed6ea6d36f4020b56d8 to ensure cache is 
+	    flushed when booting uImages
+v1.5.1.15
+	- Springbank: switching the TPM pins to
+	  GPIO stupidly broke the TPM diagnostic
+	  commands in APBoot; switch the mode
+	  of these pins in the board-specific read
+	  and write routines -- this works because
+	  we never do more than one read operation at
+	  a time; if that changes, this needs a cleaner
+	  fix
+v1.5.1.14
+	- Springbank: work around the BSPI unit
+	  getting stuck by reading 256 bytes from
+	  the base of the flash; keep your fingers
+	  crossed
+v1.5.1.13
+	- Bowmore:
+	  - use the DDR2 CAS latency value of 4 as per WNC uboot after 
+            running the 4 corner test report.
+v1.5.1.12
+	- Springbank: disable I2C block for
+	  TPM GPIO support
+v1.5.1.11
+	- Springbank: fix TPM OIAP test
+v1.5.1.10
+	- Ardmore: enable TPM diagnostic
+v1.5.1.9
+	- Springbank:
+	  - correctly swap MAC counts when passing to Linux
+v1.5.1.8
+	- Springbank:
+	  - enable 'bdinfo' command
+	  - pass number of cores in the Aruba tag
+	  - move address of boot params to 0x1000 (this must match the kernel)
+	  - don't pass memory tags on these boards, as it confuses the BRCM 
+	    initialization code
+	  - Springbank has 32MB of flash
+v1.5.1.7
+	- Springbank:
+	  - change armv7.ari to armv7ns.ari
+v1.5.1.6
+	- K2:
+	  - store radio calibration data in Flash
+v1.5.1.5
+	- Springbank:
+	  - use cmd_bootm_fsl.c for booting on iProc
+v1.5.1.4
+	- Springbank:
+	  - update most TPM code from latest Corvina boot
+	  - add some delays in iproc_i2c.c so that printfs
+	    can be removed
+	  - The TPM seems to work with these changes
+v1.5.1.3
+	- Springbank:
+	  - fix spansion flash initialization so that the reference
+	    board works as expected; missed this during the LDK SPI
+	    code update
+v1.5.1.2
+	- Springbank:
+	  - set baud rate to 9600 now that most development is done
+v1.5.1.1
+	- Springbank:
+	  - possible fix for verification failures on 'upgrade boot':
+	    - add l2cc_invalidate_and_wait() and call it from
+	      aruba_invalidate_dcache()
+	    - add iproc_l2_cache_flush_range() and call it from flush_cache()
+	      so that memory is in sync after a network transfer completes
+	      (this is based on the code in Linux 2.6.34.6 
+	      plat-brcm/cache-l310.c (part of ESDK 1.1.0)
+	  - updated PHY address for our board so that link status displays
+	    correctly
+	  - suppress a few messages when booting Linux, as we did on Arran
+v1.5.1.0
+	- Springbank:
+	  - relocate to just below 128MB to
+	    leave room for Linux; required
+	    changing the cache policy to work
+	    reliably; the top 6MB are now
+	    treated the same way as 0-16MB.  If
+	    APBoot's memory usage goes above 6MB,
+	    we may need to change this, but that
+	    seems unlikely (and in fact, it is probably
+	    only the text space that matters)
+	  - corrected code that copies exception vectors
+	    to address 0; not sure this is needed
+	  - invalidate D$ after writing to flash in
+	    aruba_copy_and_verify()
+v1.5.0.16
+	- Springbank:
+	  - Flash:
+	    - update most SPI flash code from iProc LDK 3.4.3
+	    - add delays in iproc_qspi.c to fix some boot 
+	      flakiness; this may not be the right fix
+	    - fix a problem with the 'md/cmp' hack; don't switch
+	      banks if we're already on that bank, to avoid
+	      flushing the prefetch buffers incorrectly
+	  - change DDR_CTL_82 to match the reference code; not
+	    sure about this either
+	  - import print_buffer() from U-boot 2012.10-rc3 for
+	    debugging
+	  - import min/max fixes from U-boot 2012.10-rc3
+	  - suppress another annoying error from the Ethernet
+	    driver
+v1.5.0.15
+	- Springbank:
+	  - memory POST for iProc
+	    - use QSPI scratch register for POST work
+	    - untangle a lot of iProc ifdefs
+	    - fix memory range; now runs from 16MB to 128MB
+v1.5.0.14
+	- Springbank:
+	  - suppress a couple of Ethernet driver errors that
+	    seem mostly harmless
+	  - cosmetic tweak to CPU info display
+v1.5.0.13
+	- Springbank:
+	  - reset button fixes:
+	    - can't use GPIO lib prior to relocation, so hand code
+	      GPIO accessors
+	    - move GPIO initialization into checkboard()
+	    - enable reset button in the board config
+v1.5.0.12
+	- Springbank:
+	  - Flash:
+	    - fix watchdog issue when flashing OS
+	    - don't leave flex mode on when switching to the
+	      lower 16MB address range
+	    - memory commands leave lower range enabled when done
+	    - improve memory commands (md/cmp) by checking for a
+	      16MB crossing during the operation, not just at the
+	      beginning
+	- Build:
+	  - minor cleanup of targets so that 'apboot' depends on
+	    'u-boot.bin'
+	  - Makefile.releng tweaks:
+	    - stop building 2-stage Octeon images; we don't care about
+	      them
+	    - support for building all images without signing them or
+	      installing them (useful for auditing changes)
+v1.5.0.11
+	- Springbank:
+	  - snapshot TPM/I2C support
+	    - this is a work in progress
+	    - added enough APIs to allow us to talk
+	      to the TPM, but it is not fully operational
+	    - added simple TPM commands; need to update
+	      with latest from Corvina
+	    - fixed I2C probing
+	  - support for 'md' and 'cmp' on flash addresses above
+	    16MB
+	    - I was not able to construct a scheme that would
+	      allow the BSPI to read these addresses in all cases
+	      so this resorts to doing a pseduo-bank-switch
+	      using the BSPI parameters to tell the CPU to send
+	      the upper address byte when "bank 2" is selected;
+	      otherwise, it is not sent
+	  - relocation only seems reliable if we leave APBoot at
+	    16MB; this will cause other problems, but leaving it
+	    this way for now
+	  - commented out some GPIO pin definitions that are not
+	    needed
+	  - coded a bunch of support for provisioning image in
+	    bank 2, but decided not to do it that way; checking in
+	    for possible future use
+v1.5.0.10
+	- Springbank:
+	  - preliminary watchdog support for both Springbank and the 
+	    reference board
+	  - DRAM:
+	    - set lane 0 read data delay to 2 for our SKU ID
+	    - update DRAM registers after comparing with Sercomm CFE 
+	      drop; not too sure about these
+	    - dump a bunch of registers if the DDR PHY fails to come up
+	  - Ethernet:
+	    - move some debug messages under BCMDBG, not DEBUG
+	    - add 'robo' command to dump switch registers
+	    - add code to power down ports 1-4 (since network is not 
+	      working on P0, not sure about this either)
+	  - GPIO:
+	    - initialize GPIO driver and mux pins
+	    - add 'gpio' command
+	    - disable power pins since they are scheduled to be removed from P1
+	  - integrate Micron/Macronix 4-byte address support from iProc LDK 
+	    3.4.3, along with some other changes like FSR poll support
+	  - TODO:
+	    - support for 4-byte reads via the BSPI block (normal memory dumps)
+	    - disable 2nd core
+	    - investigate DDR more
+	    - sort out memory size init (16 or 128)
+v1.5.0.9
+	- Springbank:
+	  - add a bunch of kludges for PCI scanning to avoid
+	    seeing the same device on the same bus multiple times
+	    (copied code from Linux, but it isn't working, so kludges
+	     are needed)
+	  - re-enable radio display on reference board
+	  - report link status when transmitting
+v1.5.0.8
+	- Springbank:
+	  - remove more NVRAM code from build
+	  - cosmetic:
+	    - cosmetic clock display fix
+	    - cosmetic changes regarding L2 cache unlocking
+	    - cosmetic changes regarding caches not being enabled
+	    - move SHMOO and other DRAM messages under SHMOO_DEBUG
+	    - cosmetic CPU ID reporting changes
+	    - cosmetic Ethernet reporting fixes
+	  - add late_board_init() support to reference board config
+	    (not fully working yet due to PCI issues)
+	  - add 'ar5416' command to reference board config for debugging
+	  - start of support for reporting Ethernet link status
+	  - PCI:
+	    - re-enable PCI initialization
+	    - fix up support for multiple busses
+	    - don't set latency timer on iProc for now
+	    - try to ensure we don't have array mismatches in ar5416.c
+	    - fix PCI scan reporting to match Ardmore
+	  - revert reference board flash map to a more standard configuration
+	  - add supoprt for running FIPS POST, not tested
+v1.5.0.7
+	- Springbank: snapshot
+	  - minor cosmetic cleanup; way more to do here
+	  - ignore all of the NVRAM code from the BRCM patch,
+	    since it was causing corruption
+	  - Ethernet:
+	    - invert return code to match our older version of eth.c
+	    - older code calls halt function unconditionally; ignore the
+	      request if the Ethernet state is not active
+	  - use 1000 HZ even if CONFIG_IPROC_DIAGS is enabled; should
+	    probably clean this up, but without this change network timeouts
+	    take forever
+	  - byte-swap fixes for DNS
+	  - as expected, fix byte-swapping for image header checksum
+	  - fix register offsets for SRAB PHY access, they are shifted by 1
+v1.5.0.6
+	- Springbank: snapshot
+	  - don't reserve space for the NVRAM on our boards, as we won't use it
+	  - hide MDE DDR command in diag mode
+	  - change Ethernet device name to 'eth0' in APBoot
+	  - add support for the Spansion flash on the 53012ER board
+	  - clean up DEBUG macros in mtd.h to avoid DEBUG being set in 
+	    lib_armv7/board.c
+	  - adjust flash layout since 53012ER board has only 16MB of SPI flash
+	  - display flash size correctly, similar to Arran
+	  - add -pie to LDFLAGS for ARMV7 platforms so that relocation works
+	  - add an option to avoid relocating inventory data; not sure if
+	    this is needed
+v1.5.0.5
+        - Springbank:
+	  - apply ESDK 1.1 U-boot patch supplied by BRCM in order to add
+	    support for the 53012ER reference board
+	  - most of this is NVRAM stuff for that board that we won't use
+	    on the Springbank design
+	  - TODO: double-check DDR changes
+	  - fix up the default environment to be exactly what we want
+v1.5.0.4
+        - Springbank:
+	  - add HW reset line support for iProc
+	  - add support for MII operations via the SRAB registers
+	    used by the built-in switch
+	  - iProc uses pci_auto_fsl.c now
+	  - minor tweak to pci.h
+	  - add MAC, MAC count, and USB power control to Aruba ARM tag
+	    and initialize them in lib_armv7/bootm.c
+	  - print POE/DC status if enabled
+	  - cosmetic boot banner changes for ARMv7
+	  - initialize TLV inventory if enabled
+	  - reset button support
+v1.5.0.3
+        - Springbank:
+          - untested GPIO support
+          - start of reset button support
+          - add power reporting routine, not enabled yet
+          - enable radio reporting
+          - fix build mistake for BRCM reference board
+          - set memory size to 128MB
+          - add PCI IDs for 43250 radios
+          - add GPIO code from iProc LDK 3.4.3
+          - fix a few more image verification
+            byte-order issues
+          - TODO: chksum?
+v1.5.0.2
+        - Springbank:
+          - fix DHCP option request
+          - untested byte-order fixes for:
+            - ADP
+            - Aruba image processing
+            - image signature verification
+v1.5.0.1
+        - Springbank:
+          - untested code to pass Aruba tags to the kernel
+          - fix up flash map, assuming a 32MB flash
+          - if environment is in the SPI flash, allow it to be 64KB, since
+            it won't be accessed before relocation and doesn't need to fit
+            in the L2C (I hope)
+          - use aruba_flash_read() on iProc
+          - don't bother verifying uImage CRC on iProc, same as Arran
+          - AP variant will be on card #1
+          - move a few iProc libraries from .a to .o so that weak 
+            symbols are picked up correctly
+          - ensure cmdtable alignment as we do on other
+            boards
+          - call board_eth_init() for iProc
+          - set up default environment
+          - define CONFIG_NET_RETRY_COUNT as it usually is
+v1.5.0.0
+        - Springbank: snapshot first version of APBoot that compiles 
+            and links
+          - add the following from BRCM iProc LDK 3.4.3 (based on
+            u-boot 2012.10-rc3)
+          - iProc header files for I/O devices
+          - various header files from u-boot 2012.10-rc3 needed for
+            compilation
+          - BRCM SPI drivers
+          - BRCM Northstar board files
+          - BRCM ARMv7 CPU header files
+          - BRCM ARMv7 CPU and network driver support
+          - add build support for BCM reference board and Springbank,
+            including new libraries
+          - initial configs for reference board and springbank
+          - remove CONFIG_SYS_NO_FLASH
+          - add Aruba tags to armv7/setup.h (not used yet)
+          - edit various new files to build in our environment and/or
+            u-boot version
+          - clean up compiler warnings in BRCM code
+          - mkconfig hack for armv7 vs. arm
+          - add springbank to Makefile.releng
+          - enable LMB support for iProc
+          - add strict_strtoul() from 2012.10-rc3
+          - add getenv_ulong() from 2012.10-rc3
+          - add generic_fls() from 2012.10-rc3
+          - update printf() return type
+          - add write_hwaddr() API to net device
+          - don't look for baudrate early
+          - add some malloc() functions needed by newer platform code
+          - integrate IPROC PCIe code
+          - create u-boot.lds files from u-boot-custom.lds and update
+            for older source tree layout
+          - use correct boot interface for AP code
+        - TODO:
+          - fix flash map
+          - check for weak symbols to make sure that we get the right
+            ones
+          - audit command processing, networking, and other options
+          - figure out why the environment size is capped at 4K due
+            to using L2C as RAM
+          - audit i2c, flash, PCI, Ethernet
+          - fix up our kernel boot parameters
+          - POST
+v1.4.0.20
+      - Arran: 
+        - treat the Marvell 1540M rev A2 phy and default as similar to A1.
+        - newer apboot for Marvell A2 rev of Phy.
+      - Ardmore:
+        - treat the Marvell 1548M rev A2 phy and default as similar to A1.
+        - newer apboot for Marvell A2 rev of Phy.
+      - Bowmore
+        - move the GPIO 14 for flash chip select in assembly code to correct
+          file.
+v1.4.0.19
+      - Bowmore: 
+        - fix the bank command to display the right bank when selected.
+        - incorporate the MAC register settings from WNC since they are more
+          stable for both 1g and 100MB link speed.
+        - configure the GPIO 14 for flash chip select in assembly code.
+        - do not enable I/O access for perigrine radio in uboot since 
+          it causes radio no to trasmit in AOS.
+v1.4.0.18
+	- K2: changes for P1A board
+	  - change DDR size to 512MB
+	  - modify GPIOs definition per P1A HW
+	  - power red and status green LEDs are active high
+	  - add new BRCM chipset
+	  - change model name to AP-27x
+v1.4.0.17
+	- Bowmore: fix the 10Mb issue, use the settings from WNC board.
+v1.4.0.16
+        - Bowmore: disable JTAG interface which was committed mistakenly. 
+v1.4.0.15
+        - Bowmore: apboot changes for P1 board for release to mfg.
+          - marvell ethernet phy(1510) changes, 10/100/1000 is working.
+v1.4.0.14
+        - Bowmore: change Bowmore AOS image to mips32ac.ari and fix machine 
+          type to Bowmore in apboot.
+v1.4.0.13
+        - FIPS RSA and SHA POST were added
+v1.4.0.12
+        - Bowmore: support for Bowmore APBoot on Sercomm board
+v1.4.0.11
+        - Octeon: fix memset() sign-extension issue
+v1.4.0.10
+        - FIPS vector test support:
+          - Added "fipstest rsa|sha1 0xaddr size" to perform FIPS vector test
+          - Added the infra to perform FIPS vector test.
+          - This CLI is not available for production.
+          - It can be enabled by using "export FIPS_TEST=1" and then compiling
+v1.4.0.9
+        - All: build inventory code with one inventory in all APBoot
+          versions; previously some platforms had been missing this
+v1.4.0.8
+        - Bowmore: initial APBoot for new Atheros-based design
+          - delete prototype MV-based support
+          - new board directory
+          - new config file
+          - update image type (this will probably change)
+          - build support
+          - consolidate a few ifdefs to simplify maintenance
+v1.4.0.7
+        - K2:
+          - change DDR size to 256MB
+          - modify GPIOs definition per P1 HW
+          - add PHY 88E1512 support, work as SGMII mode
+          - add delay in init sequences so that the boot messages can be seen
+            on USB console
+          - power red and status green LEDs are active high
+v1.4.0.6
+        - Ardmore: tri-state LED2 as suggested by Stephen; addresses a problem
+          with eth1's amber LED being too dim
+v1.4.0.5
+        - Ardbeg: updated DDR settings after latest review
+v1.4.0.4
+        - Ardbeg: updated DDR settings based on latest Sercomm code
+          and review from HW team
+          - CAS latency changed from 4 to 5
+v1.4.0.3
+        - Ardbeg: enable ATH_RGMII_CAL to get the right combination for
+          TX_DELAY and TX_INVERT on 10/100M mode
+v1.4.0.2
+        - Ardmore: explicitly reset TPM at startup
+v1.4.0.1
+        - Dalmore-LTE: cut refresh interval as 
+          requested by the HW team; high-temperature
+          support
+v1.4.0.0
+        - Ardbeg:
+          - apply Jingong's fix for SPI CS1
+          - cut refresh interval as requested
+            by the HW team; high-temperature
+            support
+v1.3.9.8
+        - Tamdhu: fix up reset button function
+v1.3.9.7
+        - Scapa-H: updated DDR settings per Sercomm
+v1.3.9.6
+        - Ardbeg: 
+          - correctly fix GPIO 4 muxing
+          - enable TX delay on the PHY
+            when running at 10 or 100
+v1.3.9.5
+        - Ardbeg: 
+          - disable JTAG
+          - configure GPIO 4 as a GPIO
+          - fix issues in GPIO initialization;
+            all pins seem to be correct now
+          - update power display to match hardware
+          - fix up PHY LED for 10 Mb/s
+        - Dalmore/Cardhu/Dalmore-LTE:
+          - undef CONFIG_BOOTARGS
+v1.3.9.4
+        - Ardbeg: snapshot P2 bringup
+          - PLL 720/600/200 for now
+          - incorporate Sercomm changes to serial init and PLL init
+          - GPIO pin changes
+          - leave JTAG enabled for now
+          - remove some unneeded code for 4-byte SPI flash support
+v1.3.9.3
+        - Talisker: updated DDR settings from Thomas
+v1.3.9.2
+        - Ardmore: cut refint in half to meet
+          high-temperature timing requirements
+v1.3.9.1
+        - Dalmore/LTE: parameterize flash bank register
+          accesses for readability and Ardbeg port
+        - Dalmore-LTE: GPIO pin and model updates
+        - Ardbeg: 
+          - parameterize flash bank register accesses
+          - updates based on latest schematic; won't work
+            on original boards
+v1.3.9.0
+        - add support for displaying the factory image flag
+        - minor clean up of factory reset messages related to
+          the treatment of partition 0
+v1.3.8.9
+        - Tamdhu/Arran: fix bug77451 - 'mvEgigaTx: eth0 failed' sometimes when
+          peer port is forced as 10M
+v1.3.8.8
+        - Dalmore-LTE:
+          - addVersion support
+          - map PCI bus so that we can fiddle radio GPIOs
+          - untested code for initializing the radio GPIOs
+          - GPIO pin updates
+          - board/model updates
+v1.3.8.7
+        - Dalmore-LTE: initial support
+v1.3.8.6
+        - Ardmore: increase system and wired MAC frame lengths to 9100 for
+          jumbo frame support
+v1.3.8.5
+        - Tamdhu: change GPIOs of status, 2G LEDs for Rev B
+v1.3.8.4
+        - FSL: enable CONFIG_AUTO_COMPLETE (bug 77069)
+v1.3.8.3
+        - Talisker: updated DDR settings from Sercomm
+v1.3.8.2
+        - Ardbeg: apply updates from LSDK 9.5.3.15
+        - MSR4K: add support for S25FL128S flash
+v1.3.8.1
+        - Ardbeg:
+          - take the PHY out of reset; needed for newer boards
+          - reconfigure GPIO inputs overwritten by serial_init()
+v1.3.8.0
+        - Ardmore: DDR settings recommended by Thomas
+v1.3.7.12
+        - Ardbeg: GPIO configuration fixes
+v1.3.7.11
+        - Ardmore: updated refrec value per Thomas
+v1.3.7.10
+        - Ardmore: relax pretoact to 9 clocks
+v1.3.7.9
+        - Ardbeg: 
+          - disable JTAG
+          - enable reset button
+          - fix GPIO accessors for Scorpion
+v1.3.7.8
+        - Ardbeg: 
+          - drop MAX PHY config from 5 to 1 to speed up
+            Ethernet initialization and make sure we don't
+            read PHYs that are not present
+          - fix reporting of speed and duplex
+          - initial settings for 10/100 operation; lightly tested
+          - import code from Linux to fix half-duplex operation
+          - add Ardbeg to production build
+v1.3.7.7
+        - Tamdhu:
+          - sensor and poe is working for Tamdhu, poe support both af and at
+            mode
+          - poe is poweroff default, using "poeon" and "poeoff" to control poe
+          - wan led problem is solved, need Rev.B board
+v1.3.7.6
+        - Ardbeg: 
+          - correct 16MB manufacturing record location
+          - fix manufacturing retrieval using
+            aruba_flash_read()
+v1.3.7.5
+        - Ardbeg:
+          - fix UNCACHED_SDRAM() definition so that
+            Linux gets the correct arguments
+          - baudrate back to 9600
+          - change watchdog timeout interval to be more like
+            Dalmore; might want to tweak this a bit more
+v1.3.7.4
+        - Ardmore: recognize additional BRCM radio IDs
+v1.3.7.3
+        - Ardbeg:
+          - fix clock reporting
+          - fix ethernet frame filtering so we 
+            can talk through a gateway
+v1.3.7.2
+        - Ardbeg:
+          - use correct PLL values (720/600/240)
+          - set DDR parameters to match Sercomm code
+          - change SPI bus frequency to match Sercomm code
+          - disable RGMII calibration for now
+          - more JTAG_DISABLE ifdefs
+          - don't enable reset button or DC power pin for now
+          - cosmetic clean up
+          - fix CPU ID reporting; clock frequencies are not
+            working yet
+          - use only 16MB of flash for now
+          - baudrate is at 115200 for the time being
+v1.3.7.1
+        - Tamdhu: enable 4-byte addressing mode for 32M SPI flash
+v1.3.7.0
+        - Ardebg: initial support added, based on QCA AP136
+          LSDK version 9.5.2.18_a
+v1.3.6.9
+        - Tamdhu:
+          - enable RX delay and TX delay on 6172 RGMII interface
+          - drive RGMII signals at 3.3v, not 1.8v
+v1.3.6.8
+        - Tamdhu:
+          - fix variant field in mfginfo
+          - change flash sector number to 512
+v1.3.6.7
+        - Tamdhu:
+          - partial fix for WAN port LED
+          - fix status LED
+v1.3.6.6
+        - Tamdhu: add support for PHY access
+          via the global SMI registers; switch
+          port PHYs are powered down correctly now
+v1.3.6.5
+        - Tamdhu: fix switch port LEDs, hopefully
+v1.3.6.4
+        - Tamdhu: 
+          - take 6172 out of reset
+            and fix the ID check
+          - switch ports start at 1, not 0
+          - move the built-in PHY to address 0x9
+v1.3.6.3
+        - Tamdhu: 
+           - change flash size to 32M
+          - add DB_TAMDHU_ID check in mvBoardEnvLib.c
+          - add MX25L25635E flash support in macronix.c
+v1.3.6.2
+        - Ardmore: disable unsafe flash operations as
+          done on other platforms
+v1.3.6.1
+        - Ardmore: define CFG_TPM_CERT
+v1.3.6.0
+        - DNS: fix long-standing issue (bug 74812) where
+          junk after the NUL could end up in the DNS request
+          if 'servername' were set to something shorter than
+          what it had previously been
+v1.3.5.10
+        - Tamdhu: add pse support, change MPP/GPIO/LED according to latest
+          schematics, modify switch for MDI access  
+v1.3.5.9
+        - Tamdhu: fix build after Ardmore integration; USB
+          storage stubbed out for now until we can work on it
+v1.3.5.8
+        - Dalmore: allow OS image type to be ARUBA_IMAGE_DALMORE
+          in case we need this for IAP 14MB support
+        - Tamdhu: same for ARUBA_IMAGE_TAMDHU
+        - Ardbeg: same for ARUBA_IMAGE_ARDBEG
+v1.3.5.7
+        - Dalmore: move staging area to 64MB so that we can
+          handle 14MB images
+v1.3.5.6
+        - minor rerrangement of inventory code so we can send
+          it to WNC
+v1.3.5.5
+        - Dalmore: On Rev C, the control logic for red status led is
+          changed to 1 - on; 0 -off
+v1.3.5.4
+        - Arran: more cleanup after CLs 229533 and 229678; a few things
+          were missed, apparently
+v1.3.5.3
+        - Ardmore: relax acttorw timing for now
+v1.3.5.2
+        - Ardmore: add official Peregrine PCI ID
+v1.3.5.1
+        - Ardmore:
+          - initial DDR settings for 512MB DRAM
+          - build infrastructure for building 256MB and 512MB versions
+v1.3.5.0
+        - Ardmore: updated DDR settings from latest WNC drop
+v1.3.4.5
+        - Ardmore: use out_le32() when accessing the USB viewport
+          register
+v1.3.4.4
+        - Ardmore: pass USB power mode to Linux in the AOS FDT stanza
+v1.3.4.3
+        - Ardmore:
+          - fix up power display for POE+ (signal is not correct yet)
+          - add support for disabling USB if there is insufficient
+            power
+v1.3.4.2
+        - Ardmore: 
+          - fix MACSec initialization for A1 PHY
+          - use direct time-base reads to determine when to blink
+            the LED and poke the external watchdog; since the clock
+            is driven off of interrupts, we can miss cycles when flashing
+            because CFI accesses hold off interrupts
+v1.3.4.1
+        - Ardmore:
+          - fix CFG_FLASH_SIZE
+          - fix factory_reset issue with 14MB images
+v1.3.4.0
+        - Ardmore:
+          - watchdog fixes for 14MB image support:
+            - split up copy into 64KB chunks so we can pet the
+              watchdog when copying into the staging area
+            - pet the dog in a few other places just to be safe
+          - change CONFIG_SYS_BOOTMAPSZ to 64MB so that we can boot
+            the 14MB image with room for the device tree and the stack;
+            Linux has been mapping 64MB since commit 
+            e8b63761554aca641bd9020447d487bfd85111bf
+v1.3.3.3
+        - Ardmore:
+          - add configuration for POE+ GPIO; doesn't seem to be working
+          - drive smart antenna pins as outputs for the time being
+          - clear and disable all GPIO interrupts
+v1.3.3.2
+        - Ardmore:
+          - cleanup formatting and remove dead code in ardmore.c
+          - shut down USB2, TDM, SPI, and SDHC blocks
+          - only display the PHY temperature sensor for one port
+          - upgrade USB storage, FAT, and partition code to u-boot 2010.12
+          - experimental code for booting and upgrading from USB storage;
+            adds the following user-visible commands:
+	    - boot usb:<file>
+	    - upgrade os|boot usb:<file>
+	    - dir
+            also adds the following diag commands:
+	    - usb start, stop
+	    - usb storage
+	    - fatls
+	    - fatinfo
+	    - fat read|write
+v1.3.3.1
+        - Ardmore:
+          - use TBI setting for SGMII recommended by FSL FAE
+          - set bit 0x200 when fixing SGMII mode, per Marvell FAE
+          - remove extra link debug hack
+          - add 'tsecdiag' to dump a variety of interesting registers
+            in case of further SGMII problems
+          - power down more unused interfaces
+v1.3.3.0
+        - Ardmore:
+          - update LED settings after testing
+          - use defined hwconfig if not available elsewhere
+          - allow environment to override compiled in USB_PHY_TYPE for testing
+v1.3.2.9
+        - Ardmore:
+          - use 8-bit temp sensor value in the PHY
+          - enable the configuration reset button
+v1.3.2.8
+        - Ardmore:
+          - port USB code from FSL 2010.12 for testing purposes
+          - hide eth2 on the P1020RDB as well
+v1.3.2.7
+        - Ardmore:
+          - apply ARDMORE_REV_A_PHY_WAR to both ports
+          - improve link status display
+v1.3.2.6
+        - Ardmore:
+          - MDIO bus doesn't seem to work for address 0 if TSEC1 is not 
+            up, so bring it up, but don't register it since it is not
+            connected
+          - add ARDMORE_REV_A_PHY_WAR to put the PHY in the right
+            mode since it is not strapped correctly
+          - cosmetic changes to remove PHY autoneg message
+v1.3.2.5
+        - Ardmore: 
+          - configure PCI_RST, external watchdog, and TPM reset lines 
+            as outputs
+          - reset radios at bootup
+          - configure watchdog pin as an output
+          - initial DDR settings taken from WNC
+          - don't print DTT status at boot up
+          - enable DTT commands
+          - fix watchdog timeout on 'flinfo'
+          - power status reporting fix
+          - cosmetic changes
+          - PHY WAR for rev A port 0 issue
+          - PHY rev A1 init sequence added
+v1.3.2.4
+        - All: build fix for generated asm offsets so that we can switch
+          between architectures cleanly
+v1.3.2.3
+        - add initial QCA9890 support
+v1.3.2.2
+        - Ardmore:
+          - fix typo in code that reads GPIO pin value
+          - add code to toggle external watchdog pin
+v1.3.2.1
+        - Ardmore:
+          - assign GPIO pins
+          - remove CPLD from the memory map
+          - fix up GUTS MUX settings
+v1.3.2.0
+        - Ardmore:
+          - updates to P1020RDB-PC
+          - pet watchdog while printing the FDT
+v1.3.1.9
+        - Ardmore:
+          - fix up TSEC configuration
+          - add 154x PHY code
+          - add 'readpci/writepci'
+          - add 'gpio' command and support routines
+          - enable power status display for Ardmore
+v1.3.1.8
+        - Ardmore:
+          - hook up P1020 memory POST after
+            importing much POST code from FSL
+            2010.12
+          - import config reset, gpio_pins, and 
+            traffic test from Arran; not enabled yet
+          - get rid of WATCHDOG_RESET_INTERNAL() usage;
+            a better fix is to not dereference 'gd'
+            unless gd->reloc_off is non-zero
+v1.3.1.7
+        - Ardmore: don't pet the watchdog from the
+          clock interrupt, or many hang conditions won't
+          be interrupted
+v1.3.1.6
+        - Ardmore: 
+          - watchdog support
+            - fix interrupt init to not clobber the watchdog setting
+            - reset the board on exceptions, don't hang
+            - Book E watchdog code based on Linux 2.6.35
+            - PPC calls watchdog_reset() in some places
+              where global data is not available, so
+              added watchdog_reset_internal() and
+              corresponding macros for these scenarios;
+              pets the dog, but won't update LED state; need
+              to see how this works when real HW is available
+          - fix a problem with generating the
+            size of the global_data area for
+            ASM code
+v1.3.1.5
+        - Ardmore: pass eth1 MAC address correctly
+v1.3.1.4
+        - Ardmore: P1020RDB-PC support
+v1.3.1.3
+        - Ardmore:
+          - enable slow flash staging area
+          - fix duplicate 'bootcmd' definition
+          - switch to 9600 baud
+v1.3.1.2
+        - Ardmore:
+          - start of 32MB flash layout changes
+          - minor tweaks to aruba_aos device tree
+v1.3.1.1
+        - Ardmore: use the device tree to pass Aruba
+          information to Linux
+v1.3.1.0
+        - Ardmore:
+          - update LZMA code to 2010.12 version
+          - update 'bootm' code to 2010.12 version
+            on PPC platforms
+          - update I2C code to 2010.12 version on
+            PPC platforms; both busses work now
+            - relocate I2C subcommands manually
+          - add FIT image support from 1010.12A
+          - increase malloc size to 4MB for compression
+            support
+          - re-factor some common routines out of
+            cmd_apboot.c and cmd_meshos.c in to apboot-util.c
+          - PPC booting uses FIT images, specifying the
+            configuration as the board name, e.g.:
+                    bootm <addr>#<config>
+            this is used to select the correct DTB
+          - build correct pci_indirect file; don't
+            build both
+          - add some command routines from 2010.12 to
+            support new subcommand functions
+          - add size checking on all production boot
+            images
+          - cosmetic cleanup of image booting
+v1.3.0.5
+        - Ardmore/all: replace usage of '%q' with '%L' after printf code update
+v1.3.0.4
+        - Ardmore: in our version of U-boot, relocation of structures
+          containing pointers needs to be done manually; revert
+          GIT commit cd1011db80287eef933d1599b74cff1116c93134
+          so that TSEC PHY pointers are fixed up correctly; otherwise
+          we could crash when trying to bring up the network
+v1.3.0.3
+        - Ardmore:
+          - fix tsec_init() return value to match our ancient code
+          - cosmetic cleanup for Ethernet and PCI
+          - enable TLV inventory in a temporary location
+v1.3.0.2
+        - Ardmore:
+          - upgrade vsprintf.c to 2010.12 to support
+            the newer formats that are required
+          - correctly fix 'upgrade' command when at the
+            end of the flash
+          - minor cosmetic tweaking
+          - due to a probable link-order issue, remove
+            weak definition of board_add_ram_info()
+          - fix PCI links by importing a new version of pci_indirect.c
+            from 2010.12, as pci_indirect_fsl.c
+          - add CFG_LATE_BOARD_INIT support
+          - enable ar5416 reporting in late board processing
+          - print 0x on PC and LR for easier debugging
+v1.3.0.1
+        - Ardmore:
+          - cosmetic APBoot cleanup
+          - ensure production image set at correct location
+          - hide 'fdt' commands in diag mode
+          - boot delay back down two 2 seconds
+          - fix DHCP request parameters
+          - fix environment saving and remove some default parameters
+            we don't want
+          - printf() support for 'z' and 't' qualifiers
+          - fix Ethernet address management for TSEC driver in APBoot mode
+          - fix image upgrade logic which never correctly detected the
+            end of the flash
+          - make malloc() initialization more like other boards; this may
+            or may not make any difference
+v1.3.0.0
+        - Ardmore: 1st 1/2-baked version of APBoot
+          running on the P1020WLAN reference board
+          - integrate Freescale U-boot support from their 2010.12
+            port (SDK 20110709, patched to V1_03)
+            - this adds about 200 files and updates many other PPC
+              files, in addition to some common file changes
+          - add checksum with watchdog support to MD5, SHA-1, and
+            CRC-32
+          - update of image format header with corresponding
+            collateral changes (mostly _ARCH_ replacing _CPU_)
+          - update cmd_apboot.c and cmd_meshos.c to handle the
+            case where APBoot is at the top of the flash, not
+            the bottom
+          - TODO:
+            - fix PCI bus initialization
+            - DHCP DNS server parsing
+            - cosmetic cleanup
+            - FDT command fixes
+            - pass AOS information to Linux
+            - finalize flash layout
+            - verify that other platforms work without
+              issue (all that I've tried build, but
+              have not been tested)
+v1.2.8.7
+        - Dalmore: Disable Marvell PHY CLK125 pin output due to EMI issue per
+          Accton
+v1.2.8.6
+        - Dalmore: change eth0 LEDs behavior for Rev C board
+v1.2.8.5
+        - add support for MST200AC production builds
+        - minor fixes to Cardhu and Talisker needed
+          after previous changes
+v1.2.8.4
+        - Dalmore: 
+          - Apply PCIE dithering patch per Atheros
+          - Disable RCLK due to EMI issue (per Accton)
+          - Set DDR TAP control register per the latest Accton code
+          - Set GPIO18 to output high to control two LNA chains per Accton
+v1.2.8.3
+        - msr2k: Disable PCI init and GPIO led operations for MSR4K
+v1.2.8.2
+        - msr2k: Add new board 'MST200AC', and add new marvell phy support
+v1.2.8.1
+        - Arran: should still disable 'drop_bad_tag' for A1
+v1.2.8.0
+        - Arran: updated 154xM rev A1 initialization based on the 7/11/2012
+          release notes
+v1.2.7.14
+        - Dalmore: report power status at boot up
+v1.2.7.13
+        - Dalmore: 
+          - add dual-bank flash support (2 x 16M)
+v1.2.7.12
+        - Dalmore: 
+          - leave the TX and RX clock delay enabled per
+            the latest Accton code
+          - set Ethernet configuration register delays per Accton
+          - fix GMAC configuration for 10 Mb/s
+          - minor cleanup to make it easier to diff our code with Accton's
+v1.2.7.11
+        - Dalmore:
+          - only allow 1 PCI bus
+          - fix radio reporting in the presence of mixed
+            PCI and WMAC radios
+v1.2.7.10
+        - Dalmore: initial (base) board support added
+v1.2.7.9
+        - MSR2K/MST200/MSR1200,2000,4000
+          -  Modify board name and remove board_subtype
+          -  Pass APBoot version to MeshOS
+v1.2.7.8
+        - Tamdhu:
+          - minor cleanup to port swapping changes
+          - add Aruba WLAN MAC tag to pass WMAC to Linux
+          - pass board ID since we only have one Linux build for all 
+            boards using this CPU
+          - variant that Linux needs can be on different board records, 
+            so handle that as we do on Cardhu
+          - fix GMAC speeds
+          - move flash sector addresses for 32MB
+          - initial support for 6172 switch initialization
+v1.2.7.7
+        - Tamdhu: initial Tamdhu config and skeleton 6172 driver
+        - Tamdhu: set up aruba_6560 target to use built-in GE PHY
+v1.2.7.6
+        - Arran/Tamdhu: 
+          - relocate to 0x1000000 for support of 14MB images
+          - move SPI_CS_BASE to 0xf6000000 and increase the window size
+            to 32MB for Tamdhu 32MB flash
+v1.2.7.5
+        - DNS: avoid sending an ARP before every packet
+        - DNS: fix a long standing issue where we timed out once
+          before sending the first request
+v1.2.7.4
+        - Cardhu: replace MAC address parsing with a cleaner version; not 
+          sure this will fix issues seen at Accton, but at least the code
+          is better
+v1.2.7.3
+        - Atheros SoC/Arran: fix bug 65223 by using the correct sizes for 
+          time computation
+        - All: add crude support for ICMP redirect processing; seems to
+          work in limited testing, and fixes bug 59461
+        - All: drop packets with IP options since we can't process them
+          anyway; avoids "checksum bad" messages on the console
+v1.2.7.2
+        - Arran: 1540M A1 support
+v1.2.7.1
+        - Add backup image header parse in CLI command 'purgeenv' and
+          automatic recover apboot env partition.
+v1.2.7.0
+        - MeshOS support added, including support for MST200, MSR1200, MSR2000,
+          and MSR4000
+v1.2.6.16
+        - Cardhu: change model name from IAP-23 to RAP-3
+v1.2.6.15
+        - Cardhu: ping fix for failures seen at Accton
+v1.2.6.14
+        - Cardhu: enable RevJ DDR2 for manufacturing
+v1.2.6.13
+        - Octeon: fix the real DNS bug; was stack corruption caused by 
+          a misunderstanding of the UDP send routine semantics
+        - add 'nodog' command on Octeon platforms
+v1.2.6.12
+        - Octeon: fix a bug where TFTP after DNS might not work right; might
+          be a compiler issue
+        - BBGW: integrate changes from 'arran' branch
+v1.2.6.11
+        - Cardhu: move to using TCK for GPIO HW reset (instead of TDO)
+v1.2.6.10
+        - Cardhu: RevJ DDR2 support, early PSE shutdown, poe on/off
+v1.2.6.9
+        - Cardhu: change DDR clock back to pre-production CPU speeds
+v1.2.6.8
+        - Cardhu: add code to reset board when POST fails
+        - Cardhu: fix apboot fifo addresses for AR934x
+        - Cardhu: enable production PLL settings (560/450/225->560/480/240)
+        - Cardhu: fix intermittent power-on failures (DDR2 initialization)
+v1.2.6.7 (released to MFG for Arran/Arran IAP)
+        - Arran: relocate to 0x900000 so that we have room for booting 7MB
+          images
+v1.2.6.6
+        - Arran: watchdog fix for flashing large images
+        - Cardhu: enable reset button for Cardhu in apboot
+        - Cardhu: power down lan ports in apboot for cardhu and clean up 
+                  description for ethreg command
+        - Cardhu: fix cardhu apboot to report actual pll frequencies and use 
+                  srif 560/450/225 settings (pre-production)
+v1.2.6.5
+        - Cardhu: product name change
+v1.2.6.4
+        - Cardhu: report Wasp revision register more correctly
+        - Cardhu: upgrade board support from 9.2.0.508 to 9.2.0.717
+        - Cardhu: watchdog timeout set to 20 seconds (give or take)
+        - Cardhu: radio identification
+          - add ath_wmac.c driver and use it
+        - Cardhu: Ethernet changes
+          - cosmetic cleanup of speed/duplex display
+          - don't register 'eth1' since we don't want to boot from it
+          - hook up MII commands for troubleshooting
+          - don't set 'eth1addr' anymore, since we won't use it
+          - enable S27 ethreg commands 
+        - minor improvements to command table relocation debugging
+v1.2.6.3
+        - Cardhu: cleanup
+        - Cardhu: fix GPIO config and disable HW reset for now
+        - Cardhu: TLV inventory
+          - support per-board inventory buffer size
+          - add 'base' card type to 'proginv'
+          - add support for programming wireless MAC information
+          - pass wireless mac info and board variant to Linux via
+            the environment if TLV inventory is in use
+v1.2.6.2
+        - First booting version of apboot for Cardhu (needs work)
+v1.2.6.1
+        - add some new PCI IDs
+v1.2.6.0
+        - Cardhu: initial integration of Wasp support
+        - add 'osinfo' command
+        - fix bug in image staging; wrong size used for
+          provisioning image -- won't affect Arran, fortunately,
+          since both images are the same size
+        - add some WATCHDOG_RESET() calls in places that
+          could take a while to run
+v1.2.5.6
+        - display the option numbers and lengths of DHCP options that
+          we receive
+v1.2.5.5
+        - Arran: 
+          - add portloop command for HW PHY testing
+          - replace switchCountersRead with our version to get
+            better data for PHY testing
+v1.2.5.4
+        - modify Scapa-H E0 LED to display amber instead of red at 10/100
+v1.2.5.3
+        - fix speed/duplex detection and mii reporting for Scapa-H
+v1.2.5.2
+        - initial support for Scapa-H
+v1.2.5.1
+        - add IAP support to MSR2K
+v1.2.5.0 (released to MFG for Arran production builds using the A0 CPU revision)
+        - update some Cavium files to the versions from SDK 1.7.3 so
+          that they are licensed correctly
+v1.2.4.5
+        - Arran: added 65xx A0 device IDs
+v1.2.4.4 (released to MFG for IAPs, Arran pilot, and Arran production with Z2)
+        - preserve os_partition for IAP AP purge and factory_reset 
+          commands (TLV)
+        - add 'proginv system ccode -d' to allow the country code TLV
+          to be removed
+        - add invent_remove_tlv() API
+v1.2.4.3
+        - preserve os_partition for IAP AP purge and factory_reset commands
+          (non-TLV)
+v1.2.4.2
+        - in APBoot, disable 'erase bank' and 'erase all' for safety reasons
+        - similarly, for APBoot, hide diag commands from command completion
+          and help functions unless in diag mode; commands can still be typed
+          explicitly if known
+        - remove 'reboot' command on APs; only 'reset' is supported
+v1.2.4.1
+        - Arran: A0 PHY changes
+          - restore PHY soft reset since Marvell says it is needed for EEE
+          - add a delay to make the PHY link more likely to be up when we try
+            to use it by doing the PHY init prior to the PEX init if CONFIG_EEE
+            is defined
+          - cosmetic changes to keep the user occupied while all of this is
+            going on
+          - add 'eee' and 'dump_eee' commands for testing 802.3az support
+v1.2.4.0
+        - Arran: incorporate changes from KW2 USP v2.1.8; not customer-visible
+v1.2.3.5
+        - Arran A0 PHY support:
+          - remove A0 PHY warning printf
+          - remove soft reset to make link detection time
+            the same as Y0 (pending confirmation from Marvell)
+v1.2.3.4
+        - fix random config reset on Scapa reboots
+v1.2.3.3
+        - fix usage of ethact[] array so that
+          XLR/S platforms work; not customer-visble
+v1.2.3.2
+        - add 'proginv system ccode' support
+v1.2.3.1
+        - Arran: updated DDR settings for new termination scheme
+v1.2.3.0
+        - Arran flash boot speed up; copy image into memory using fast
+          flash page read and then verify the checksum and signature
+          from memory
+v1.2.2.19
+        - increased maximum TLV inventory item size from 32 to 96
+        - fix inventory bug that would allow TLV data longer than the
+          maximum to be read without truncation
+v1.2.2.18
+        - implemented 'disable_reset_button' for Arran;
+          not quite as nice as AR7xxx designs since the
+          flash is not readable when we first check the
+          reset button; LED will flash first even if
+          reset button processing is later denied
+        - also improve the LED blinking algorithm when
+          processing the reset button
+v1.2.2.17
+        - add swatch support to BlueBlood
+v1.2.2.16
+        - change MSR2K memory timings to match Talisker
+v1.2.2.15
+        - add swatch + reset + 16M support for Scapa
+v1.2.2.14
+        - add swatch support for Talisker:
+        - flash layout change for 2nd partition
+        - reset honors dont_clear bit in image
+        - os_partition boot selector via env
+        - booted partition number passed to kernel
+        - disable_reset_button override via env
+        - mfginfo updated to show country code
+        - added "clear os <n>" command
+        - added "upgrade os <n> <file>" command
+v1.2.2.13
+        - AP-175P:
+          - reduce PCI clock speed from 66MHz to 33MHz
+          - perform PCI clock intialization earlier in init
+          - add more minor ID revisions to avoid PHY errors
+          - change ETH_INT0_CLK setting to match Azalea's
+v1.2.2.12
+        - Arran: possible fix for PEX init failure from Marvell
+v1.2.2.11
+        - set booted partition for Arran
+        - enable 2nd image partition for Arran
+        - updated Aruba ARM boot tag:
+          - added two spare words, a flags field, and the 
+            booted partition number (for Swatch)
+        - added apboot_os_partition data to environment passed to Linux for 
+          determining booted image
+        - also fixed a problem with os_partition change that wasn't using the 
+        - enabled support for displaying country codes for Swatch APs 
+          (non-TLV)
+        - added support for selecting partition to try first ("os_partition")
+        - add check for DONT_CLEAR flag in partition 0 image header
+v1.2.2.10
+        - Arran Plan B:
+          - fix for I-cache enable failing under JTAG;
+            need to correctly check for the existence
+            of the L2 cache
+          - added support for the 1540M A0 revision, which is not 
+            tested yet
+v1.2.2.9
+        - Arran temperature sensor address fix
+        - Arran Plan B:
+          - temperature sensor address fix
+          - use the defined memory base regions since Marvell
+            keeps moving them around; hopefully this will keep
+            them in sync
+          - integrate changes from Marvell KW2 USP 2.1.5
+          - perform 1540M Y0 init sequence even when EEE is not enabled
+	  - bump the wiremac and system mac frame sizes to 2048 so jumbo
+	    frames work
+	  - enable 10K MTU on switch ports
+	  - further power-down updates from Marvell
+	    - new sequences for shutting down
+	      internal PHYs and the PON
+	    - power down some unused memories
+	    - ensure that all unneeded clocks are
+	      disabled
+	    - disable PHY clock chaining
+	    - disable USB clock
+	    - further PON shutdown enhancements
+	  - power scheme adjustments suggested by Marvell
+	  - comment out eth_set_port_to_phy() on Plan B
+	  - reinstate code to hardwire GMAC speed/duplex based
+	    on what the PHY reports
+	  - add correct call to do_bootm() in TFTP path, just in case
+	  - integrate changes from Marvell KW2 USP
+	    v2.1.3
+	  - remove mv_kw files to avoid confusion
+	  - MPP dump fix from Wistron
+	  - enable clock power control as supplied by Marvell
+	  - shut down USB
+	  - power off both copper and QSGMII interfaces 
+	    of ports 2 and 3
+v1.2.2.8
+        - Arran 6282 PCI scan BAR reporting fix
+        - Arran Plan B:
+                - PCI scan BAR reporting fix
+v1.2.2.7
+        - cosmetic help fix
+        - Arran Plan B:
+	  - hide pcieTune variable
+	  - cosmetic fixes
+	  - shrink PHY reset delay from 500ms to 100ms
+	  - updated power display logic for Plan B
+	  - cosmetic help display fix
+v1.2.2.6
+        - remove some commands we don't want
+        - Arran Plan B:
+	  - fix PHY interrupt reporting
+	  - Makefile.releng changes to build production Plan-B bootloader
+	  - restore boot retry time to 2 minutes
+	  - swap switch ports rather than GMACs
+	  - pet watchdog while flashing
+	  - restore call to mvEthPortFinish()
+	  - addVersion support for arran_6560
+	  - doimage changes from Wistron
+	  - re-enable watchdog on Plan B
+	  - cosmetic flash fix
+	  - hold PHY and radios in reset for 500ms to
+	    fix PHY reset glitch
+	  - swap GE ports to put them in the right order
+	  - fix switch initialization for Z2; needs more
+	    testing
+	  - fix help string for switchCountersRead
+	  - snapshot Plan B bringup changes
+	  - updated MPP settings
+	  - Arran board definitions
+	  - fixed UART selection
+	  - applied some fixes from Wistron bringup; not
+	    complete
+	  - up to apboot> prompt; no Ethernet
+	  - fix a few issues with the integration of the latest
+	    Marvell code
+	  - DRAM register update from Wistron
+v1.2.2.5
+        - force flash write protection off to deal with manufacturing issue
+          at Wistron
+        - Arran Plan B: 
+	  - snapshot 6560 Z2 U-boot 2.0.1 integration
+v1.2.2.4
+        - force port speed/duplex based on PHY results rather than relying
+          on in-band autonegotiation, which doesn't seem to be accurate
+          unless we restart the PHY; restarting the PHY takes too long
+        - fix reporting of 10 Mb/s link speed
+        - first Plan B Arran support:
+	  - snapshot integration of Z2 6560 U-boot drop
+	  - read the correct PHY status when running
+	    with the Aruba switch configuration
+	  - define mvOsPrintf for ethShow()
+	  - set up the desired port connectivity on the 6560 eval board
+	  - call the routine to set up the 6560 switch chip
+	  - minor GPIO fixes for Plan B
+	  - initial support for setting the 6560 switch the
+	    way we want it:
+	      port 2 <-> port 5 (GMAC 1)
+	      port 1 <-> port 6 (GMAC 0)
+	  - update Plan B GPIO pin definitions
+	  - enable 6560 switch define
+	  - debugging changes for 6560 eval board: no watchdog, and 
+	    long idle timeout
+	  - fixes for 'ethShow'
+	  - more cosmetic flash fixes
+	  - fix problem that allowed erase to walk off the end of the 
+	    flash
+	  - fix ethernet address recovery when environment is invalid
+	  - KW2 doesn't take a channel number in I2C routines; fixed; 
+	    iprobe works now
+	  - minor help string fix for 'sf' menu
+	  - don't set some environment variables that we don't want
+	  - enable interrupts for timer support
+	  - hook up SPI flash
+	    - update environment offset
+	    - add read/write support
+	    - hook up flinfo
+	  - fixes to cpuRegs
+	  - snapshot 6560 APBoot:
+	    - PEX hooked up and scanning
+	    - USB removed
+	    - cosmetic changes
+	    - DRAM and flash size displays
+	    - fix long help configuration
+	    - install correct linker script
+	    - APBoot now up to prompt on 6560 eval board via JTAG
+	  - update to KW2 USP v1.3.0
+	    - build doimage_kw2, and fix override logic in it
+	  - import various things from u-boot 2009.08 to get things to 
+	    build
+	  - partial hook up of new SPI flash scheme; this needs more work
+	  - command table alignment fixes
+	  - placeholder definitions for Arran MPP pins
+	  - preliminary big-endian build fixes
+	  - import drivers/spi from u-boot 2009.08 drivers/mtd/spi
+	  - move some files into the right places for KW2
+v1.2.2.3
+        - fix cpuRegs command and enable it
+        - cosmetic fix to 'temp' command
+v1.2.2.2
+        - hide Marvell's environment variables and force the
+          CPU cache and other settings to be the way we
+          want them without putting these things where
+          customers could easily fiddle with them
+v1.2.2.1
+        - add 'phyTemp' command to read PHY temperature
+          sensors
+v1.2.2.0
+        - update to Marvell USP 3.5.6; the visible
+          change is the addition of the 'temp' command that
+          uses the 6282 junction temperature sensor
+v1.2.1.7
+        - 802.3af/at detect was inverted; fixed
+v1.2.1.6
+        - hook up POST memory test; this probably needs more work
+        - implement 'tt' traffic test
+        - add 'ethShow' command for dumping port information
+v1.2.1.5
+        - set handle correctly when adding a card to the
+          inventory
+v1.2.1.4
+        - hook up HW reset pin, although it is not yet working
+        - fix PHY LED setup; late_board_init() was not getting called
+        - initialize PHY interrupt pin and fix up pin reporting for
+          'gpio_pins'
+        - allow the 6282 boot ROM source to be set in the environment to
+          simplify building images that boot from UART 0
+        - enable factory reset button
+v1.2.1.3
+        - disable flash protection since it is not on a per-sector
+          basis; this is equivalent to Atheros-based 11n APs
+v1.2.1.2
+        - Arran bringup changes:
+          - add status LED flashing code and mdelay() support routine
+          - add untested code for processing factory reset button
+          - set GPIO outputs and inputs correctly
+	  - take PHYs out of reset
+	  - drive PA voltage at 4.2 (not confirmed)
+	  - added power status display
+	  - added 'gpio_pins' command
+	  - remove TWSI devices
+	  - enable 2nd Ethernet port
+	  - MPP updates based on the latest HW spec
+	  - minor cosmetic changes
+	  - hook up AD7416/LM75 driver
+	  - standard console is on UART 1 on production HW
+v1.2.1.1
+        - moved to Marvell ARM USP 3.5.3
+v1.2.1.0
+        - moved to Marvell ARM USP 3.5.0
+v1.2.0.4
+        - multi-inventory support (not needed for APs)
+v1.2.0.3
+        - initial port of TLV inventory code to ARM build
+        - pass antenna board variant to Linux
+v1.2.0.2
+        - initial submission of TLV inventory code for Arran; tested on Talisker
+v1.2.0.1
+        - fix network timeout bug on OCTEON platforms introduced by ARM
+          integration
+v1.2.0.0
+        - 1st working Arran version, booting from SPI flash
+        - integrated ARM support from Marvell U-boot 3.4.27
+v1.1.0.0
+        - Build with GCC 4.3.3 toolchain
+v1.0.9.34
+        - support reset button for new Talisker boards
+v1.0.9.33 (released to Accton for Blue Blood builds)
+          (released to MFG for MSR2K Aruba builds)
+        - add support for BlueBlood with 16M of flash
+v1.0.9.32
+        - added MSR2K support
+v1.0.9.31
+        - added support for factory reset button on BlueBlood
+v1.0.9.30 (released to Sercomm for Scapa builds)
+        - modified CPU clock from 400MHz to 390MHz for Scapa (noise)
+v1.0.9.29
+        - added work-around for pci failure on Jura-R
+v1.0.9.28
+        - modified SDRAM refresh settings to match Sercomm's latest
+          recommendations for Scapa
+v1.0.9.27
+        - fix Jura-R PCI scan to correctly assign BARs to both radios
+v1.0.9.26
+        - restart the 7240 MAC if we get a TX timeout; seems to help Blue Blood
+          network booting a bit
+        - also fixed some register offsets that were wrong
+v1.0.9.25
+        - GPIO and watchdog fixes for Blue Blood
+v1.0.9.24
+        - first usable Blue Blood version
+v1.0.9.23
+        - minor clean up to ar5416.c integrated from arran branch
+        - initial blueblood support added, not verified at all
+v1.0.9.22
+        - initial Scapa 10 Mb/s support
+v1.0.9.21
+        - move Scapa HW reset to gpio pin 7 (multiplexed w/ejtag TDO input)
+v1.0.9.20
+        - the compromise solution; move Scapa text base to 0x9fxxxxxx but leave
+          normal flash access at 0xbfxxxxxx
+        - no longer invalidate the cache when performing flash operations on
+          724x
+v1.0.9.19
+        - move Scapa flash back to 0xbfxxxxxx from 0x9fxxxxxx; the performance
+          gains weren't worth the annoyance
+        - Scapa GigE PLL setting fix take 2; also enable/disable clock skew on
+          the 8021 when switching to/from 1000/100
+        - update 7242 GPIO function register earlier in the boot process
+v1.0.9.18
+        - Jura-R PHY LED fixes
+v1.0.9.17
+        - ensure flash write protect pin asserted at startup
+        - invalidate D-cache for flash ranges after write or
+          erase operations
+v1.0.9.16
+        - GigE PLL fix for Scapa
+v1.0.9.15
+        - PHY/Ethernet fixes for Jura-R
+v1.0.9.14
+        - move the command table up by 32 bytes to avoid more overlap with the 
+          end of the GOT
+v1.0.9.13
+        - Scapa-C support
+          - PCI/radio scan
+          - CPU ID reporting
+          - some cosmetic stuff
+          - fix broken ethernet in Scapa apboot
+          - HW reset line
+          - watchdog
+          - flash driver
+          - CPU ID reporting
+          - Ethernet
+          - PCI bus scan
+          - radio LEDs
+          - radio scan fixes
+          - hide 'reboot caused by watchdog'; doesn't seem to work on 7242
+        - update ap-16x references to ap-18x (Jura-R is no longer AP-164, but 
+          AP-185)
+v1.0.9.12 (released to MFG)
+        - bug 38028; original fix worked but was wrong; correct NetPutShort() 
+          for future use
+v1.0.9.11
+        - bug 38028; write query info after the DNS names using NetPutShort()
+          to handle unaligned accesses
+v1.0.9.10
+        - corrected length on 'TheCache' check for factory_reset
+v1.0.9.9
+        - talisker 'fixmfg' support (not customer visible)
+v1.0.9.8 (released to MFG)
+        - handle a trailing '.' in DNS name lookups
+v1.0.9.7
+        - change 'BOOTP' to 'DHCP' in messages
+v1.0.9.6 (Talisker changes) (released to Sercomm for pre-pilot build)
+        - restrict 71xx serial init to only messing with the GPIO 
+          pins it should touch
+        - indicate to the user that we are slowly relocating the 
+          code, and setting up memory
+        - delay a bit after initializing the 8021 to give the RX clock 
+          some more time to stabilize
+v1.0.9.5 (Talisker changes)
+        - new I2C support works for the clock and the temperature sensor
+        - enable early_board_init() for 7100-based designs; turn the red LED
+          off a litle earlier on Talisker
+v1.0.9.4
+        - minor cleanup to DHCP discover:
+          - remove hostname, boot path
+          - remove extra pad byte
+          - don't send the boot file name in the discover
+v1.0.9.3 (Talisker changes)
+        - leave an extra 8 bytes between the end of the GOT entries and the
+          start of the command table, since it seems like sometimes an extra
+          word gets relocated
+v1.0.9.2 (Talisker changes)
+        - HW reset pin support
+        - more reliable I2C probing (iprobe) support using the Atheros scheme
+        - fix off-by-one in RTC month handling that made things incompatible
+          with Linux
+v1.0.9.1 (Talisker changes)
+        - initialize radio LEDs correctly (active low)
+        - add 'gpio' diag command for fiddling with GPIO pins
+        - add readpci/writepci commands for 7100
+        - minor fixes to I2C probing; reasonably reliable now
+v1.0.9.0 (1st Talisker version)
+        - support for GPIO 6 as flash write protect pin (works)
+        - glue Atheros generic I2C code with u-boot I2C
+          support (not working)
+        - enable the LM75 driver for bringup (not working)
+        - clone the 1374 driver to use as a basis
+          for the Seiko RTC driver, and hack in bits of
+          the Linux driver to make it functional (not working)
+        - updated DDR settings from Thomas (works)
+        - flash map changes based on flash spec (works)
+        - ar5416 init code informs board-specific code
+          how many radios were found so that LED configuration
+          can be adjusted (not tried)
+        - in CPU information display, report AHB speed as well (works)
+        - 8021 PHY clock delay support (works)
+        - minor comsetic changes (works)
+v1.0.8.3 (released to Sercomm, and for 12x 5010 production)
+        - updated Moscato Trrd setting thanks to Thomas
+v1.0.8.2
+        - bug 31819; warn if deleting an unknown environment variable
+v1.0.8.1
+        - fix for bug 31778; make sure that environment is updated correctly
+          after DHCP command; issue has been around since 1.0.1.1
+v1.0.8.0
+        - memory timing settings changed to match Sercomm to see if it helps 
+          w/ bug 31615
+        - also fix a bug in Palomino 5010 settings introduced during Moscato 
+          hacking
+v1.0.7.9
+        - fix TFTP boot issue if image is not signed; should keep retrying
+v1.0.7.8 (released to Sercomm)
+        - IDTboot compatibility; if environment is corrupt, save the default
+          environment when booting
+v1.0.7.7
+        - per 5010 errata sheet, force fasten_n on for Moscato even though
+          clkf is in range; hopefully fixes a hang while initializing the PLL
+          after soft reset; should not affect Palomino w/ 5010 as fasten_n is
+          already set due to higher DDR clock frequency
+        - reset the PKO on Moscato, since we still seem to be having trouble 
+          with Ethernet hangs; the fix in 1.0.7.3 didn't seem to do the trick
+v1.0.7.6 (not customer visible)
+        - wire moscato MAC address count to 5 to handle
+          all zeroes in the mfg sector
+v1.0.7.5        
+        - flash status LED fewer times if reset button pushed (Moscato only)
+        - pass correct MAC address count to Linux (Moscato only)
+        - make 'mfginfo' and 'factory_reset' non-diag commands
+v1.0.7.4 (Moscato changes, not customer-visible for Palomino)
+        - blink status LED quickly if reset button pressed
+v1.0.7.3 (Moscato changes, not customer-visible for Palomino)
+        - possible fix for MII PKO queue not draining if we reboot with 
+          traffic flowing on the 6063
+        - hold PHYs in power-down; Linux will release them
+        - minor cosmetic changes
+v1.0.7.2
+        - fix 2.4G LED on Moscato
+v1.0.7.1
+        - Moscato bringup
+	  - fix reset button
+	  - DDR clock appears to only be @ 266
+	  - detect 6063 correctly
+v1.0.7.0 (Moscato changes, not customer-visible for Palomino)
+        - support for optional provisioning image
+          - upgrade prov
+          - clear prov
+          - boot tries prov image if os image not available, before 
+            attempting to network boot
+        - add size checks in upgrade path
+v1.0.6.0
+        - image signing optional for Palomino, mandatory for Moscato
+v1.0.5.5
+        - moscato inventory changes (not customer visible)
+v1.0.5.4
+        - fix 'clear cache' to not kill the TPM sector
+v1.0.5.3
+        - grenache changes (not customer visible)
+        - Moscato single-boot fix (not customer visible)
+v1.0.5.2
+        - add 'clear all' and 'clear cache'
+        - add 'factory_reset' diag command
+v1.0.5.1
+        - print 'none' if no radio cards found
+        - different number of SDRAM columns for Moscato & Palomino
+v1.0.5.0 (released to MFG for 5010 pilot build)
+        - handle moscato having a different machine type in the OS image than it
+          does in the boot image
+        - verify image header on network boot even if 'autostart' is not set
+v1.0.4.4
+        - moscato support; not customer visible
+v1.0.4.3
+        - moscato support; not customer visible
+v1.0.4.2
+        - grenache merges; not customer visible
+v1.0.4.1
+        - bug 27968; FIPS image verification for tftpboot
+        - latest RSA certs
+v1.0.4.0
+        - add support for MD5 checksum verification
+        - re-factor basic image verification code
+        - fix FIPS verification issue in network booting
+        - Moscato image verification should work now
+v1.0.3.3
+        - fix FIPS memory allocation issue (not customer visible)
+v1.0.3.2
+        - start of Moscato work; (not customer visible)
+        - one minor change to Palomino code to simplify ifdefs
+v1.0.3.1
+        - 666Mhz DRAM support for re-spin, courtesy of Jerry (not customer 
+          visible)
+v1.0.3.0
+        - baseline for 5010-respin (not customer visible)
+        - support for the 5010 single-radio design, which runs at 400 Mhz
+v1.0.2.4
+        - check signature header for valid certificate format, signature size,
+          and algorithm type before attempting to validate signature
+v1.0.2.3
+        - added command to disable autorebooting on idle timeout
+v1.0.2.2
+        - FIPS changes; not customer visible yet
+v1.0.2.1 (released to MFG)
+        - bug 27512; DNS parser replaced by AP-6x/7x version
+v1.0.2.0
+        - grenache merges; not customer visible
+v1.0.1.1
+        - DNS fixes:
+          - no bug #; back off DNS timeout, and clean up DNS debugging
+          - no bug #; fix issue where we would not retry boot if we
+            ARP'd for something that never answered
+          - no bug #; send DNS requests w/ source port 1025 instead of 
+            port 53 to avoid firewall issues
+          - DNS debugging displayed when 'dns_debug' set in the 
+            environment
+          - no bug #; reset after 60 failed DNS attempts; idtboot 
+            compatibility
+        - no bug #; if no option 43 returned, 'dhcp' command should not go
+          on to try ADP/DNS; idtboot compatibility
+v1.0.1.0
+        - no bug #; verify image header correctly during TFTP boot
+v1.0.0.9 (released to MFG)
+        - no bug #; allow boot delay of 0 for AP-6x/7x/8x compatibility
+v1.0.0.8
+        - no bug #; allow DHCP responses without a default router
+v1.0.0.7
+        - bug 26432; preamble checking workaround for broken PHYs
+v1.0.0.6
+        - low-latency changes enabled for CN5010 only
+        - bug 26529; DHCP issue at Vanguard; don't set giaddr, and don't
+          use address before ACK
+        - use DHCP if none of 'ipaddr', 'netmask', or 'gatewayip' are
+          set; this makes behavior compatible with idtboot
+        - Ethernet debugging enabled if 'enet_verbose' is set
+        - DHCP debugging enabled if 'dhcp_verbose' is set
+        - improved behavior of word-erase (^W)
+        - blink the status LED a bit during POST
+v1.0.0.5
+        - new CN5010 PLL code for experimentation (not customer visible)
+v1.0.0.4
+        - reset TFTP timeout after a successful packet reception
+v1.0.0.3
+        - memory configuration changes to slightly
+          improve latency
+v1.0.0.2
+        - crude memory test in POST
+        - cosmetic changes to bootup messages
+        - display PCI scan when booting, like legacy APs
+v1.0.0.1
+        - DRAM debug changes (not customer visible)
+v1.0.0.0
+        - initial CN5010 support
+v0.0.8.9
+        - another fix to gpio_pins command (not customer visible)
+v0.0.8.8
+        - minor fix to gpio_pins command (not customer visible)
+v0.0.8.7 (released to MFG)
+        - fix an issue that would prevent recovery of an AP if
+          the environment sector was corrupted and a valid MAC
+          address is available in the manufacturing record
+v0.0.8.6 (released to MFG)
+        - bug 23024 (allow double quotes in addition to single quotes
+          for quoted arguments, e.g. setenv bootcmd "boot ap" now works)
+        - add client ID to DHCP requests so that APBoot and Linux
+          get the same IP address
+v0.0.8.5
+        - disable square wave generator on RTC to save battery life
+        - bug 23020 (vendor class was not present in DHCP requests)
+v0.0.8.4
+        - bug 23022 (2nd Ethernet port on 120 and 121 did not work)
+v0.0.8.3
+        - tftpget diag command renamed to 'netget'
+        - bug 22788 (typing 'boot' doesn't work like older APs)
+v0.0.8.2
+        - added 'clear os'
+        - minor fix to 'gpio_pins' diag command
+v0.0.8.1
+        - bug 22821 (ADP doesn't work right)
+v0.0.8.0 (released to MFG)
+        - 64MB support for CN3005
+        - cosmetic change to radio display
+v0.0.7.3
+        - model number changes per PM
+v0.0.7.2
+        - fix for bug 21975
+        - possible fix for bug 22004
+        - 'gpio_pins' diag command added
+        - all variants get two Ethernet ports
+        - print 'ar9160', not 'ar5416'
+v0.0.7.1 (released to MFG)
+        - enable 133Mhz DRAM refclock support
+v0.0.7.0
+        - 1st mainline version; same as v0.0.6.9 from 'ndev', but
+          enables port swapping for Rev B protos
+v0.0.6.9
+        - div2 register setting for new DRAM ref clock
+          (not enabled in 0.0.6.x series boot versions)
+        - port swapping support in anticipation of rev B.
+v0.0.6.8
+        - integrated latest Nebbiolo changes from 'sw'
+        - local addition of command history in u-boot broke various commands
+          that depend on the semantics of console_buffer[]; fixed by using
+          a copy out of the history array when the command is complete
+v0.0.6.7
+        - integrated latest Nebbiolo changes from 'sw'
+        - change handling of build_num[]/build_time[] to make it more
+          robust for all platforms
+        - prototype for Rev. B port swapping
+v0.0.6.6
+        - integrated latest Nebbiolo changes from 'sw'
+v0.0.6.5
+        - added command "cdce" for accessing cdce906 clock driver i2c regs
+        - integrated 84004 and 84029 from 'sw'
+v0.0.6.4
+        - integrated latest Nebbiolo changes from 'sw'
+v0.0.6.3
+        - integrated latest Nebbiolo changes from 'sw'
+v0.0.6.2
+        - improve handling of ^C in "mt" memory test
+        - refresh the watdchdog while counting down in autoboot
+v0.0.6.1
+        - simple support for blinking the status LED; a timer would be better
+v0.0.6.0
+        - integrated latest Nebbiolo changes from 'sw'
+v0.0.5.3
+        - limit number of memory test failures displayed so that the serial
+          port isn't tied up on boards with bad memory problems
+v0.0.5.2
+        - force GPIO mux routing on radios to turn off LEDs if the OS left
+          them on
+v0.0.5.1
+        - a few more single-radio changes
+          - cut packet buffers down
+          - move TFTP staging down to 22MB
+          - only gets one MAC address
+          - don't touch some LEDs that won't be present
+v0.0.5.0
+        - initial single-radio variant support
+          - use 16-bit wide memory on CN3005
+          - fix CPU refclock calculation
+v0.0.4.4
+        - integrated latest Nebbiolo changes from 'sw'
+v0.0.4.3
+        - reset after 60 failed DHCP attempts
+        - hook for passing boot version to Linux; not fully tested yet
+v0.0.4.2
+        - incorporate more fixes from idtboot:
+          - reset if 60 TFTP attempts fail
+          - prevent boardname (and baudrate) from being 
+            overwritten by the user
+          - port disassembler
+          - make behavior of 'dhcp' follow idtboot, not ppcboot
+        - restore cache flushing on tftpboot; only disabled
+          for nebbiolo
+v0.0.4.1
+        - turn off the radio LEDs on startup
+v0.0.4.0
+        - add some commands to read/write PCI memory space with appropriate
+          swapping
+        - report the number of 5416s we find at startup and set up their PCI
+          accesses
+v0.0.3.2
+        - soft-reset after NMI to avoid flaky behavior
+        - alas, we can no longer detect that we took a watchdog; not sure
+          what to do about this yet
+v0.0.3.1
+        - report whether watchdog caused a reboot by checking
+          the NMI bit in the COP0 status register
+        - this whole thing still seems a little dodgy
+v0.0.3.0
+        - don't reserve the 1MB of memory for the boot since it doesn't 
+          seem to be needed, and compressed images were overwriting some 
+          allocations done in the Linux area; removing this is a kludge, 
+          but keeps the allocations down below 2MB, where they are safe
+        - pet the dog in a few more flash operations in u-boot
+v0.0.2.2
+        - crude watchdog support
+          - enable CONFIG_HW_WATCHDOG
+          - add 'wdog' command to stop petting the dog
+            for test purposes
+          - pet the dog while:
+            - waiting for command timeouts
+            - copying to flash
+            - comparing memory
+          - disable the watchdog while running the
+            Aruba memory test
+        - blink status LED when we poke the watchdog; this
+          would be better done w/ interrupts
+0.0.2.1
+        - turn off watchdog in startup, in case it was left on by default
+0.0.2.0
+        - fix a bug where 'tftpboot' was not working if all params were known
+
+For information on older releases, use p4.

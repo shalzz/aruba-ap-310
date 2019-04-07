@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+
+WRAPPER_LIBDIR="${WRAPPER_LIBDIR:=-L/home/wrk/qca/aruba-networks_ipq8066-ln-1-0-1_qca_oem_enterprise_enterprise/qsdk/staging_dir/target-arm_v7-a_uClibc-0.9.33.2_eabi/usr/lib/}"
+
+WRAPPER_OPTIONS=""
+WRAPPER_LIBS="-lc -L/home/wrk/qca/aruba-networks_ipq8066-ln-1-0-1_qca_oem_enterprise_enterprise/qsdk/staging_dir/toolchain-arm_v7-a_gcc-4.6-linaro_uClibc-0.9.33.2_eabi/lib -lgcc_s "
+
+WRAPPER_INCLIB="Y"
+while [ -n "$1" ]
+do
+	WRAPPER_OPTIONS="$WRAPPER_OPTIONS $1"
+	if [ "$1" = "-c" -o "$1" = "-E" -o "$1" = "-S" -o "$1" = "-MF" ]
+	then
+		WRAPPER_INCLIB="N"
+	fi
+	if [ "$1" = "-static" ]
+	then
+		WRAPPER_LIBS="-lc -L/home/wrk/qca/aruba-networks_ipq8066-ln-1-0-1_qca_oem_enterprise_enterprise/qsdk/staging_dir/toolchain-arm_v7-a_gcc-4.6-linaro_uClibc-0.9.33.2_eabi/lib -lgcc_s -lgcc_eh"
+	fi
+	shift
+done
+if [ "$WRAPPER_INCLIB" = "Y" ]
+then
+	WRAPPER_OPTIONS="$WRAPPER_OPTIONS -nodefaultlibs $WRAPPER_LIBDIR -Wl,-Bdynamic,-luClibc++,-Bstatic,-lstdc++,-Bdynamic $WRAPPER_LIBS"
+fi
+
+exec arm-openwrt-linux-uclibcgnueabi-g++ -fno-builtin  -DGCC_HASCLASSVISIBILITY  $WRAPPER_INCLUDEDIR $WRAPPER_OPTIONS

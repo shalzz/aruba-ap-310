@@ -1,0 +1,5 @@
+modules_pppoe:
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_PPP_MODULE_PATH)/pppoe.$(KMOD) $(DESTDIR)/../lib 2>/dev/null
+	-$(KSTRIP) $(DESTDIR)/../lib/pppoe.$(KMOD) 2>/dev/null
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_PPP_MODULE_PATH)/pppox.$(KMOD) $(DESTDIR)/../lib 2>/dev/null
+	-$(KSTRIP) $(DESTDIR)/../lib/pppox.$(KMOD) 2>/dev/null

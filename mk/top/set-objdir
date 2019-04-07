@@ -1,0 +1,18 @@
+#
+# By default, a platform specific directory will be used for 
+# all builds. 
+#
+ifndef NO_OBJDIR
+USE_OBJDIR=1
+endif
+ifdef HOST_APPLICATION
+ifndef LINUX_APP
+USE_OBJDIR=
+else
+OBJDIR=host_obj/
+endif
+endif
+ifndef USE_OBJDIR
+OBJDIR:=
+endif
+

@@ -1,0 +1,32 @@
+#
+# set ARUBA_IMAGE_TYPE and ARUBA_PLATFORM_TYPE
+#
+include ${ARUBA_MK_DATA}/image-types
+include ${ARUBA_MK_TOP}/check-image-var
+ifeq "${ARUBA_IMAGE_TYPE}" ""
+ARUBA_IMAGE_TYPE:=$(shell IMAGE_VARS="${IMAGE_VARS}" VARIANT_VARS="${VARIANT_VARS}" ${ARUBA_MK_SCRIPTS}/set-image-type)
+export ARUBA_IMAGE_TYPE ARUBA_MK_IMAGE_TYPES
+
+ifneq "${ARUBA_IMAGE_TYPE}" ""
+
+# load the variant information if present
+-include ${ARUBA_MK_IMAGE_VARIANTS}/${ARUBA_IMAGE_TYPE}
+ifdef BASE_IMAGE_TYPE
+export ARUBA_VARIANT_TYPE:=${ARUBA_IMAGE_TYPE}
+override ARUBA_IMAGE_TYPE:=${BASE_IMAGE_TYPE}
+else
+export ARUBA_VARIANT_TYPE:=none
+endif
+
+# force the image-specific variable to be 'yes' so that exclusion rules work
+_IMAGE_TYPE_UC:=$(shell echo ${ARUBA_IMAGE_TYPE} | tr '[a-z]' '[A-Z]')
+override ${_IMAGE_TYPE_UC}:=yes
+export _IMAGE_TYPE_UC
+endif
+
+ifneq "${ARUBA_IMAGE_TYPE}" ""
+include ${ARUBA_MK_IMAGE_TYPES}/${ARUBA_IMAGE_TYPE}/platform-type
+endif
+export ARUBA_PLATFORM_TYPE
+
+endif

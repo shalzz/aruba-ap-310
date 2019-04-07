@@ -1,0 +1,30 @@
+#!/bin/sh 
+export ARUBA_SRC=/net/peknetapp01/wwei/code/6.5.x.0 
+export ARUBA_TOOLS=$ARUBA_SRC/aos-cmn/tools/ppce5500-fsl/sysroots
+#export ARUBA_TOOLS_PREFIX=$ARUBA_TOOLS/x86_64-fslsdk-linux/usr/bin/powerpc-fsl-linux/powerpc-fsl-linux
+export ARUBA_SYSROOT=$ARUBA_TOOLS/ppce5500-fsl-linux-uclibc
+export PATH=$PATH:$ARUBA_TOOLS/x86_64-fslsdk-linux/usr/bin/powerpc-fsl-linux: 
+#export LD_LIBRARY_PATH=$ARUBA_SYSROOT/lib:$ARUBA_SYSROOT/usr/lib: 
+export AS=powerpc-fsl-linux-as 
+export AR=powerpc-fsl-linux-ar 
+export CC=powerpc-fsl-linux-gcc 
+export CXX=powerpc-fsl-linux-g++ 
+export CCLD=powerpc-fsl-linux-ld 
+#export CPP=powerpc-fsl-linux-cpp 
+export RANLIB=powerpc-fsl-linux-ranlib 
+export STRIP=powerpc-fsl-linux-strip 
+ 
+export CFLAGS="-B$ARUBA_SYSROOT/lib -D__FAT_AP__ --sysroot=$ARUBA_SYSROOT -static-libgcc" 
+#export CFLAGS="--sysroot=$ARUBA_SYSROOT -D__FAT_AP__ -static-libgcc"
+#export LDFLAGS="-mabi=32" 
+export CXXFLAGS="-Wl,-static -g" 
+ 
+export ac_cv_func_setpgrp_void=no 
+export ac_cv_func_setvbuf_reversed=no 
+export ac_cv_func_getifaddrs=no 
+cd .. 
+rm config.cache 
+./bootstrap 
+make clean 
+./configure --host=powerpc-fsl-linux --target=powerpc-linux --enable-dst-minutes --enable-ignore-dns-errors --enable-ACTS --enable-ARBITER --enable-ARCRON-MSF --enable-AS2201 --enable-threads --enable-CHRONOLOG --enable-CHU --enable-DATUM --enable-DUMBCLOCK --enable-FG --enable-HEATH --enable-HOPFSERIAL --enable-HOPFPCI --enable-HPGPS --enable-JJY --enable-LEITCH --enable-LOCAL-CLOCK --enable-NEOCLOCK4X --enable-NMEA --enable-ONCORE --enable-PALISADE --enable-PCF --enable-PST --enable-SHM --enable-SPECTRACOM --enable-TRUETIME --enable-ULINK --enable-ZYFER --enable-accurate-adjtime --enable-tick=VALUE --enable-tickadj=VALUE --enable-kernel-fll-bug --enable-ipv6 --with-openssl-incdir=${ARUBA_SRC}/openssl-regular/openssl-1.0.1c/include --with-yielding-select=yes  
+make

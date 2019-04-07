@@ -1,0 +1,46 @@
+#!/bin/sh
+# test-modem ttyUSB0
+
+# scripts:
+# modem-test    simple modem AT command test
+# modem-info    cellular modem info, extended
+
+# rc:   0       success
+#       1       invalid arguments
+#       2       IO error, port not found
+#       3       timeout, port not responding
+#       4+      ABORT condition matched        
+
+usage="Usage: $0 <tty port> <script>"
+
+if [ $# -ne 2 ]; then
+  echo $usage
+  exit 1
+fi
+
+port=$1
+script=$2
+logfile=/tmp/test-modem.log
+rm $logfile
+/usr/sbin/chat -Vf /etc/ppp/peers/$script <>/dev/$port 2>$logfile >&0
+rc=$?
+
+echo >> $logfile
+if [ $rc -eq 0 ]; then
+  echo "TTY port responded to modem AT commands"
+  echo "TTY port responded to modem AT commands" >> $logfile
+elif [ $rc -eq 1 ]; then
+  echo "Error: Invalid chat arguments"
+  echo "Error: Invalid chat arguments" >> $logfile
+elif [ $rc -eq 2 ]; then
+  echo "Error: Port I/O error. TTY port $port inaccessible" 
+  echo "Error: Port I/O error. TTY port $port inaccessible" >> $logfile
+elif [ $rc -eq 3 ]; then
+  echo "Error: Timed out while waiting for modem to respond to AT commands" 
+  echo "Error: Timed out while waiting for modem to respond to AT commands" >> $logfile
+else
+  echo "Error: Abort condition $rc occured " 
+  echo "Error: Abort condition $rc occured " >> $logfile
+fi
+
+exit $rc

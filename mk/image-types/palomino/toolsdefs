@@ -1,0 +1,6 @@
+ARUBA_TOOL_CHAIN=mips-toolchain
+KERNEL_TOOLS         := $(ARUBA_SRC)/tools/mips64-octeon-linux-gnu-4.3.3
+_KERNEL_TOOLS_PREFIX  := $(KERNEL_TOOLS)/bin/mips64-octeon-linux-gnu-
+override KERNEL_TOOLS_PREFIX = ${_KERNEL_TOOLS_PREFIX}
+AR9160=yes
+COMPAT_CFLAGS += -Wno-pointer-sign

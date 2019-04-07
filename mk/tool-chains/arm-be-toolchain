@@ -1,0 +1,16 @@
+ifdef PROFILE_APPLICATION
+error this is not supported
+ARUBA_TOOLS        := $(ARUBA_SRC)/tools/mips-linux-gnu-uClibc-0.9.30-prof
+  else # PROFILE_APPLICATION
+ARUBA_TOOLS        := $(ARUBA_SRC)/tools/armeb-linux-gnu-uClibc-0.9.30
+  endif # PROFILE_APPLICATION
+ARUBA_SYSROOT      := ${ARUBA_TOOLS}
+ARUBA_INCLUDE_DIR  := ${ARUBA_TOOLS}
+ARUBA_TOOLS_PREFIX := $(ARUBA_TOOLS)/usr/bin/armeb-linux-
+ARUBA_GCC_BASE     := -B$(ARUBA_TOOLS) -B$(ARUBA_TOOLS)/lib  --sysroot=${ARUBA_TOOLS} -static-libgcc
+SYSTEM_LIBS_PATH   := $(ARUBA_TOOLS)/lib ${ARUBA_TOOLS}/usr/lib $(ARUBA_TOOLS)/usr/armeb-linux-uclibcgnueabi/lib
+
+STRIP_OPTIONS := -R .pdr  --strip-debug --strip-unneeded
+COMPAT_CFLAGS += -Wno-pointer-sign
+
+KERNEL_TOOLS_PREFIX = ${ARUBA_TOOLS_PREFIX}

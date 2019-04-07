@@ -1,0 +1,32 @@
+#!/bin/sh
+
+#
+# this is a partial work-around for bug 46592
+#
+# if magic bytes 0xDE 0xAF show up as the first 2 bytes at offset 0x340000 in mips.ari,
+# then we need to consider the image unsafe and will re-build from top-level Makefile
+#
+# (since it's essentially random data due to compression, a single rebuild should suffice)
+#
+
+checksafe()
+{
+	bfile=$(basename $1)
+	if [ "$bfile" != "mips.ari" ]
+	then
+		# only an issue for mips.ari images
+		exit 0
+	fi
+	bytes=`dd if=$1 bs=64k skip=52 count=1 2>/dev/null | dd bs=2 count=1 2>/dev/null | xxd -p`
+	if [ "$bytes" == "deaf" ]; then
+        echo "######################################################################################################################################"
+        echo "######                                                                                                                           #####"
+		echo ">>>  $bfile image is not safe for bug 46592 (0x$bytes appears at offset 0x340000)   <<<"
+        echo "######                                                                                                                           #####"
+        echo "######################################################################################################################################"
+        exit 1
+	fi
+    exit 0
+}
+
+checksafe $1

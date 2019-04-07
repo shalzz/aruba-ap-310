@@ -1,0 +1,9 @@
+ARUBA_TOOL_CHAIN=powerpc-e5500-toolchain
+
+KERNEL_TOOLS         := $(ARUBA_SRC)/aos-cmn/tools/ppce5500-fsl/sysroots
+_KERNEL_TOOLS_PREFIX  := $(KERNEL_TOOLS)/x86_64-fslsdk-linux/usr/bin/powerpc-fsl-linux/powerpc-fsl-linux-
+override KERNEL_TOOLS_PREFIX := ${_KERNEL_TOOLS_PREFIX}
+export KERNEL_TOOLS
+
+TOOLCHAIN_INSTALL_PATH := $(ARUBA_SRC)/aos-cmn/tools/ppce5500-fsl
+INSTALL_TOOLCHAIN_SCRIPT := $(ARUBA_MK_IMAGE_TYPES)/${ARUBA_IMAGE_TYPE}/install_toolchain.sh

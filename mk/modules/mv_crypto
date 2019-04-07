@@ -1,0 +1,11 @@
+# The emake parallel build app needs dependencies to determine 
+# the proper order in which targets are invoked.
+ifdef ARUBA_EMAKE
+ifdef ARRAN
+arubainstall_deps = $(KERNEL_SRC)/drivers/crypto/mv_cesa.$(KMOD)
+endif
+endif
+
+modules_mv_crypto: $(arubainstall_deps)
+	-cp -f -p $(KERNEL_SRC)/drivers/crypto/mv_cesa.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/mv_cesa.$(KMOD)

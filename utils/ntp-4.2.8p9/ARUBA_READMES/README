@@ -1,0 +1,24 @@
+#### THIS IS A README TO COMPILE NTP FOR VARIOUS PLATFORMS ####
+
+Please follow the steps to compile NTP code.
+
+step-1: Check-out respective BUILD.x (x=nebbiolo/shumway/porfidio) file.
+
+step-2: Change "ARUBA_SRC" variable with your view path.
+
+step-3: Save and close the BUILD.x
+
+step-4: Checkout following files under NTP folder, for allowing them to execute.
+
+//depot/margot/opensource/GPL/ntp-4.2.8p9/COPYRIGHT
+//depot/margot/opensource/GPL/ntp-4.2.8p9/bootstrap
+//depot/margot/opensource/GPL/ntp-4.2.8p9/configure
+//depot/margot/opensource/GPL/ntp-4.2.8p9/sntp/COPYRIGHT
+//depot/margot/opensource/GPL/ntp-4.2.8p9/sntp/configure
+//depot/margot/opensource/GPL/ntp-4.2.8p9/sntp/libevent/configure
+
+step-5: Execute BUILD.x
+
+step-6: After execution completion "ntpd", "ntpdc" binaries will be available "ntp-4.2.8p9/ntpd" and "ntp-4.2.8p9/ntpdc" folders respectively.
+
+step-7: After you are done with your work, revert files that were checked out in step-1 and step-4 files.

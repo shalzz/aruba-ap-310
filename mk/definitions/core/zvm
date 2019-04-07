@@ -1,0 +1,31 @@
+# 
+# Platform specific Tools
+#
+ZCC       :=
+ZFLAGS    :=
+ZVMDIR    :=
+
+ifdef CPU_SUPPORTS_ZVM
+  ifdef ZVM
+    include ${ARUBA_MK_UTILS}/zvm
+    ZVMDIR        := $(ARUBA_SRC)/tools/zvm-release
+    ZCC           := $(ZVMDIR)/${ZVM_RELEASE}/bin/zcc
+    ZPROJ         := --zproj=$(ARUBA_SRC) 
+    ZROOT         := --zroot=/flash/zvm/
+    ZOPTS         := --zalign=1 --zfork=0 --zbtdepth=8
+    ZCOVDB        := --zcovdb=$(ARUBA_SRC)
+    ifndef ZMEM_CONFIG
+        ZMEM_CONFIG   :=zmake_switch_all.cfg
+    endif
+    ifndef ZCOV_CONFIG
+        ZCOV_CONFIG   :=zmake_switch_def.cfg
+    endif
+    ifdef ZMEM
+      ZCFG        := --zcfg=$(ZVMDIR)/$(ZMEM_CONFIG)
+    else
+      ZCFG        := --zcfg=$(ZVMDIR)/$(ZCOV_CONFIG)
+    endif
+    ZFLAGS        := $(ZPROJ) $(ZROOT) $(ZOPTS) $(ZCOVDB) $(ZCFG)
+  endif
+endif
+

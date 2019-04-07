@@ -1,0 +1,166 @@
+#
+# This provides a default target for arubainstall.
+# 
+# Lots of magic here: arubainstall as defined in this file will
+# perform directory recursion.  arubainstall_this_dir provides
+# the default behavior for arubainstall in a given directory.
+# In any directory, arubainstall can be redefined to provide local
+# behavior that would not be provided by arubainstall_this_dir below.
+#
+# All Applications and DSOs are installed automatically.
+# this target can still be used for extra stuff. 
+#
+
+ifdef TARGET_NONIMAGE_APP
+NONIMAGE_DIR=nonimage_utils
+NONIMAGE_UTILS:=$(DESTDIR)/../../$(NONIMAGE_DIR)
+endif
+
+ifdef TARGET_UNITTEST_APP
+UNITTEST_DIRNAME=unittests
+UNITTEST_DIR:=$(abspath $(DESTDIR)/../../$(UNITTEST_DIRNAME)/$(subst $(abspath $(ARUBA_SRC)),,$(abspath $(UNITTEST_APP)))/../..)
+endif
+
+# The emake parallel build app needs dependencies to determine 
+# the proper order in which targets are invoked.
+ifdef ARUBA_EMAKE
+ifdef TARGET_APPLICATION
+    arubainstall_deps = $(TARGET_APPLICATION)
+endif
+ifdef TARGET_NONIMAGE_APP
+    arubainstall_deps = $(TARGET_NONIMAGE_APP)
+endif
+ifdef TARGET_UNITTEST_APP
+    arubainstall_deps = $(TARGET_UNITTEST_APP)
+endif
+ifdef SHARED_LIBRARY
+    arubainstall_deps = $(SHARED_LIBRARY)
+endif
+ifdef KERNEL_MOD
+    arubainstall_deps = $(OBJDIR)$(KERNEL_MOD)
+endif
+endif
+
+arubainstall: $(arubainstall_deps)
+
+arubainstall_this_dir:
+ifndef NO_INSTALL
+# ----------
+ifdef AMP
+ifdef TARGET_APPLICATION
+	@echo -e "  INST APP AMP  " $(APPLICATION)
+	@-mkdir -p $(DESTDIR)/bin
+	$(INSTALL) $(INSTALL_OPTIONS) $(TARGET_APPLICATION) $(DESTDIR)/bin
+	$(STRIP)  $(DESTDIR)/bin/$(APPLICATION)
+endif
+ifdef TARGET_NONIMAGE_APP
+	@echo "  INST    (under $(NONIMAGE_DIR) directory) " $(NONIMAGE_APP)
+	@-mkdir -p $(NONIMAGE_UTILS)
+	$(INSTALL) $(INSTALL_OPTIONS) $(TARGET_NONIMAGE_APP) $(NONIMAGE_UTILS)/$(NONIMAGE_APP)
+	$(STRIP)  $(NONIMAGE_UTILS)/$(NONIMAGE_APP)
+endif
+ifdef TARGET_UNITTEST_APP
+	@echo "  INST    (under $(UNITTEST_DIR) directory) " $(UNITTEST_APP)
+	@-mkdir -p $(UNITTEST_DIR)
+	$(INSTALL) $(INSTALL_OPTIONS) $(TARGET_UNITTEST_APP) $(UNITTEST_DIR)/$(UNITTEST_APP)
+	$(STRIP)  $(UNITTEST_DIR)/$(UNITTEST_APP)
+endif
+ifdef SHARED_LIBRARY
+	@echo -e "  INST SHARED LIB AMP  " $(SHARED_LIBRARY)
+	@echo -e "  INST   " $(SHARED_LIBRARY)
+ifdef MILAGRO
+	@-mkdir -p $(DESTDIR)/lib64
+	$(INSTALL) $(INSTALL_OPTIONS) $(SHARED_LIBRARY) $(DESTDIR)/lib64
+	$(STRIP) $(DESTDIR)/lib64/$(SHARED_LIBRARY_NAME)
+else
+	@-mkdir -p $(DESTDIR)/lib
+	$(INSTALL) $(INSTALL_OPTIONS) $(SHARED_LIBRARY) $(DESTDIR)/lib
+	$(STRIP) $(DESTDIR)/lib/$(SHARED_LIBRARY_NAME)
+endif
+endif
+else
+# ----------
+ifdef TARGET_APPLICATION
+	@echo -e "  INST APP  " $(APPLICATION)
+	$(INSTALL) $(INSTALL_OPTIONS) $(TARGET_APPLICATION) $(DESTDIR)/bin
+	$(STRIP)  $(DESTDIR)/bin/$(APPLICATION)
+endif
+ifdef TARGET_NONIMAGE_APP
+	@-mkdir -p $(NONIMAGE_UTILS)
+	@echo "  INST    (under $(NONIMAGE_DIR) directory) " $(NONIMAGE_APP)
+	$(INSTALL) $(INSTALL_OPTIONS) $(TARGET_NONIMAGE_APP) $(NONIMAGE_UTILS)/$(NONIMAGE_APP)
+	$(STRIP)  $(NONIMAGE_UTILS)/$(NONIMAGE_APP)
+endif
+ifdef TARGET_UNITTEST_APP
+	@echo "  INST    (under $(UNITTEST_DIR) directory) " $(UNITTEST_APP)
+	@-mkdir -p $(UNITTEST_DIR)
+	$(INSTALL) $(INSTALL_OPTIONS) $(TARGET_UNITTEST_APP) $(UNITTEST_DIR)/$(UNITTEST_APP)
+	$(STRIP)  $(UNITTEST_DIR)/$(UNITTEST_APP)
+endif
+ifdef SHARED_LIBRARY
+	@echo -e "  INST  SHARED LIB  " $(SHARED_LIBRARY)
+ifdef MILAGRO
+	$(INSTALL) $(INSTALL_OPTIONS) $(SHARED_LIBRARY) $(DESTDIR)/../lib64
+	$(STRIP) $(DESTDIR)/../lib64/$(SHARED_LIBRARY_NAME)
+else
+	$(INSTALL) $(INSTALL_OPTIONS) $(SHARED_LIBRARY) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/$(SHARED_LIBRARY_NAME)
+endif
+endif
+ifdef KERNEL_MOD
+	@echo -e "  INST   " $(KERNEL_MOD)
+	$(INSTALL) $(INSTALL_OPTIONS) $(OBJDIR)$(KERNEL_MOD) $(DESTDIR)/../lib
+endif
+endif # AMP
+endif # NO_INSTALL
+
+cleaninstall_this_dir:
+ifndef NO_INSTALL
+
+ifdef TARGET_APPLICATION
+	@echo "  CLEAN  " $(APPLICATION)
+	-rm -f $(DESTDIR)/bin/$(APPLICATION)
+endif
+ifdef TARGET_NONIMAGE_APP
+	@echo "  CLEAN  " $(NONIMAGE_APP)
+	-rm -f $(NONIMAGE_UTILS)/$(NONIMAGE_APP)
+endif
+ifdef TARGET_UNITTEST_APP
+	@echo "  CLEAN  " $(UNITTEST_APP)
+	-rm -f $(UNITTEST_DIR)/$(UNITTEST_APP)
+endif
+
+ifdef AMP
+
+ifdef SHARED_LIBRARY
+	@echo "  CLEAN  " $(SHARED_LIBRARY)
+ifdef MILAGRO
+	-rm -f $(DESTDIR)/lib64/$(SHARED_LIBRARY_NAME)
+else
+	-rm -f $(DESTDIR)/lib/$(SHARED_LIBRARY_NAME)
+endif
+endif
+ifdef KERNEL_MOD
+	@echo "  CLEAN  " $(KERNEL_MOD)
+	-rm -f $(DESTDIR)/lib/$(KERNEL_MOD)
+endif
+
+else # NOT AMP...
+
+ifdef SHARED_LIBRARY
+	@echo "  CLEAN  " $(SHARED_LIBRARY)
+ifdef MILAGRO
+	-rm -f $(DESTDIR)/../lib64/$(SHARED_LIBRARY_NAME)
+else
+	-rm -f $(DESTDIR)/../lib/$(SHARED_LIBRARY_NAME)
+endif
+endif
+ifdef KERNEL_MOD
+	@echo "  CLEAN  " $(KERNEL_MOD)
+	-rm -f $(DESTDIR)/../lib/$(KERNEL_MOD)
+endif
+
+endif # AMP
+
+endif # NO_INSTALL
+

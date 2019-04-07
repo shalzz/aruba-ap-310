@@ -1,0 +1,89 @@
+RELENG_MAKE=Makefile.releng
+
+TARG ?= all
+
+CVM_BOARDS=palomino palomino128 moscato 
+#CVM_2STAGE_BOARDS=2stage_palomino 2stage_moscato 
+
+ATH_BOARDS=talisker cardhu dalmore scapa scapa16 scapa_h blueblood blueblood16 \
+	msr2k ardbeg dalmore_lte hazelburn hazelburn_h
+ATH_MSR_BOARDS=1200 2000 4000 200 201
+
+MVL_BOARDS=arran tamdhu
+
+FSL_BOARDS=ardmore ardmore256 k2 tomatin tomatin16
+
+BRCM_BOARDS=springbank springbank16 balvenie
+
+QCA_BOARDS=octomore eiger glenfarclas sierra toba
+
+allboards:	\
+	${CVM_BOARDS} ${CVM_2STAGE_BOARDS} \
+	${ATH_BOARDS} ${ATH_MSR_BOARDS} \
+	${MVL_BOARDS} ${FSL_BOARDS} ${BRCM_BOARDS} \
+	${QCA_BOARDS} 
+
+listboards:
+	@echo ${CVM_BOARDS} ${CVM_2STAGE_BOARDS} \
+	${ATH_BOARDS} ${ATH_MSR_BOARDS} \
+	${MVL_BOARDS} ${FSL_BOARDS} \
+	${BRCM_BOARDS} ${QCA_BOARDS}
+
+1stage_boot:
+	@echo ${__BOARD} ${__IMAGE_TYPE} ${__SIZE} ${__SUBTYPE}
+	${MAKE} unconfig clean clobber
+	${MAKE} ${__BOARD} ${__SUBTYPE}
+	${MAKE} ${TARG} ${__IMAGE_TYPE}=yes
+ifdef ARUBA_SAVE_SIZE_INFO
+	-mkdir -p /tmp/${ARUBA_SAVE_SIZE_INFO}
+	~sca/bin/getsizes > /tmp/${ARUBA_SAVE_SIZE_INFO}/${__BOARD}${__SUBTYPE}
+endif
+	tools/Checksize u-boot.bin ${__SIZE}
+	${INST}${MAKE} install ${__IMAGE_TYPE}=yes
+
+${CVM_BOARDS}:
+	${MAKE} -f ${RELENG_MAKE} 1stage_boot __BOARD=$@ __IMAGE_TYPE=PALOMINO __SIZE=1048576
+
+${ATH_BOARDS}:
+	${MAKE} -f ${RELENG_MAKE} 1stage_boot __BOARD=$@ __IMAGE_TYPE=TALISKER __SIZE=1048576
+
+${ATH_MSR_BOARDS}:
+	${MAKE} -f ${RELENG_MAKE} 1stage_boot __BOARD=msr2k __IMAGE_TYPE=TALISKER __SIZE=1048576 __SUBTYPE="MSR_SUBTYPE=$@"
+
+${MVL_BOARDS}:
+	${MAKE} -f ${RELENG_MAKE} 1stage_boot __BOARD=$@ __IMAGE_TYPE=ARRAN __SIZE=1048576
+
+${FSL_BOARDS}:
+	${MAKE} -f ${RELENG_MAKE} 1stage_boot __BOARD=$@ __IMAGE_TYPE=ARDMORE __SIZE=524288
+
+${BRCM_BOARDS}:
+	${MAKE} -f ${RELENG_MAKE} 1stage_boot __BOARD=$@ __IMAGE_TYPE=SPRINGBANK __SIZE=1048576
+
+${QCA_BOARDS}:
+	${MAKE} -f ${RELENG_MAKE} 1stage_boot __BOARD=$@ __IMAGE_TYPE=OCTOMORE __SIZE=1048576
+
+2stage_boot:
+	@echo ${__BOARD} ${__IMAGE_TYPE} ${__SIZE1} ${__SIZE2} ${__SUBTYPE}
+	${MAKE} unconfig clean clobber
+	${MAKE} ${__BOARD}_stage1 ${__SUBTYPE}
+	${MAKE} ${TARG} ${__IMAGE_TYPE}=yes
+	cp u-boot.bin apboot_stage1_bin
+	cp u-boot.srec apboot_stage1_srec
+	cp u-boot apboot_stage1_elf
+	cp System.map apboot_stage1_map
+	${MAKE} unconfig clean
+	${MAKE} ${__BOARD}_stage2 ${__SUBTYPE}
+	${MAKE} all ${__IMAGE_TYPE}=yes
+	dd conv=sync ibs=${__SIZE1} if=apboot_stage1_bin of=apboot_pad1
+	dd conv=sync ibs=${__SIZE1} if=apboot_stage2 of=apboot_pad2
+	cat apboot_pad1 apboot_pad2 apboot_pad2 > concat_bin
+	tools/Checksize apboot_pad1 ${__SIZE1}
+	tools/Checksize apboot_pad2 ${__SIZE1}
+	tools/Checksize concat_bin ${__SIZE2}
+	${__IMAGE_TYPE}=yes BOOT_TYPE_LC=apboot ./Mkaddversion
+	$(ARUBA_SRC)/platform/addVersion/addVersion concat_bin apboot_combined -M ${__BOARD} -z none -t apboot -s include/apboot_stage2_version.txt -v 1
+	${INST}${MAKE} install_2stage
+
+${CVM_2STAGE_BOARDS}:
+	${MAKE} -f ${RELENG_MAKE} 2stage_boot __BOARD=$(subst 2stage_,,$@) __IMAGE_TYPE=PALOMINO \
+		__SIZE1=262144 __SIZE2=786432

@@ -1,0 +1,27 @@
+orig:
+	u-boot base	0x044000
+	u-boot stack	0x04bf4c
+	u-boot arena	0x050000
+	u-boot code	0x080000
+	u-boot top	0x100000
+0x0100000 -> 0x0ffffff	-> boot loader		(15MB)
+0x1000000 -> 0x1ffffff	-> reserved for linux	(16MB)
+0x2000000 -> 0x201f3ff  -> fpa 0
+0x201f400 -> 0x203f3ff  -> fpa 1
+0x203f400 -> 0x204f3ff  -> fpa 2
+
+new:
+	u-boot base	0x044000
+	u-boot stack	0x04bf4c
+	u-boot arena	0x050000
+	u-boot code	0x080000
+	u-boot top	0x100000
+0x0100000 -> 0x01fffff	-> boot loader		(1MB)
+0x0200000 -> 0x11fffff	-> reserved for linux	(16MB)
+0x1200000 -> 0x121f3ff  -> fpa 0
+0x121f400 -> 0x123f3ff  -> fpa 1
+0x123f400 -> 0x124f3ff  -> fpa 2
+0x1600000 -> 0x20fffff  -> staging area  (should only go to 1ffffff)
+
+Compressed kernels currently load @ 80a00000 (10MB), and uncompress down to 
+80200000 (2MB)

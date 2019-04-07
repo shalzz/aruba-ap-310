@@ -1,0 +1,6 @@
+ifdef MEMWATCH
+ifndef HOST_APPLICATION
+CFLAGS += -DMEMWATCH
+LDFLAGS += $(TOOLS)/usr/lib/memwatch.o
+endif
+endif

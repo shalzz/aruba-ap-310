@@ -1,0 +1,61 @@
+#
+# Target for archives and DSOs
+#
+# The variant with EXTRA_OBJS is yet another work around for 
+# building multiple libraries from a bunch of stuff in one
+# directory and should only be used to deal with legacy directories
+#
+# Mostly because of the above, DSOs are built from the completed
+# archives.
+# 
+# The logic for installing the library is as follows.
+#   - archive is always installed when make it run in a directory
+#     that does not have PART_LIB defined.
+#   - if partlib is defined, and make is not ran from top level,
+#     library is installed.   That allows to run make in any subdir
+#     and have expected results.
+#   - if partlib is defined, and make is ran from top level,
+#     then library is not installed.  It gets installed when
+#     the archive is completed, when running make in the DIR that
+#     does not have PART_LIB defined.
+#
+# Note that the archive members are added by the implicit rule above
+#
+
+ALL_OBJFILES := $(OBJFILES) $(CLASSFILES) $(EXTRA_OBJS)
+
+ifneq "$(strip $(ALL_OBJFILES))" ""
+$(STATIC_LIBRARY): $(STATIC_LIBRARY)($(ALL_OBJFILES))
+	@echo -e "  LIB     $(subst ${ARUBA_SRC}/,,${CURDIR})/$(subst ${OBJDIR},,$@)"
+	$(ARQUIET)$(ARUBA_RANLIB) $@
+	$(ARQUIET)mkdir -p $(INSTALL_LIBS_DIR)
+ifndef DONT_EXPORT_ARCHIVE 
+	$(ARQUIET)if [ X$(ARUBA_TOP_LEVEL_MAKE) == X ]; then \
+		$(INSTALL) $(INSTALL_OPTIONS) $(STATIC_LIBRARY) $(INSTALL_LIBS_DIR); \
+	else if [ X$(PART_LIB) == X  ]; then \
+		$(INSTALL) $(INSTALL_OPTIONS) $(STATIC_LIBRARY) $(INSTALL_LIBS_DIR); \
+		fi \
+	fi
+endif
+else
+#
+# LIBRARY targets with no objects are used with PART_LIB (see above).
+# The makefile in this directory is executed when the archive is completed
+# and the shared library is built there if applicable.   This is a great
+# place to install the library.
+#
+.PHONY: $(STATIC_LIBRARY)
+$(STATIC_LIBRARY): 
+	@mkdir -p $(INSTALL_LIBS_DIR)
+	$(ARQUIET)$(INSTALL) $(INSTALL_OPTIONS) $(STATIC_LIBRARY) $(INSTALL_LIBS_DIR)
+endif
+
+#
+# Shared library
+#
+$(SHARED_LIBRARY): $(STATIC_LIBRARY)
+	$(ARQUIET)$(CC) $(ALLLDFLAGS) -o $(SHARED_LIBRARY)  -Wl,--whole-archive $(STATIC_LIBRARY) \
+	-Wl,--no-whole-archive $(ALLLIBS)
+	@mkdir -p $(INSTALL_LIBS_DIR)
+	$(ARQUIET)$(INSTALL) $(INSTALL_OPTIONS) $(SHARED_LIBRARY) $(INSTALL_LIBS_DIR)
+

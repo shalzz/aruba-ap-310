@@ -1,0 +1,71 @@
+#
+# Common global gcc stuff.   This defines -Werror so local
+# directories that have warnings must define proper additional
+# switches
+#
+ifndef AUDIT_MSG
+WERROR=-Werror
+else
+WERROR=
+CFLAGS += -D__LOG_AUDIT__
+endif
+
+
+CFLAGS += -pipe -Wall ${WERROR} -DCONFIG_${_IMAGE_TYPE_UC}
+# 
+# there are too many of these warnings
+CFLAGS += -Wno-unused
+
+#
+# This can be added to local Makefiles to catch more compile time 
+# issues.
+#
+EXTRA_WARNINGS +=  -Wformat -Wno-format-zero-length   -Wimplicit \
+ -Wmissing-braces  -Wparentheses -Wswitch  -Wreturn-type -Wunused-function \
+ -Wshadow  -Wpointer-arith  -Wmissing-prototypes -Wmissing-declarations \
+ -Wmissing-format-attribute -Wredundant-decls
+
+#
+# This might be a little aggressive, but get it everywhere to get
+# it going
+#
+ifndef HOST_APPLICATION
+ifndef UPGRADER
+CFLAGS += -fno-unit-at-a-time
+endif
+endif
+
+ifndef HOST_APPLICATION
+# due to build machine variances, don't pass these to the host compiler
+CFLAGS += ${COMPAT_CFLAGS}
+endif
+ifdef GCC_4_3
+CFLAGS += -Wno-pointer-sign
+endif
+
+ifndef KERNEL_MOD
+# always build with and stripped for the target.
+ifndef PROFILE_APPLICATION
+DEBUG_FLAGS=-ggdb
+CFLAGS += ${DEBUG_FLAGS}
+LDFLAGS += ${DEBUG_FLAGS}
+endif
+endif
+
+#
+# A little ugly.  At some point local builds were changed so they compile
+# with -O2.   If -O0 is used, some extra warnings show up on official builds.
+# 
+ifndef KERNEL_MOD
+ifdef OPTIMIZED
+CFLAGS += ${STANDARD_OPTIMIZATION}
+else
+ifdef NOT_OPTIMIZED
+CFLAGS += ${LOW_OPTIMIZATION}
+else
+CFLAGS += ${STANDARD_OPTIMIZATION}
+endif
+endif
+else
+CFLAGS += ${HIGH_OPTIMIZATION}
+endif

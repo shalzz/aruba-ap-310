@@ -1,0 +1,21 @@
+#
+# Core configuration
+#
+
+config ARUBA_SKB_LEAK_DEBUGGING
+	bool "SKB leak debugging"
+	default Y
+	help 
+	  If you say Y here all skb allocations are tracked and can be dumped 
+	  using "cat /proc/sys/net/core/allocated_skbs"
+
+config ARUBA_SKB_TRACK
+	bool "Track SKB status"
+	default Y
+	help 
+	  If you say Y here skb double free is tracked  
+config ARUBA_SKB_QUARANTINE
+	bool "QUARANTINE SKB"
+	default N
+	help 
+	  If you say Y here skb can be quarantined  

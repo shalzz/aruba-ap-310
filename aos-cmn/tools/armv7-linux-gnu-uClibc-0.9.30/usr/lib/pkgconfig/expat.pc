@@ -1,0 +1,11 @@
+prefix=/var/tmp/tool-chains/buildroot-2012.11-4.7.2-arm/host/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: expat
+Version: 2.1.0
+Description: expat XML parser
+URL: http://www.libexpat.org
+Libs: -L${libdir} -lexpat
+Cflags: -I${includedir}

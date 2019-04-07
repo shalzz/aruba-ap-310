@@ -1,0 +1,29 @@
+#!/bin/sh 
+export ARUBA_LE=-le
+export ARUBA_SRC=/net/peknetapp01/wwei/code/6.5.x.0 
+export ARUBA_SYSROOT=$ARUBA_SRC/aos-cmn/tools/armv7-linux-gnu-uClibc-0.9.30/usr/arm-buildroot-linux-uclibcgnueabi/sysroot 
+export ARUBA_TOOLS=$ARUBA_SRC/aos-cmn/tools/armv7-linux-gnu-uClibc-0.9.30 
+export PATH=$PATH:$ARUBA_SRC/aos-cmn/tools/armv7-linux-gnu-uClibc-0.9.30/usr/bin: 
+export LD_LIBRARY_PATH=$ARUBA_SYSROOT/lib: 
+export AS=arm-linux-as 
+export AR=arm-linux-ar 
+export CC=arm-linux-gcc 
+export CXX=arm-linux-g++ 
+export CCLD=arm-linux-gcc 
+export CPP=arm-linux-cpp 
+export RANLIB=arm-linux-ranlib 
+export STRIP=arm-linux--strip 
+ 
+export CFLAGS="-B$ARUBA_TOOLS -B$ARUBA_TOOLS/lib -D__FAT_AP__ --sysroot=$ARUBA_SYSROOT -static-libgcc" 
+#export LDFLAGS="-mabi=32" 
+export CXXFLAGS="-Wl,-static -g" 
+ 
+export ac_cv_func_setpgrp_void=no 
+export ac_cv_func_setvbuf_reversed=no 
+export ac_cv_func_getifaddrs=no 
+cd .. 
+rm config.cache 
+./bootstrap 
+make clean 
+./configure --host=i686-pc-linux-gnu --target=arm-buildroot-linux-uclibcgnueabi --enable-dst-minutes --enable-ignore-dns-errors --enable-ACTS --enable-ARBITER --enable-ARCRON-MSF --enable-AS2201 --enable-threads --enable-CHRONOLOG --enable-CHU --enable-DATUM --enable-DUMBCLOCK --enable-FG --enable-HEATH --enable-HOPFSERIAL --enable-HOPFPCI --enable-HPGPS --enable-JJY --enable-LEITCH --enable-LOCAL-CLOCK --enable-NEOCLOCK4X --enable-NMEA --enable-ONCORE --enable-PALISADE --enable-PCF --enable-PST --enable-SHM --enable-SPECTRACOM --enable-TRUETIME --enable-ULINK --enable-ZYFER --enable-accurate-adjtime --enable-tick=VALUE --enable-tickadj=VALUE --enable-kernel-fll-bug --enable-ipv6 --with-openssl-incdir=${ARUBA_SRC}/openssl-regular/openssl-1.0.1c/include --with-yielding-select=yes  
+make

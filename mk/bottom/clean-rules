@@ -1,0 +1,47 @@
+#
+# Clean target for current directory. 
+#
+# make used to remove only what it buit but this leaves lots of 
+# stuff behind with changes over timer.  So the new cleaner clean with lemon
+# was put in.
+CLEAN_WITH_LEMON_ODOR:= $(OBJDIR)*.so $(OBJDIR)*.a $(OBJDIR)*.o *~ make.log *.asmout *.i $(OBJDIR)*.lib $(OBJDIR)*.dll $(OBJDIR)*.exe $(OBJDIR)*.idb $(OBJDIR)*.pdb
+
+ifndef MULTI_DIRS
+CLEANFILES := $(TARGET_APPLICATION) $(KERNEL_MOD) $(OBJFILES) $(CLASSFILES) $(DEPFILES) $(CLEAN_WITH_LEMON_ODOR) $(MSG_HEADERS)
+else
+CLEANFILES := $(TARGET_APPLICATION) $(KERNEL_MOD) $(addprefix $(OBJDIR), $(notdir $(OBJFILES))) $(CLASSFILES) $(addprefix $(OBJDIR), $(notdir $(DEPFILES))) $(CLEAN_WITH_LEMON_ODOR) $(MSG_HEADERS)
+endif
+
+
+ifndef PART_LIB
+ifdef STATIC_LIBRARY
+CLEANFILES += $(STATIC_LIBRARY) $(INSTALL_LIBS_DIR)/$(STATIC_LIBRARY_NAME)
+endif
+ifdef SHARED_LIBRARY
+CLEANFILES += $(SHARED_LIBRARY) $(INSTALL_LIBS_DIR)/$(SHARED_LIBRARY_NAME:.dll=.lib) $(INSTALL_BINS_DIR)/$(SHARED_LIBRARY_NAME)
+endif
+endif # PART_LIB
+
+CLEANFILES += $(GENERATED_HEADERS) $(GENERATED_CFILES) $(GENERATED_CCFILES) $(OTHER_TO_CLEAN)
+
+# this allows for custom clean targets.
+ifdef EXTRA_CLEAN_TARGET
+.PHONY: $(EXTRA_CLEAN_TARGET)
+endif
+
+.PHONY: install_toolchain
+.PHONY: clean_this_dir
+ifneq "$(strip $(CLEANFILES))" ""
+clean_this_dir: $(EXTRA_CLEAN_TARGET)
+	-rm -f $(CLEANFILES) >/dev/null 2>&1
+ifdef OBJDIR
+	-rm -rf $(OBJDIR)
+endif
+ifdef PROTOS_CFILES
+	-rm -rf $(PROTOS_DIR)
+endif
+else
+clean_this_dir: $(EXTRA_CLEAN_TARGET)
+	@echo "Nothing to be cleaned"
+endif
+

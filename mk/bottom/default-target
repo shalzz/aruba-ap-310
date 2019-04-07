@@ -1,0 +1,10 @@
+#
+# Default target in  every DIR, compile and link...
+# all depends on Makefiles.
+#
+.PHONY all_this_dir:
+_all_this_dir := protos $(MSG_HEADERS) $(EXTRA_ALL_TARGET) $(TARGET_APPLICATION) \
+	$(TARGET_NONIMAGE_APP) $(KERNEL_MOD) $(SHARED_LIBRARY) $(STATIC_LIBRARY) $(OBJFILES) \
+	$(CLASSFILES) $(TARGET_UNITTEST_APP)
+all_this_dir: $(_all_this_dir)
+

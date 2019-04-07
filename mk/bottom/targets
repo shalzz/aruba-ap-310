@@ -1,0 +1,47 @@
+# MAKE_SUBDIRS_FIRST allows to recurse subdirs first and build local
+# after, opposite of default behavior.
+ifndef MAKE_SUBDIRS_FIRST
+ifndef MAKE_SUBDIRS_LAST
+all: all_this_dir subdirs sections
+else
+all: all_this_dir sections subdirs
+endif
+else
+all: subdirs sections all_this_dir
+endif
+
+#
+#
+clean : RECURSION_OPTIONS := -k 
+clean : install_toolchain clean_this_dir subdirs sections
+
+#
+# this target cleans the kernel and the the directories in COMMON_DIR,
+# which are different for some platfroms but that can't be built in their
+# own directory.
+#
+cleancommon : RECURSION_OPTIONS := -k 
+cleancommon : clean_this_dir subdirs 
+ifdef KERNEL_SRC
+ifndef NO_KERNEL_REBUILD
+	${MAKE} -C ${KERNEL_SRC} mrproper ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+endif
+endif
+
+#
+# default target for arubainstall.
+#
+arubainstall: subdirs sections arubainstall_this_dir
+
+#
+# removes files installed on the target file system by arubainstall
+#
+cleaninstall: subdirs sections cleaninstall_this_dir
+
+#
+# savesymbols is used by release management to archive the binaries, DSOs,
+# and everything else useful for debugging core files or kernel crashes
+# on release management builds.
+#
+savesymbols: subdirs sections savesymbols_this_dir
+

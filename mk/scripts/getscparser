@@ -1,0 +1,21 @@
+#!/bin/sh
+
+#Copy parser library for multi-version support
+if [ $2 == "milagro" ]; then
+    parser_source=${ARUBA_SRC}/${2}fs/target/lib64/libcliparse.so
+    libcrypto_source=${ARUBA_SRC}/${2}fs/target/mswitch/bin/libcrypto.so.1.0.0
+    libcrypto_targ=$1/../../lib/libcrypto.so.1.0.0
+    echo "  COPY    ${libcrypto_source} -> ${libcrypto_targ}"
+    cp -fp ${libcrypto_source} ${libcrypto_targ}
+    
+else
+    parser_source=${ARUBA_SRC}/${2}fs/target/lib/libcliparse.so
+fi
+parser_targ=$1/libcliparse_${2}.so
+
+if [ -f ${parser_source} ]; then
+    echo "  COPY    ${parser_source} -> ${parser_targ}"
+    cp -fp ${parser_source} ${parser_targ}
+fi
+
+

@@ -1,0 +1,44 @@
+include $(ARUBA_SRC)/mk/Makefile.rules
+include $(ARUBA_SRC)/mk/Makefile.toolsdefs
+
+ifdef NO_OPENSSL
+SSL_INC=$(CYASSL_DIR)
+SSL_LIB_DIR=$(CYASSL_DIR)/src/.libs
+SSL_OPTION=--with-cyassl
+else
+SSL_INC=$(OPENSSL_DIR)/include
+SSL_LIB_DIR=$(OPENSSL_DIR)/$(OBJDIR)
+SSL_OPTION=--enable-openssl
+endif
+
+# Note: openssl should be compiled first if you want to use tls/ttls/peap, point
+# openssl library path to somewhere you put the openssl files.
+CC=$(ARUBA_SRC)/tools/mips-linux-gnu-uClibc-0.9.30/usr/bin/mips-linux-gcc 
+NM=$(ARUBA_SRC)/tools/mips-linux-gnu-uClibc-0.9.30/usr/bin/mips-linux-nm
+CFLAGS=-B$(ARUBA_SRC)/tools/mips-linux-gnu-uClibc-0.9.30/lib -B$(ARUBA_SRC)/tools/mips-linux-gnu-uClibc-0.9.30/usr/lib --sysroot=${ARUBA_TOOLS} -I$(ARUBA_SRC)/tools/mips-linux-gnu-uClibc-0.9.30/usr/include -I$(SSL_INC) 
+CPP=$(ARUBA_SRC)/tools/mips-linux-gnu-uClibc-0.9.30/usr/bin/mips-linux-cpp -I$(ARUBA_SRC)/tools/mips-linux-gnu-uClibc-0.9.30/usr/include -I$(SSL_INC)
+CXXCPP=${CPP}
+CXXCPP=g++ -E
+CPPFLAGS=-B$(ARUBA_SRC)/tools/mips-linux-gnu-uClibc-0.9.30/lib -B$(ARUBA_SRC)/tools/mips-linux-gnu-uClibc-0.9.30/usr/lib -I$(ARUBA_SRC)/tools/mips-linux-gnu-uClibc-0.9.30/usr/include -I$(ARUBA_SRC)/utils/zlib --sysroot=${ARUBA_TOOLS}
+LDFLAGS=-Wl,-rpath-link $(ARUBA_SRC)/usr/lib/aruba/$(OBJDIR) -B$(ARUBA_SRC)/tools/mips-linux-gnu-uClibc-0.9.30/lib -B$(ARUBA_SRC)/tools/mips-linux-gnu-uClibc-0.9.30/usr/lib -L$(SSL_LIB_DIR) -L$(ARUBA_SRC)/utils/zlib/$(OBJDIR) --sysroot=${ARUBA_TOOLS}
+
+export CPP
+export CXXCPP
+export CC
+export NM
+export CFLAGS
+export CPPFLAGS
+export LDFLAGS
+export ARUBA_TOOLS
+
+
+myconfig:
+	./configure            \
+        --host=mips-linux  \
+        --with-gnu-ld      \
+        $(SSL_OPTION)      \
+        --enable-shared=no \
+        --without-extensions \
+        --without-testapps \
+        --without-server \
+        --enable-static

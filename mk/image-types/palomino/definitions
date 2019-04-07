@@ -1,0 +1,7 @@
+include ${ARUBA_MK_PLATFORM_TYPES}/${ARUBA_PLATFORM_TYPE}/definitions
+include ${ARUBA_MK_DEFINITIONS}/platform/11n-aps
+include ${ARUBA_MK_DEFINITIONS}/platform/mips-platform
+include ${ARUBA_MK_DEFINITIONS}/features/tpm
+include ${ARUBA_MK_DEFINITIONS}/features/ipv6
+include ${ARUBA_MK_DEFINITIONS}/features/4g_lte_only
+include ${ARUBA_MK_DEFINITIONS}/features/usb-storage

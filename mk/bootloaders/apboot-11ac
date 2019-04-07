@@ -1,0 +1,2 @@
+apboot-11ac:
+	cd platform/bootloader/apboot-11ac; ${MAKE} -f Makefile.releng allboards

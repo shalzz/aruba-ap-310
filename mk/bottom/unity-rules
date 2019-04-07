@@ -1,0 +1,97 @@
+#
+# Rules to generate Unity test runners
+#
+# Unity provides a script that generates a test runner for a single c file that
+# can contain many tests. A test runner should be generated for each test file.
+#
+# Compilation of unit tests is disabled by default. Define COMPILE_UNITTEST=yes
+# in the environment to build the unit tests.
+#
+# In the parent Makefile, use UNITTEST_DIR to add a unit test directory.
+# Unlike DIRS, UNITTEST_DIR will make sure that all sections and all other
+# subdirectories will compiled before the tests.
+#
+# Example Makefile to test a simple library:
+#
+# SECTIONS = TEST_FOO 
+# ifdef TEST_FOO
+# INCS_LOCAL += -Ipath_to_foolibrary
+# LIBS_LOCAL = -lfoolibrary
+# UNITY_TEST_CFILE := test_foo.c
+# UNITTEST_APP := test_foo
+# endif
+#
+# This section generates the non-image app test_foo.
+# Simply copy the executable and execute it on the target device.
+#
+# Example Makefile to test a library using cmock:
+#
+# ifdef TEST_USING_CMOCK
+# UNITY_TEST_CFILE := unity_test_that_uses_cmock.c
+# UNITY_USE_CMOCK := 1
+# LIBS_LOCAL := -lfoo -lcmock_bar
+# INCS_LOCAL := $(MINCDIRS) -I../ -Ipath/to/bar/cmock/
+# UNITTEST_APP := unity_test_that_uses_cmock
+# endif
+#
+# This section generates the non-image app unity_test_that_uses_cmock.
+# In this case, our test code make calls to the real foo library. 
+# The code under test in the foo library tries to call other methods in the bar
+# library that we want to intercept.
+# foo is linked with a mock version of the bar library. The tests can then check
+# that functions in bar would be called with the expected paramers and provide
+# a return value.
+ifdef ARUBA_UNITTEST
+
+ifdef UNITTEST_DIR
+
+# build the tests after any code uin the current directory
+ifdef SECTIONS
+$(UNITTEST_DIR) : $(SECTIONS)
+endif
+
+# build the tests after other subdirectories
+ifdef DIRS
+$(UNITTEST_DIR) : $(DIRS)
+endif
+
+DIRS += $(UNITTEST_DIR)
+endif
+endif # ARUBA_UNITTEST
+
+# do nothing if UNITY_TEST_CFILE is not set
+ifneq "$(strip $(UNITY_TEST_CFILE))" ""
+
+# Script to use when generating test runners
+ifndef UNITY_GENERATE_RUNNER
+UNITY_GENERATE_RUNNER = $(UNITY_TOOLS)/auto/generate_test_runner.rb
+endif
+
+# Options for the script
+ifndef UNITY_GENERATE_RUNNER_OPTIONS
+UNITY_GENERATE_RUNNER_OPTIONS = --use_param_tests=1
+endif
+
+# link the unity library
+INCS_LOCAL += -I$(UNITY_TOOLS)/src
+LIBS_LOCAL += -lunity -lm -lunity_platform_fixups
+
+# also link cmock if it is used
+ifdef UNITY_USE_CMOCK
+INCS_LOCAL += -I$(CMOCK_TOOLS)/src
+LIBS_LOCAL += -lcmock
+endif
+
+UNITY_TEST_RUNNER = $(patsubst %.c,%_runner.c,$(UNITY_TEST_CFILE))
+
+CFILES += $(UNITY_TEST_CFILE)
+GENERATED_CFILES += $(UNITY_TEST_RUNNER)
+
+ifdef UNITY_UNDER_TEST_CFILES
+EXTRA_OBJS += $(join $(dir $(UNITY_UNDER_TEST_CFILES)), $(addprefix $(OBJDIR),$(patsubst %.c,%.o,$(notdir $(UNITY_UNDER_TEST_CFILES)))))
+endif
+
+$(UNITY_TEST_RUNNER) : $(UNITY_TEST_CFILE) $(UNITY_GENERATE_RUNNER)
+	@echo "Generating Unity test runner: " $@
+	$(RUBY) $(UNITY_GENERATE_RUNNER) $(UNITY_GENERATE_RUNNER_OPTIONS) $< $@
+endif

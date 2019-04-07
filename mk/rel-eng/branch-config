@@ -1,0 +1,35 @@
+# This file is executable perl code.  If you change it, make sure it
+# still compiles by excuting perl -c <file> before submitting.
+
+$branch_config =
+{
+  client =>
+  {
+  spec_lines   => [
+                    ['//aos/cmn/cmn/...', 'aos-cmn/cmn/...'],
+                    ['//aos/cmn/platform/os/linux-2.6.35/...', 'aos-cmn/platform/os/linux-2.6.35/...'],
+                    ['//aos/cmn/platform/os/linux-3.4.0/...', 'aos-cmn/platform/os/linux-3.4.0/...'],
+                    ['//aos/cmn/platform/os/linux-3.12.19/...', 'aos-cmn/platform/os/linux-3.12.19/...'],
+                    ['//aos/cmn/platform/os/linux-3.18/...', 'aos-cmn/platform/os/linux-3.18/...'],
+                    ['//aos/cmn/platform/os/linux-4.1.45/...', 'aos-cmn/platform/os/linux-4.1.45/...'],
+                    ['//aos/cmn/platform/os/linux-4.4.60/...', 'aos-cmn/platform/os/linux-4.4.60/...'],
+                    ['//aos/cmn/protocols/...', 'aos-cmn/protocols/...'],
+                    ['//aos/cmn/regulatory/...', 'aos-cmn/regulatory/...'],
+                    ['//aos/cmn/tools/aarch64-5.3-glibc-2.22/...', 'aos-cmn/tools/aarch64-5.3-glibc-2.22/...'],
+                    ['//aos/cmn/tools/arm-5.3-uclibc-1.0.12/...', 'aos-cmn/tools/arm-5.3-uclibc-1.0.12/...'],
+                    ['//aos/cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/...', 'aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/...'],
+                    ['//aos/cmn/tools/armv7-linux-gnu-uClibc-0.9.30/...', 'aos-cmn/tools/armv7-linux-gnu-uClibc-0.9.30/...'],
+                    ['//aos/cmn/tools/clisp/...', 'aos-cmn/tools/clisp/...'],
+                    ['//aos/cmn/tools/freescale-2010.09/...', 'aos-cmn/tools/freescale-2010.09/...'],
+                    ['//aos/cmn/tools/node/...', 'aos-cmn/tools/node/...'],
+                    ['//aos/cmn/tools/powerpc-linux-gnu-uClibc-0.9.30/...', 'aos-cmn/tools/powerpc-linux-gnu-uClibc-0.9.30/...'],
+                    ['//aos/cmn/tools/ppce5500-fsl/...', 'aos-cmn/tools/ppce5500-fsl/...'],
+                    ['//aos/cmn/tools/qualcomm/hexagon-installers/8.0.07/...', 'aos-cmn/tools/qualcomm/hexagon-installers/8.0.07/...'],
+                    ['//aos/cmn/tools/qualcomm/ubi/NHSS.QSDK.9.0.r1_2018-04-10/...', 'aos-cmn/tools/qualcomm/ubi/NHSS.QSDK.9.0.r1_2018-04-10/...'],
+                    ['//aos/cmn/tools/qualcomm/ubi/release-2017-05-12/...', 'aos-cmn/tools/qualcomm/ubi/release-2017-05-12/...'],
+                    ['//aos/cmn/tools/x86_64-unknown-linux-gnu-4.7.2/...', 'aos-cmn/tools/x86_64-unknown-linux-gnu-4.7.2/...'],
+                    ['+//depot/margot/_BRANCH_/...', ''],
+                  ],
+  },
+};
+

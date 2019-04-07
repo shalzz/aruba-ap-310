@@ -1,0 +1,4 @@
+nnm_build:
+#ifndef SKIP_NNM
+#	cd nnm; ${MAKE} NNM=yes
+#endif

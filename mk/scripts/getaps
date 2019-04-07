@@ -1,0 +1,45 @@
+#!/bin/sh
+pref=$1
+targ=$2
+
+AP_FILE=${ARUBA_SRC}/mk/image-types/${ARUBA_IMAGE_TYPE}/AP-images
+
+if [ -f ${AP_FILE} ]; then
+    echo " Use ${AP_FILE}"
+else
+    AP_FILE=${ARUBA_SRC}/mk/data/AP-images
+fi
+
+fgrep -v '^#' ${AP_FILE} | grep -w no | while read foo; do
+	set -- $foo
+	fn=${targ}/$1
+	echo "  RM      ${fn}"
+	rm -f ${fn}
+done
+
+mkdir -p ${targ}/hdr
+grep -v '^#' ${AP_FILE} | grep -w yes | while read foo; do
+	set -- $foo
+	fn=${pref}/$3/$1
+	bn=$1
+	if [ -f ${fn} ]; then 
+#		echo cp -fvp ${fn} ${targ}
+		echo "  COPY    ${fn} -> ${targ}"
+		cp -fp ${fn} ${targ}
+	else
+		if printenv | grep $4 2>/dev/null; then
+			v=`printenv | grep $4 | cut -d= -f2`
+#			echo "Getting ${bn} from env $4 ${v}"
+			echo "  WGET     ${v} -> ${bn}"
+			wget ${v} -O ${targ}/${bn}
+		else
+			 echo "ERROR: env ${4} or ${fn} does not exist."
+		fi
+	fi
+        dd if=${targ}/${bn} of=${targ}/hdr/${bn} bs=1024 count=1 > /dev/null 2>&1
+done
+# copy image list
+echo "  COPY    ${AP_FILE} -> ${targ}"
+cp -fp ${AP_FILE} ${targ}
+echo "  COPY    ${AP_FILE} -> ${targ}/hdr"
+cp -fp ${AP_FILE} ${targ}/hdr

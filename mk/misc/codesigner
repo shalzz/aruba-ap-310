@@ -1,0 +1,16 @@
+codesigner:
+ifdef NEBBIOLO
+ifdef CODE_SIGNER
+ifdef FIPS
+	@echo "NEBBIOLO is defined, adding required directories"
+	$(MAKE) 
+	$(MAKE) image CODE_SIGNER=yes FIPS=yes
+else
+	@echo "In order to build Code Signer Server, you need FIPS defined" 
+endif
+else
+	@echo "In order to build Code Signer Server, you need CODE_SIGNER defined" 
+endif
+else
+	@echo "In order to build Code Signer Server, you need NEBBIOLO defined" 
+endif

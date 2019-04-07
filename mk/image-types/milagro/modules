@@ -1,0 +1,6 @@
+include ${ARUBA_MK_MODULES}/milagro_kprobes
+
+modules_milagro:
+ifndef DIAGNOSTIC_BUILD
+	${MAKE} modules_kprobes
+endif

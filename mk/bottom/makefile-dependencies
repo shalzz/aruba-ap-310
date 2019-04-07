@@ -1,0 +1,25 @@
+ifndef NO_MAKEFILE_DEPEND
+$(wildcard ${ARUBA_MK_ROOT}/Makefile.*) \
+	$(wildcard ${ARUBA_MK_BOTTOM}/*) \
+	$(wildcard ${ARUBA_MK_CORE}/*) \
+	$(wildcard ${ARUBA_MK_TOP}/*) \
+	$(wildcard ${ARUBA_MK_DEFINITIONS}/*/*) \
+	$(wildcard ${ARUBA_MK_PLATFORM_TYPES}/${ARUBA_PLATFORM_TYPE}/*) \
+	$(wildcard ${ARUBA_MK_IMAGE_TYPES}/${ARUBA_IMAGE_TYPE}/*):
+
+$(_all_this_dir): Makefile ${ARUBA_MK_ROOT}/Makefile.top \
+	${ARUBA_MK_ROOT}/Makefile.bottom ${ARUBA_MK_ROOT}/Makefile.kernel \
+	${ARUBA_MK_ROOT}/Makefile.naming \
+	${ARUBA_MK_ROOT}/Makefile.toolsdefs \
+	${ARUBA_MK_ROOT}/Makefile.rules \
+	${ARUBA_MK_CPU_FAMILIES}/${ARUBA_CPU_FAMILY} \
+	${ARUBA_MK_TOOL_CHAINS}/${ARUBA_TOOL_CHAIN} \
+	$(wildcard ${ARUBA_MK_BOTTOM}/*) \
+	$(wildcard ${ARUBA_MK_CORE}/*) \
+	$(wildcard ${ARUBA_MK_TOP}/*) \
+	$(wildcard ${ARUBA_MK_DEFINITIONS}/*/*) \
+	$(wildcard ${ARUBA_MK_PLATFORM_TYPES}/${ARUBA_PLATFORM_TYPE}/*) \
+	$(wildcard ${ARUBA_MK_IMAGE_TYPES}/${ARUBA_IMAGE_TYPE}/*)
+else
+$(_all_this_dir): 
+endif

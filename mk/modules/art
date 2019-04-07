@@ -1,0 +1,5 @@
+modules_art:
+ifdef REGULATORY_TESTING
+	-cp -f -p $(KERNEL_SRC)/drivers/art/art.$(KMOD) $(DESTDIR)/../lib/modules/art.${KMOD}.${ARUBA_IMAGE_TYPE}
+	-$(KSTRIP) $(DESTDIR)/../lib/modules/art.$(KMOD).${ARUBA_IMAGE_TYPE}
+endif

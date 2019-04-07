@@ -1,0 +1,19 @@
+#
+# This allows to build many things, libs or apps, from
+# the same directory.  This is intended for backward 
+# compatibility, implementation is not too straight forward.
+# It works by invoking make with the makefile that defines
+# SECTIONS with every variable defined in SECTION
+# set to 'yes', one by one. This essentially works like the
+# directory recursion above. 
+#
+SECTIONS += ${SECTIONS_yes}
+EXCLUDE_SECTIONS += ${EXCLUDE_SECTIONS_yes}
+_SECTIONS := $(filter-out ${EXCLUDE_SECTIONS},$(SECTIONS))
+
+.PHONY: sections $(_SECTIONS)
+sections: $(_SECTIONS)
+$(_SECTIONS):
+ifndef STOP_RECURSION_HERE
+	$(ARQUIET)$(MAKE) $(RECURSION_OPTIONS) STOP_RECURSION_HERE=1 $@=yes $(MAKECMDGOALS)
+endif

@@ -1,0 +1,2 @@
+DPDK_PLATFORM=yes
+DPDK_DIR=infra/dpdk

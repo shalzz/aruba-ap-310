@@ -1,0 +1,6 @@
+export __ARUBA_KERNEL=3.10.59
+KERNEL_CONFIG=aruba_milagro_defconfig
+KERNEL_CRASH_CONFIG=aruba_milagro_crash_kernel_defconfig
+KERNEL_CONFIG_DIAG=aruba_milagro_diag_defconfig
+KERNEL_CONFIG_LTT=aruba_milagro_ltt_defconfig
+K_IMG_NAME:=vmlinux.strip

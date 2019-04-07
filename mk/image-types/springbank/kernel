@@ -1,0 +1,18 @@
+# export this for include shuffle
+export __ARUBA_KERNEL=2.6.35
+ifdef DEBUG_BUILD
+KERNEL_CONFIG=aruba_springbank_debug_defconfig
+else
+ifdef FAT_AP
+KERNEL_CONFIG=aruba_springbank_iap_defconfig
+else
+KERNEL_CONFIG=aruba_springbank_defconfig
+endif
+endif
+KERNEL_CONFIG_LTT=aruba_springbank_ltt_defconfig
+K_IMG_NAME:=uImage
+K_IMG_DIR_SRC=$(KERNEL_SRC)/arch/arm/boot
+SYMLINK_KERNEL_INCLUDES_TO_TOOLS:=1
+ifndef IMAGE_NAME_BASE
+IMAGE_NAME_BASE:=armv7ns
+endif

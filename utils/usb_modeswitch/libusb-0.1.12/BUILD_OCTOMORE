@@ -1,0 +1,20 @@
+#!/bin/sh
+
+#
+# Checkout
+# - Makefile
+# - config.log
+# - config.status
+#
+
+# to build image
+export ARUBA_TOOL_PREFIX="${ARUBA_SRC}/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/bin/arm-openwrt-linux"
+
+export CC="${ARUBA_TOOL_PREFIX}-gcc"
+export CXX="${ARUBA_TOOL_PREFIX}-c++"
+export AR="${ARUBA_TOOL_PREFIX}-ar"
+export LD="${ARUBA_TOOL_PREFIX}-ld"
+
+export CPPFLAGS="-fPIC"
+./configure --host=arm-linux --target=arm-linux --disable-shared lt_cv_objdir=octomore_obj
+make

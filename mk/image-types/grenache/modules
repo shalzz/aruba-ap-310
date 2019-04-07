@@ -1,0 +1,26 @@
+modules_grenache:
+	${MAKE} -C ${KERNEL_SRC} modules ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+	mkdir -p $(DESTDIR)/../lib/modules
+#	-cp -f -p $(KERNEL_SRC)/drivers/art/art.$(KMOD) $(DESTDIR)/../lib/modules
+#	-cp -f -p $(KERNEL_SRC)/drivers/usb/serial/airprime.ko $(DESTDIR)/../lib/modules
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/serial/option.ko $(DESTDIR)/../lib/modules
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/serial/hso.ko $(DESTDIR)/../lib/modules
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/serial/sierra.ko $(DESTDIR)/../lib/modules
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/serial/usbserial.ko $(DESTDIR)/../lib/modules
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/class/cdc-acm.ko $(DESTDIR)/../lib/modules
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/net/usbnet.$(KMOD) $(DESTDIR)/../lib/modules
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/net/cdc_ether.$(KMOD) $(DESTDIR)/../lib/modules
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/net/pcd_driver/dgworks/dgworks.$(KMOD) $(DESTDIR)/../lib/modules
+	-cp -f -p $(KERNEL_SRC)/drivers/usb/net/pcd_driver/net/ptumlusbnet.$(KMOD) $(DESTDIR)/../lib/modules
+
+#	-$(STRIP) $(DESTDIR)/../lib/modules/art.$(KMOD)
+#	-$(STRIP) $(DESTDIR)/../lib/modules/airprime.$(KMOD)
+	-$(STRIP) $(DESTDIR)/../lib/modules/option.$(KMOD)
+	-$(STRIP) $(DESTDIR)/../lib/modules/hso.$(KMOD)
+	-$(STRIP) $(DESTDIR)/../lib/modules/sierra.$(KMOD)
+	-$(STRIP) $(DESTDIR)/../lib/modules/usbserial.$(KMOD)
+	-$(STRIP) $(DESTDIR)/../lib/modules/cdc-acm.$(KMOD)
+	-$(STRIP) $(DESTDIR)/../lib/modules/usbnet.$(KMOD)
+	-$(STRIP) $(DESTDIR)/../lib/modules/cdc_ether.$(KMOD)
+	-$(STRIP) $(DESTDIR)/../lib/modules/dgworks.$(KMOD)
+	-$(STRIP) $(DESTDIR)/../lib/modules/ptumlusbnet.$(KMOD)

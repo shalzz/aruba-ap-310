@@ -1,0 +1,19 @@
+#!/bin/sh
+
+#
+# Checkout
+# - Makefile
+# - config.log
+# - config.status
+#
+
+# to build image
+ARUBA_TOOLS="/sca/iproc-3.4.3/iproc/buildroot/host/"
+export ARUBA_TOOL_PREFIX="${ARUBA_TOOLS}/usr/bin/arm-linux"
+
+export CC="${ARUBA_TOOL_PREFIX}-gcc"
+export CXX="${ARUBA_TOOL_PREFIX}-c++"
+export AR="${ARUBA_TOOL_PREFIX}-ar"
+export LD="${ARUBA_TOOL_PREFIX}-ld"
+
+./configure --host=arm-linux --target=arm-linux --disable-shared

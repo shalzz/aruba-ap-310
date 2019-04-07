@@ -1,0 +1,5 @@
+ARUBA_TOOLS := /usr
+ARUBA_TOOLS_PREFIX := /usr/bin/
+ARUBA_GCC_BASE := -B/lib64 -B/usr/lib64 -B$(ARUBA_TOOLS) -B$(ARUBA_TOOLS)/lib
+SYSTEM_LIBS_PATH := /lib64 /usr/lib64 $(ARUBA_TOOLS)/lib
+COMPAT_CFLAGS += -Wno-pointer-sign -Wno-strict-aliasing

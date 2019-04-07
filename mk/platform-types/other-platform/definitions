@@ -1,0 +1,2 @@
+include ${ARUBA_MK_DEFINITIONS}/platform/all-platforms
+ARUBA_BUILD_DIRS=${ARUBA_MK_PLATFORM_TYPES}/${ARUBA_PLATFORM_TYPE}/build-dirs

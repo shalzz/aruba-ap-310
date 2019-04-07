@@ -1,0 +1,11 @@
+# run with chat -Vf modem-test <>/dev/ttyUSB0 2>/tmp/log >&0
+
+TIMEOUT 1
+ABORT 'BUSY'
+ABORT 'ERROR'
+
+# attention
+'' 'at!ippassthrough=0'
+# wait for answer
+'OK' 'at!reset'
+'OK'

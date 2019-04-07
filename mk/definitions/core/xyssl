@@ -1,0 +1,10 @@
+# OpenSSL exception case where APs need OpenSSL from fips location even if "FIPS" is not defined
+ifndef FIPS
+
+ifdef PLATFORM_USES_XYSSL
+#CFLAGS += -D__FIPS_BUILD__
+XYSSL = $(TOP)/xyssl/xyssl-0.9
+endif	# PLATFORM_USES_XYSSL
+
+endif	# FIPS
+

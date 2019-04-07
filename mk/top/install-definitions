@@ -1,0 +1,11 @@
+#
+# DSOs and archived are installed in this directory as they are built.
+# Applications link with .a and .so in this directory.
+#
+INSTALL_LIBS_BASE_DIR := $(ARUBA_SRC)/usr/lib/aruba/
+INSTALL_LIBS_DIR := $(INSTALL_LIBS_BASE_DIR)$(OBJDIR)
+INSTALL_BINS_DIR := $(ARUBA_SRC)/usr/bin/aruba/$(OBJDIR)
+
+ifdef HOST_APPLICATION
+NO_INSTALL=1
+endif

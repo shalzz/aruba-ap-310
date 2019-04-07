@@ -1,0 +1,3 @@
+data.load.elf u-boot
+register.set.pc 0x1080000
+;D.S SD:0xD0010000 %LE %LONG 0x21112220

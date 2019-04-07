@@ -1,0 +1,15 @@
+#!/bin/sh
+export T32SYS=/home/t32
+export T32TMP=/tmp
+export T32ID=T32
+export PATH=$PATH:/home/t32/bin/pc_linux
+
+cd $T32SYS/fonts
+mkfontdir .
+xset +fp $PWD
+xset fp rehash
+
+cd $T32SYS
+
+$T32SYS/bin/pc_linux/t32usbchecker
+$T32SYS/bin/pc_linux/t32marm

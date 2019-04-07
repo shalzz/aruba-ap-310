@@ -1,0 +1,9 @@
+#The emake parallel build app needs dependencies to determine 
+# the proper order in which targets are invoked.
+ifdef ARUBA_EMAKE
+arubainstall_deps = $(KERNEL_SRC)/drivers/char/diag/diagchar.$(KMOD)
+endif
+ 
+modules_char: $(arubainstall_deps)
+	cp -f -p $(KERNEL_SRC)/drivers/char/diag/diagchar.$(KMOD) $(DESTDIR)/../lib/
+	$(KSTRIP) $(DESTDIR)/../lib/diagchar.$(KMOD)

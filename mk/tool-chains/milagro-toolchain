@@ -1,0 +1,20 @@
+ARUBA_TOOLS         := $(ARUBA_SRC)/tools/mipscross-xlp/linux
+STRIP_OPTIONS := -R .pdr --strip-debug --strip-unneeded
+
+ARUBA_SYSROOT      := ${ARUBA_TOOLS}
+ARUBA_INCLUDE_DIR  := ${ARUBA_TOOLS}
+
+ARUBA_TOOLS_PREFIX  := $(ARUBA_TOOLS)/bin/mips64-nlm-linux-
+SYSTEM_LIBS_PATH    := $(ARUBA_TOOLS)/mips64-nlm-linux/lib64
+ARUBA_GCC_BASE      := -B$(ARUBA_TOOLS) -B$(ARUBA_TOOLS)/lib
+PREFIX = mipsisa64r2-nlm-linux-
+export PREFIX
+LD_LIBRARY_PATH := $(ARUBA_TOOLS)/i686-pc-linux-gnu/mips64-nlm-linux/lib
+export LD_LIBRARY_PATH
+COMPAT_CFLAGS += -Wno-pointer-sign -Wno-strict-aliasing
+
+KERNEL_TOOLS_PREFIX = ${ARUBA_TOOLS_PREFIX}
+
+ARUBA_TOOLS_INSTALL_PATH := ${ARUBA_TOOLS}/..
+
+__GDB7 := yes

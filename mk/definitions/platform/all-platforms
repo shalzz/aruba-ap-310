@@ -1,0 +1,47 @@
+ifneq "${ARUBA_IMAGE_TYPE}" ""
+# must have trailing slash
+OBJDIR=${ARUBA_IMAGE_TYPE}_obj/
+endif
+
+ifdef NCFG_TEST
+CFLAGS += -DNCFG_TEST
+endif
+
+#
+# Features, global flags.
+#
+ifdef WMM_SUPPORT
+CFLAGS += -DWMM_SUPPORT
+endif
+
+ifdef TKIP_SUPPORT
+CFLAGS += -DTKIP_SUPPORT
+endif
+
+CFLAGS += -DMULTI_BSSID
+CFLAGS += -DAPP_SAVE_CONFIG
+
+CFLAGS += -DCLI_CODE_REORG
+
+
+#NO_LOCATION_CODE=yes
+ifdef NO_LOCATION_CODE
+CFLAGS += -DLOCATION_CODE_DEPRECATED=ARUBA_DEPRECATE
+CFLAGS += -DARUBA_DEPRECATE=__attribute__\(\(deprecated\)\)  -Wno-error
+else
+CFLAGS += -DLOCATION_CODE_DEPRECATED=
+endif
+
+# Turn on TKIP counter measures
+ifdef TKIP_COUNTERMEASURES
+CFLAGS += -D__WIFI_CERT__
+endif
+
+CFLAGS += -DCONFIG_BOC
+CFLAGS += -DUSE_PROFILE_MANAGER
+
+# needed by controller STM build as well as APs
+MWF=madwifi-2.4
+QCA=qca/${WFGEN}
+BCM=broadcom
+WIGIG=wigig

@@ -1,0 +1,5 @@
+#
+# kernel build rules for platforms with no kernel
+#
+kernel:
+	@echo "No kernel for ${ARUBA_IMAGE_TYPE}"

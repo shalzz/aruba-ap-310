@@ -1,0 +1,4 @@
+DPI_DIR=infra/dpi/Qosmos/SDK
+
+export DPI=yes
+CFLAGS += -DSOS_DPI_SUPPORT

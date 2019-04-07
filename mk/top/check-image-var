@@ -1,0 +1,23 @@
+#
+# Environment checks and sanitizing.
+#
+# Validate that one target is defined, except for targets that
+# do not require an image type to be defined ('targets with no image')
+#
+__VARS_LIST := ${IMAGE_VARS} 
+__IMAGE_LIST := ${ARUBA_IMAGES}
+ifeq ($(strip $(ARUBA_IMAGE_TYPE)),)
+__VARS_LIST := $(strip $(shell echo ${__VARS_LIST} ${VARIANT_VARS}))
+__IMAGE_LIST := $(strip $(shell echo ${__IMAGE_LIST} ${ARUBA_VARIANTS}))
+endif
+
+__CHECK_ENV := $(strip $(shell echo ${__VARS_LIST} | sed 's/[a-z0-9]*_//g'))
+ifeq "$(filter ${TARGETS_WITH_NO_IMAGE_TYPE},$(MAKECMDGOALS))" ""
+ifneq "$(words $(__CHECK_ENV))" "1" 
+$(error Error: One and only one of those must be defined in your environment: $(shell ARUBA_IMAGES="${__IMAGE_LIST}" ${ARUBA_MK_SCRIPTS}/show-image-type-list))
+endif
+else
+ifneq "$(strip $(__CHECK_ENV))" "" 
+$(error Error: Do not define any of $(shell ARUBA_IMAGES="${__IMAGE_LIST}" ${ARUBA_MK_SCRIPTS}/show-image-type-list) in your environment when target is one of: ${TARGETS_WITH_NO_IMAGE_TYPE})
+endif 
+endif

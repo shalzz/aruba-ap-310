@@ -1,0 +1,11 @@
+#!/bin/sh
+checksize()
+{
+	csz=`ls -l $1 | awk '{print $5}'` 
+	if [ $csz -gt $2 ]; then
+		echo "$1 size ($csz) exceeds limit ($2)"
+		exit 1
+	fi
+}
+
+checksize $1 $2

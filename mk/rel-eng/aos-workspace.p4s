@@ -1,0 +1,60 @@
+# A Perforce Client Specification.
+#
+#  Client:      The client name.
+#  Update:      The date this specification was last modified.
+#  Access:      The date this client was last used in any way.
+#  Owner:       The Perforce user name of the user who owns the client
+#               workspace. The default is the user who created the
+#               client workspace.
+#  Host:        If set, restricts access to the named host.
+#  Description: A short description of the client (optional).
+#  Root:        The base directory of the client workspace.
+#  AltRoots:    Up to two alternate client workspace roots.
+#  Options:     Client options:
+#                      [no]allwrite [no]clobber [no]compress
+#                      [un]locked [no]modtime [no]rmdir
+#  SubmitOptions:
+#                      submitunchanged/submitunchanged+reopen
+#                      revertunchanged/revertunchanged+reopen
+#                      leaveunchanged/leaveunchanged+reopen
+#  LineEnd:     Text file line endings on client: local/unix/mac/win/share.
+#  ServerID:    If set, restricts access to the named server.
+#  View:        Lines to map depot files into the client workspace.
+#  ChangeView:  Lines to restrict depot files to specific changelists.
+#  Stream:      The stream to which this client's view will be dedicated.
+#               (Files in stream paths can be submitted only by dedicated
+#               stream clients.) When this optional field is set, the
+#               View field will be automatically replaced by a stream
+#               view as the client spec is saved.
+#  StreamAtChange:  A changelist number that sets a back-in-time view of a
+#                   stream ( Stream field is required ).
+#                   Changes cannot be submitted when this field is set.
+#
+# Use 'p4 help client' to see more about client views and options.
+
+Client:     aos-workspace
+
+Owner: 	    p4build
+
+Root:       null
+
+SubmitOptions: RevertUnchanged
+
+Options:    noallwrite clobber nocompress unlocked nomodtime rmdir
+
+LineEnd:    share
+
+View:
+	//aos/cmn/cmn/... //aos-workspace/aos-cmn/cmn/...
+	//aos/cmn/platform/os/linux-2.6.35/...  //aos-workspace/aos-cmn/platform/os/linux-2.6.35/...
+	//aos/cmn/platform/os/linux-3.4.0/...  //aos-workspace/aos-cmn/platform/os/linux-3.4.0/...
+	//aos/cmn/platform/os/linux-3.12.19/...  //aos-workspace/aos-cmn/platform/os/linux-3.12.19/...
+	//aos/cmn/protocols/... //aos-workspace/aos-cmn/protocols/...
+	//aos/cmn/regulatory/... //aos-workspace/aos-cmn/regulatory/...
+	//aos/cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/... //aos-workspace/aos-cmn/tools/armv7-openwrt-linux-gnu-uClibc-0.9.33.2/...
+	//aos/cmn/tools/armv7-linux-gnu-uClibc-0.9.30/... //aos-workspace/aos-cmn/tools/armv7-linux-gnu-uClibc-0.9.30/...
+	//aos/cmn/tools/clisp/... //aos-workspace/aos-cmn/tools/clisp/...
+	//aos/cmn/tools/freescale-2010.09/...  //aos-workspace/aos-cmn/tools/freescale-2010.09/...
+	//aos/cmn/tools/ppce5500-fsl/... //aos-workspace/aos-cmn/tools/ppce5500-fsl/...
+	//aos/cmn/tools/powerpc-linux-gnu-uClibc-0.9.30/... //aos-workspace/aos-cmn/tools/powerpc-linux-gnu-uClibc-0.9.30/...
+	+//depot/margot/FCS6.5.X.0/... //aos-workspace/...

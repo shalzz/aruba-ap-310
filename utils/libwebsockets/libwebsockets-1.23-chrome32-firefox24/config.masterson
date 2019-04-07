@@ -1,0 +1,44 @@
+include $(ARUBA_SRC)/mk/Makefile.rules
+include $(ARUBA_SRC)/mk/Makefile.toolsdefs
+
+ifdef NO_OPENSSL
+SSL_INC=$(CYASSL_DIR)
+SSL_LIB_DIR=$(CYASSL_DIR)/src/.libs
+SSL_OPTION=--with-cyassl
+else
+SSL_INC=$(OPENSSL_DIR)/include
+SSL_LIB_DIR=$(OPENSSL_DIR)/$(OBJDIR)
+SSL_OPTION=--enable-openssl
+endif
+
+# Note: openssl should be compiled first if you want to use tls/ttls/peap, point
+# openssl library path to somewhere you put the openssl files.
+TOOLS_DIR=$(ARUBA_SRC)/aos-cmn/tools/arm-5.3-uclibc-1.0.12
+CC=$(TOOLS_DIR)/usr/bin/arm-linux-gcc
+NM=$(TOOLS_DIR)/usr/bin/arm-linux-nm
+CFLAGS=-B$(TOOLS_DIR)/lib -B$(TOOLS_DIR)/usr/lib --sysroot=${ARUBA_SYSROOT} -I$(TOOLS_DIR)/usr/include -I$(SSL_INC)
+CPP=$(TOOLS_DIR)/usr/bin/arm-linux-cpp -I$(TOOLS_DIR)/usr/include -I$(SSL_INC)
+CXXCPP=${CPP}
+CXXCPP=g++ -E
+CPPFLAGS=-B$(TOOLS_DIR)/lib -B$(TOOLS_DIR)/usr/lib -I$(TOOLS_DIR)/usr/include -I$(ARUBA_SRC)/utils/zlib --sysroot=${ARUBA_SYSROOT}
+LDFLAGS= -Wl,-rpath-link $(ARUBA_SRC)/usr/lib/aruba/$(OBJDIR) -B$(TOOLS_DIR)/lib -B$(TOOLS_DIR)/usr/lib -L$(SSL_LIB_DIR) -L$(ARUBA_SRC)/utils/zlib/$(OBJDIR) --sysroot=${ARUBA_SYSROOT}
+export CPP
+export CXXCPP
+export CC
+export NM
+export CFLAGS
+export CPPFLAGS
+export LDFLAGS
+export ARUBA_SYSROOT
+
+myconfig:
+	./configure \
+		--host=arm-linux \
+		--with-gnu-ld      \
+		$(SSL_OPTION)      \
+		--enable-shared=no \
+		--without-extensions \
+		--without-testapps \
+		--without-server \
+		--enable-static
+

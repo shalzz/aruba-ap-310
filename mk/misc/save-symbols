@@ -1,0 +1,18 @@
+
+savesymbols_kernel:
+ifdef KERNEL_SRC
+	$(INSTALL) $(KERNEL_SRC)/System.map $(SYMBOLS_DIR) 
+	$(INSTALL) $(KERNEL_SRC)/vmlinux $(SYMBOLS_DIR) 
+
+	(cd ${KERNEL_SRC}; find . -name '*.ko' -print | while read foo; do \
+		${INSTALL} $$foo ${SYMBOLS_DIR}; \
+	 done)
+endif
+#
+# Generate a .gdbinit file for the archived builds.
+#
+ifdef SYMBOLS_DIR
+.PHONY:savesymbols
+savesymbols: savesymbols_gdbinit savesymbols_kernel
+	@echo All symbolic information saved in $(SYMBOLS_DIR)
+endif

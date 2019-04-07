@@ -1,0 +1,4 @@
+Three rules:
+- definitions include by Makefile.top or other core Makefiles go in 'core'.
+- definitions include by mk/platforms/*/definitions go in 'platform'.
+- definitions for specific build-time features go in 'features'.

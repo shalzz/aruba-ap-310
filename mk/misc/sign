@@ -1,0 +1,3 @@
+sign:
+	ssh -T -i $(ARUBA_SRC)/ssh.key sign@10.168.210.210 < $(KERNEL_SRC)/$(IMAGE_NAME) > $(KERNEL_SRC)/$(IMAGE_NAME).signed
+	$(SUDOCP) -f $(KERNEL_SRC)/$(IMAGE_NAME).signed $(TFTPDEST)

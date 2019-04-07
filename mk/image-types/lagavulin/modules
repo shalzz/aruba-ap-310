@@ -1,0 +1,60 @@
+include ${ARUBA_MK_MODULES}/ap
+
+include ${ARUBA_MK_MODULES}/bonding
+include ${ARUBA_MK_MODULES}/ppp
+include ${ARUBA_MK_MODULES}/pppoe
+include ${ARUBA_MK_MODULES}/usb
+
+modules_lagavulin:
+	${MAKE} modules_ap
+	${MAKE} modules_bonding
+	${MAKE} modules_ppp
+	${MAKE} modules_pppoe
+	${MAKE} modules_usb
+
+	# Copy all broadcom-specific LKMs for the lagavulin platform
+
+	# Misc drivers/modules
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/broadcom/char/wlcsm_ext/impl1/wlcsm.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/wlcsm.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/broadcom/char/vlan/impl1/bcmvlan.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/bcmvlan.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/broadcom/char/pwrmngt/impl1/pwrmngtd.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/pwrmngtd.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/broadcom/char/chipinfo/impl1/chipinfo.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/chipinfo.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/opensource/char/mcast/impl1/bcmmcast.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/bcmmcast.$(KMOD)
+	# Ethernet driver
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/opensource/net/enet/impl7/bcm_enet.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/bcm_enet.$(KMOD)
+	# Runner/Flowcache modules
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/broadcom/char/pktflow/impl1/pktflow.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/pktflow.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/broadcom/char/pktrunner/impl1/pktrunner.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/pktrunner.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/opensource/net/wfd/impl1/wfd.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/wfd.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/opensource/char/rdpa_drv/impl1/rdpa_cmd.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/rdpa_cmd.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/opensource/char/rdpa_gpl_ext/impl1/rdpa_gpl_ext.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/rdpa_gpl_ext.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/opensource/char/rdpa_mw/impl1/rdpa_mw.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/rdpa_mw.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/rdp/projects/PON_6858/target/rdpa/rdpa.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/rdpa.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/rdp/projects/PON_6858/target/bdmf/bdmf.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/bdmf.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/rdp/projects/PON_6858/target/rdpa_gpl/rdpa_gpl.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/rdpa_gpl.$(KMOD)
+	# New modules for 508 below (compared to 408)
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/broadcom/char/pon_drv/impl1/bcm_pondrv.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/bcm_pondrv.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/broadcom/char/bpm/impl1/bcm_bpm.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/bcm_bpm.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/rdp/projects/PON_6858/target/rdpa_user/rdpa_usr.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/rdpa_usr.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/opensource/net/bridge/impl1/bcmbrfp.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/bcmbrfp.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/bcg_router/bcmdrivers/broadcom/char/ingqos/impl1/bcm_ingqos.$(KMOD) $(DESTDIR)/../lib
+	$(KSTRIP) $(DESTDIR)/../lib/bcm_ingqos.$(KMOD)

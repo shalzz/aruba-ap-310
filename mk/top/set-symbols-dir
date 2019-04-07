@@ -1,0 +1,6 @@
+ifndef SYMSDIR
+SYMBOLS_DIR:=$(ARUBA_SRC)/$(IMG)${BTAG}_syms
+else
+SYMBOLS_DIR:=$(SYMSDIR)/$(IMG)${BTAG}
+endif
+export SYMBOLS_DIR

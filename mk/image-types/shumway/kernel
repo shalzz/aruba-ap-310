@@ -1,0 +1,9 @@
+export __ARUBA_KERNEL=3.18
+KERNEL_CONFIG=aruba_shumway_defconfig
+KERNEL_CONFIG_LTT=aruba_shumway_ltt_defconfig
+KERNEL_CONFIG_DIAG=aruba_shumway_diag_defconfig
+KERNEL_CRASH_CONFIG=aruba_shumway_crash_kernel_defconfig
+K_IMG_DIR_SRC=$(KERNEL_SRC)/arch/x86/boot
+K_IMG_NAME:=bzImage
+K_IMG_TARGET:=bzImage
+export KERNEL_HEADERS_INSTALL_PATH=${ARUBA_INCLUDE_DIR}

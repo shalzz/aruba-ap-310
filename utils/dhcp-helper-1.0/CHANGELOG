@@ -1,0 +1,31 @@
+version 1.0   Support later versions of the linux capabilities
+              ABI. This stops the kernel whingeing.
+              Make failure to set capabilities a fatal error, rather
+              than silently running as root.
+	      Don't attempt to change userid or set capabilities when
+              started as a non-root user.
+
+version 0.8   Disable path-MTU discovery, which confuses some clients.
+              Add -p option to use alternative ports.
+	      Add GPL-v3 as license option.
+
+version 0.7   Tweak transmit code so that MAC addresses >14 bytes
+	      are handled as broadcasts.
+
+version 0.6   Replace netlink code with old-fashioned ioctl, since
+	      netlink ARP is buggy in some kernels.
+
+version 0.5   Fixed buffer-expansion code. My understanding of the
+	      return-code semantics of recvfrom was faulty.
+
+version 0.4   Re-do network access to use the RTnetlink system and
+	      ARP-injection instead of raw packet access. Packet sockets
+	      are no longer required, and things like IPsec should now
+              work.
+
+version 0.3   Debian packaging changes only.
+
+version 0.2   Added support for broadcast and better parameter sanity 
+	      checking.
+
+version 0.1   Initial version.

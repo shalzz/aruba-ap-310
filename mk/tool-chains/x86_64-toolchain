@@ -1,0 +1,21 @@
+ifdef PROFILE_APPLICATION
+error this is not supported
+ARUBA_TOOLS        := $(ARUBA_SRC)/aos-cmn/tools/x86_64-unknown-linux-gnu-4.7.2
+  else # PROFILE_APPLICATION
+ARUBA_TOOLS        := $(ARUBA_SRC)/aos-cmn/tools/x86_64-unknown-linux-gnu-4.7.2
+  endif # PROFILE_APPLICATION
+ARUBA_TOOLS_PREFIX := $(ARUBA_TOOLS)/bin/x86_64-unknown-linux-gnu-
+ARUBA_SYSROOT      := ${ARUBA_TOOLS}/x86_64-unknown-linux-gnu/sysroot
+ARUBA_INCLUDE_DIR  := ${ARUBA_SYSROOT}
+ARUBA_GCC_BASE     := -B$(ARUBA_TOOLS) -B$(ARUBA_TOOLS)/lib  --sysroot=${ARUBA_SYSROOT} -static-libgcc -B${ARUBA_SYSROOT}/lib
+SYSTEM_LIBS_PATH   := $(ARUBA_SYSROOT)/lib ${ARUBA_SYSROOT}/usr/lib 
+
+STRIP_OPTIONS := -R .pdr  --strip-debug --strip-unneeded
+COMPAT_CFLAGS += -Wno-pointer-sign -Wno-strict-aliasing
+CFLAGS +=  -Wno-unused-but-set-variable
+
+KERNEL_TOOLS_PREFIX = ${ARUBA_TOOLS_PREFIX}
+
+ARUBA_TOOLS_INSTALL_PATH := ${ARUBA_TOOLS}
+
+__GDB7 := yes

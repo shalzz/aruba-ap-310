@@ -1,0 +1,2 @@
+export __ARUBA_KERNEL=2.6.16
+K_IMG_NAME:=vmlinux.strip

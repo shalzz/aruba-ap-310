@@ -1,0 +1,41 @@
+
+world: echo_build_list build_list nnm_build log_build
+
+cleanworld: build_list 
+quickworld: build_list
+
+echo_build_list:
+	@echo Building: $(BUILD_LIST)
+
+BLIST:= $(BUILD_LIST)
+.PHONY: build_list $(BLIST) 
+build_list: $(BLIST)
+$(BLIST):
+	$(do_$(MAKECMDGOALS))
+
+ifeq "$(findstring k,$(MAKEFLAGS))" ""
+stop_error=set -e;
+endif
+
+define do_world
+export NO_KERNEL_REBUILD=
+@echo "===>>> Starting build for" $@ "("$(OEM)")" at $(shell date +'%m/%d/%Y %H:%M:%S %Z');
++$(stop_error)export $@=yes; $(MAKE) clean cleaninstall; $(MAKE) image; $(MAKE) savesymbols
+endef
+
+define do_quickworld
+export NO_KERNEL_REBUILD=
+@echo "===>>> Starting build for" $@ "("$(OEM)")" at $(shell date +'%m/%d/%Y %H:%M:%S %Z');
++$(stop_error)export $@=yes; $(MAKE) cleancommon cleaninstall; $(MAKE) image
+endef
+
+define do_cleanworld
+export NO_KERNEL_REBUILD=
+@echo "===>>> Starting clean for" $@ "("$(OEM)")" at $(shell date +'%m/%d/%Y %H:%M:%S %Z');
++export $@=yes; $(MAKE) clean cleaninstall
+endef
+
+ifneq "$(findstring tags,$(MAKECMDGOALS))" ""
+DIRS += $(KERNEL_SRC) sos
+else
+endif

@@ -1,0 +1,71 @@
+#
+# Rules to ease use of GCOV for profiling and/or checking test coverage.
+#
+# Usage:
+# 1. build normally
+# 2. clean & rebuild just the parts that you want to profile with ARUBA_GCOV=yes.
+#    ARUBA_GCOV=yes must be used for building the executable to be profiled.
+#    Recompiling all its dependencies is not required unless you want to gather
+#    data for them. Usually, the app is a unit test, so COMPILE_UNITTEST=yes should also be set.
+#
+# 3. Copy the executable to the target platform
+# 4. Run it with appropriate environment variables:
+#    export GCOV_PREFIX=/tmp/gcov  <-- gcda files will be created under /tmp/gcov
+#    export GCOV_PREFIX_STRIP=6    <-- optional. reduces the amount of unnecessary subdirectories.
+#    ./test_executable
+#
+#    When ARUBA_GCOV is used, files are compiled with the absolute path of the
+#    generated .gcda file. When we execute the file on the target device, we do
+#    not have the source tree. This hardcoded path could be something like
+#    /home/user/builds/<view>/Default/<platform>/some_module/some_cfile.gcda.
+#
+#    By setting GCOV_PREFIX, some directories are prepended to the path. This
+#    allows us to place all the generated files in a clean, empty directory of
+#    our choice.
+#
+#    If nothing else is set, the files will be found in paths like:
+#    /tmp/gcov/home/user/builds/<view>/Default/<platform>/some_module/some_cfile.gcda
+#
+#    Then, by additionnally setting GCOV_PREFIX_STRIP, we can reduce the depth
+#    of the tree. With GCOV_PREFIX_STRIP=6, the files will be generated here:
+#    /tmp/gcov/some_module/some_cfile.gcda
+#
+# 5. copy the generated gcda files back to the build tree. All the .gcda and .gcno files
+#    should be placed next to their associated C files, or the link to it that is
+#    maintained by ADU.
+#
+#    example, from the device's shell:
+#    /tmp # tftp -l test_ncfg_types -r test_ncfg_types -g 172.16.100.254
+#    /tmp # export GCOV_PREFIX=/tmp/gcov
+#    /tmp # export GCOV_PREFIX_STRIP=8
+#    /tmp # ./test_ncfg_types
+#    ... unit test output ...
+#    /tmp # cd /tmp/gcov
+#    /tmp/gcov # tar -cv -f gcov_output.tar cmn
+#    /tmp/gcov # tftp -l gcov_output.tar -r gcov_output.tar -p 172.16.100.254
+#
+#    then, from the build directory:
+#    ~/builds/<view>/Default/<platform>$ tar -xf /tftpboot/gcov_output.tar
+#    ~/builds/<view>/Default/<platform>$ cd cmn/ncfg/ncfg
+#    ~/builds/<view>/Default/<platform>/cmn/ncfg/ncfg$ mv porfidio_obj/*.gcda .
+#    ~/builds/<view>/Default/<platform>/cmn/ncfg/ncfg$ mv porfidio_obj/*.gcno .
+#
+# 6. execute lcov and genhtml to view the results
+#    ~/builds/<view>/Default/<platform>/cmn/ncfg/ncfg$ lcov -c  --directory . -o tracefile.info
+#    ~/builds/<view>/Default/<platform>/cmn/ncfg/ncfg$ genhtml tracefile.info
+#    ~/builds/<view>/Default/<platform>/cmn/ncfg/ncfg$ firefox index.html
+#
+# 7. To disable the gcov compiler options for a module add the following macro
+#    definition to the Makefile:
+#    EXCLUDE_COVERAGE=yes
+#
+
+ifdef ARUBA_GCOV
+ifndef EXCLUDE_COVERAGE
+CFLAGS_LOCAL += -fprofile-arcs -ftest-coverage
+CFLAGS += -fprofile-arcs -ftest-coverage
+endif
+LDFLAGS_LOCAL += -lgcov --coverage
+LDFLAGS += -lgcov --coverage
+endif
+

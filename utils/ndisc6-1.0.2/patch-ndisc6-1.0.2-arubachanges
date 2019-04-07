@@ -1,0 +1,574 @@
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/compat/fixups.h ./ndisc6-1.0.2/compat/fixups.h
+--- ./org/ndisc6-1.0.2/compat/fixups.h	2008-03-23 17:48:36.000000000 +0800
++++ ./ndisc6-1.0.2/compat/fixups.h	2013-05-23 15:14:53.483706000 +0800
+@@ -55,8 +55,17 @@ int inet6_rth_add (void *bp, const struc
+ struct pollfd;
+ struct timespec;
+ 
++/*ARUBA: no support restrict key */
++#if 0
+ int ppoll (struct pollfd *restrict fds, int n,
+            const struct timespec *restrict ts,
+            const sigset_t *restrict sigmask);
++
++#endif
++#if !defined __USE_GNU || !defined __UCLIBC_LINUX_SPECIFIC__
++int ppoll (struct pollfd *fds, nfds_t n,
++          const struct timespec *ts,
++          const sigset_t  *sigmask);
++#endif
+ #endif
+ 
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/compat/inet6_rth_add.c ./ndisc6-1.0.2/compat/inet6_rth_add.c
+--- ./org/ndisc6-1.0.2/compat/inet6_rth_add.c	2008-03-23 17:11:57.000000000 +0800
++++ ./ndisc6-1.0.2/compat/inet6_rth_add.c	2013-06-24 10:00:49.980932000 +0800
+@@ -1,6 +1,5 @@
+ /*
+  * inet6_rth_add.c - inet6_rth_* replacement for Routing Header type 0
+- * $Id$
+  */
+ 
+ /*************************************************************************
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/compat/ppoll.c ./ndisc6-1.0.2/compat/ppoll.c
+--- ./org/ndisc6-1.0.2/compat/ppoll.c	2011-05-28 21:56:18.000000000 +0800
++++ ./ndisc6-1.0.2/compat/ppoll.c	2013-05-23 15:04:09.628025000 +0800
+@@ -27,14 +27,20 @@
+ #include <signal.h>
+ 
+ #include <sys/types.h>
+-#include <poll.h>
++#include <sys/poll.h>
+ #if 0
+ # include <pthread.h> // sigprocmask is not thread-safe
+ #endif
+ 
++/*ARUBA: no support restrict key */
++#if 0
+ int ppoll (struct pollfd *restrict fds, int n,
+            const struct timespec *restrict ts,
+            const sigset_t *restrict sigset)
++#endif
++int ppoll (struct pollfd *fds, nfds_t n,
++           const struct timespec  *ts,
++           const sigset_t *sigset)
+ {
+ 	sigset_t origset;
+ 	int timeout;
+@@ -70,3 +76,4 @@ int ppoll (struct pollfd *restrict fds, 
+ #endif
+ 	return val;
+ }
++
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/doc/addr2name.1 ./ndisc6-1.0.2/doc/addr2name.1
+--- ./org/ndisc6-1.0.2/doc/addr2name.1	2010-11-01 04:56:30.000000000 +0800
++++ ./ndisc6-1.0.2/doc/addr2name.1	2013-06-24 10:03:16.597772000 +0800
+@@ -74,6 +74,4 @@ host(1), getaddrinfo(3), getnameinfo(3),
+ .SH AUTHOR
+ R\[char233]mi Denis-Courmont <remi at remlab dot net>
+ 
+-$Id: addr2name.1 658 2010-10-31 20:56:30Z remi $
+-
+ http://www.remlab.net/ndisc6/
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/doc/Makefile.am ./ndisc6-1.0.2/doc/Makefile.am
+--- ./org/ndisc6-1.0.2/doc/Makefile.am	2010-11-17 03:15:36.000000000 +0800
++++ ./ndisc6-1.0.2/doc/Makefile.am	2013-06-24 10:01:19.125271000 +0800
+@@ -1,5 +1,4 @@
+ # Makefile.am - doc Makefile for ndisc6
+-# $Id: Makefile.am 664 2010-11-16 19:15:36Z remi $
+ 
+ # Copyright © 2006-2007 Rémi Denis-Courmont
+ # This file is distributed under the same license as the ndisc6 package.
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/doc/ndisc6.8 ./ndisc6-1.0.2/doc/ndisc6.8
+--- ./org/ndisc6-1.0.2/doc/ndisc6.8	2011-05-28 22:01:39.000000000 +0800
++++ ./ndisc6-1.0.2/doc/ndisc6.8	2013-06-24 10:03:45.996892000 +0800
+@@ -105,6 +105,4 @@ ping6(8), rdisc6(8), ipv6(7)
+ .SH AUTHOR
+ R\[char233]mi Denis-Courmont <remi at remlab dot net>
+ 
+-$Id: ndisc6.8 678 2011-05-28 14:01:38Z remi $
+-
+ http://www.remlab.net/ndisc6/
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/doc/rdisc6.8 ./ndisc6-1.0.2/doc/rdisc6.8
+--- ./org/ndisc6-1.0.2/doc/rdisc6.8	2011-05-28 22:01:39.000000000 +0800
++++ ./ndisc6-1.0.2/doc/rdisc6.8	2013-06-24 10:04:17.089152000 +0800
+@@ -94,6 +94,4 @@ ndisc6(8), ipv6(7)
+ .SH AUTHOR
+ R\[char233]mi Denis-Courmont <remi at remlab dot net>
+ 
+-$Id: rdisc6.8 678 2011-05-28 14:01:38Z remi $
+-
+ http://www.remlab.net/ndisc6/
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/doc/rdnssd.8-in ./ndisc6-1.0.2/doc/rdnssd.8-in
+--- ./org/ndisc6-1.0.2/doc/rdnssd.8-in	2008-02-08 23:39:31.000000000 +0800
++++ ./ndisc6-1.0.2/doc/rdnssd.8-in	2013-06-24 10:04:41.722786000 +0800
+@@ -99,6 +99,4 @@ resolv.conf(5), rdisc6(8), ipv6(7)
+ .SH AUTHOR
+ Pierre Ynard <linkfanel at yahoo.fr>
+ 
+-$Id: rdnssd.8-in 575 2007-12-29 21:55:43Z linkfanel $
+-
+ http://www.remlab.net/ndisc6/
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/doc/rltraceroute6.8 ./ndisc6-1.0.2/doc/rltraceroute6.8
+--- ./org/ndisc6-1.0.2/doc/rltraceroute6.8	2010-11-01 04:56:30.000000000 +0800
++++ ./ndisc6-1.0.2/doc/rltraceroute6.8	2013-06-24 10:05:04.357742000 +0800
+@@ -271,6 +271,4 @@ ipv6(7), traceroute(8), tcptraceroute(8)
+ .SH AUTHOR
+ R\[char233]mi Denis-Courmont <remi at remlab dot net>
+ 
+-$Id: rltraceroute6.8 658 2010-10-31 20:56:30Z remi $
+-
+ http://www.remlab.net/ndisc6/
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/doc/tcpspray.1 ./ndisc6-1.0.2/doc/tcpspray.1
+--- ./org/ndisc6-1.0.2/doc/tcpspray.1	2010-11-01 04:56:30.000000000 +0800
++++ ./ndisc6-1.0.2/doc/tcpspray.1	2013-06-24 10:05:24.419889000 +0800
+@@ -103,6 +103,4 @@ tcp(7), inetd(8), tcptraceroute6(8), tcp
+ .SH AUTHOR
+ R\[char233]mi Denis-Courmont <remi at remlab dot net>
+ 
+-$Id: tcpspray.1 658 2010-10-31 20:56:30Z remi $
+-
+ http://www.remlab.net/ndisc6/
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/m4/Makefile.am ./ndisc6-1.0.2/m4/Makefile.am
+--- ./org/ndisc6-1.0.2/m4/Makefile.am	2007-08-08 23:11:31.000000000 +0800
++++ ./ndisc6-1.0.2/m4/Makefile.am	2013-06-24 10:05:43.982172000 +0800
+@@ -1,5 +1,4 @@
+ # Makefile.am - m4 Makefile for ndisc6
+-# $Id: Makefile.am 484 2007-08-08 15:11:29Z remi $
+ 
+ # Copyright © 2006 Rémi Denis-Courmont
+ # This file is distributed under the same license as the ndisc6 package.
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/Makefile.am ./ndisc6-1.0.2/Makefile.am
+--- ./org/ndisc6-1.0.2/Makefile.am	2010-01-24 16:27:54.000000000 +0800
++++ ./ndisc6-1.0.2/Makefile.am	2013-06-24 10:02:10.562418000 +0800
+@@ -1,5 +1,4 @@
+ # Makefile.am - master Makefile for ndisc6
+-# $Id: Makefile.am 639 2010-01-24 08:27:53Z remi $
+ 
+ # Copyright © 2006 Rémi Denis-Courmont
+ # This file is distributed under the same license as the ndisc6 package.
+@@ -14,7 +13,10 @@ AUTOMAKE_OPTIONS = \
+ 	std-options \
+ 	-Wall
+ 
+-SUBDIRS = po doc compat src rdnssd
++#ARUBA: now don't compile diagnostic tools, only need rdnssd 
++#note: if need diagnostic tools, src should be include and changes for compile
++SUBDIRS = po doc compat rdnssd
++#SUBDIRS = po doc compat src rdnssd
+ DIST_SUBDIRS = m4 $(SUBDIRS)
+ noinst_HEADERS = include/gettext.h
+ 
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/Makefile.in ./ndisc6-1.0.2/Makefile.in
+--- ./org/ndisc6-1.0.2/Makefile.in	2011-02-20 21:22:53.000000000 +0800
++++ ./ndisc6-1.0.2/Makefile.in	2013-06-25 16:02:11.885434000 +0800
+@@ -247,7 +247,10 @@ AUTOMAKE_OPTIONS = \
+ 	std-options \
+ 	-Wall
+ 
+-SUBDIRS = po doc compat src rdnssd
++#ARUBA: now don't compile diagnostic tools, only need rdnssd 
++#note: if need diagnostic tools, src should be include and changes for compile
++SUBDIRS = po doc compat rdnssd
++#SUBDIRS = po doc compat src rdnssd
+ DIST_SUBDIRS = m4 $(SUBDIRS)
+ noinst_HEADERS = include/gettext.h
+ DISTCLEANFILES = stamp-svn
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/NEWS ./ndisc6-1.0.2/NEWS
+--- ./org/ndisc6-1.0.2/NEWS	2011-07-31 16:46:22.000000000 +0800
++++ ./ndisc6-1.0.2/NEWS	2013-06-24 10:02:00.222131000 +0800
+@@ -1,7 +1,6 @@
+ RELEASE NOTES for NDisc6
+ version 1.0.2
+ =========================
+-$Id: NEWS 680 2011-07-31 08:46:22Z remi $
+ 
+   There are no known issues at the moment.
+ Please report any problem by email at address :
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/rdnssd/icmp.c ./ndisc6-1.0.2/rdnssd/icmp.c
+--- ./org/ndisc6-1.0.2/rdnssd/icmp.c	2008-04-25 01:13:07.000000000 +0800
++++ ./ndisc6-1.0.2/rdnssd/icmp.c	2013-06-24 10:06:24.415521000 +0800
+@@ -1,6 +1,5 @@
+ /**
+  * icmp.c - raw socket source for ICMPv6 RDNSS
+- * $Id: icmp.c 618 2008-04-24 17:13:07Z remi $
+  */
+ 
+ /*************************************************************************
+@@ -74,7 +73,10 @@ static int icmp_recv (int fd)
+ 		 || (icmp6.nd_ra_code != 0)) /* unknown ICMPv6 code */
+ 			return -1;
+ 
+-		for (struct cmsghdr *cmsg = CMSG_FIRSTHDR (&msg);
++        /* ARUBA: for compile without C99 mode */
++        struct cmsghdr *cmsg;
++		for (cmsg = CMSG_FIRSTHDR (&msg);
++		//for (struct cmsghdr *cmsg = CMSG_FIRSTHDR (&msg);
+ 		     cmsg != NULL;
+ 		     cmsg = CMSG_NXTHDR (&msg, cmsg))
+ 		{
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/rdnssd/Makefile.am ./ndisc6-1.0.2/rdnssd/Makefile.am
+--- ./org/ndisc6-1.0.2/rdnssd/Makefile.am	2010-01-24 16:32:21.000000000 +0800
++++ ./ndisc6-1.0.2/rdnssd/Makefile.am	2013-06-24 10:06:00.798087000 +0800
+@@ -1,5 +1,4 @@
+ # Makefile.am - rdnssd/ directory Makefile for ndisc6
+-# $Id: Makefile.am 640 2010-01-24 08:32:21Z remi $
+ 
+ # Copyright © 2006-2007 Rémi Denis-Courmont
+ # This file is distributed under the same license as the ndisc6 package.
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/rdnssd/merge-hook.in ./ndisc6-1.0.2/rdnssd/merge-hook.in
+--- ./org/ndisc6-1.0.2/rdnssd/merge-hook.in	2010-01-24 16:31:49.000000000 +0800
++++ ./ndisc6-1.0.2/rdnssd/merge-hook.in	2013-06-26 17:11:26.416135000 +0800
+@@ -2,8 +2,6 @@
+ #
+ # resolv.conf merge hook for rdnssd
+ # 
+-# $Id: merge-hook.in 634 2009-11-25 21:31:20Z linkfanel $
+-
+ # *************************************************************************
+ # *  Copyright © 2007-2009 Pierre Ynard.                                  *
+ # *  This program is free software: you can redistribute and/or modify    *
+@@ -31,7 +29,8 @@ MAXNS=3
+ # entries, for example to allow fallback to IPv4 if IPv6 fails. If
+ # there is not enough room for all IPv6 and IPv4 entries, this script
+ # will limit the IPv6 entries it adds to $RDNSS_LIMIT only.
+-RDNSS_LIMIT=$(($MAXNS - 1))
++#RDNSS_LIMIT=$(($MAXNS - 1))
++RDNSS_LIMIT=`expr $MAXNS - 1`
+ 
+ sysconfdir='@SYSCONFDIR@'
+ localstatedir='@LOCALSTATEDIR@'
+@@ -40,14 +39,21 @@ myresolvconf="$localstatedir/run/rdnssd/
+ 
+ # These should be POSIX-compliant BREs
+ RE_NSV4='^nameserver  *\([0-9]\{1,3\}\.\)\{3,3\}[0-9]\{1,3\} *$'
+-RE_NSV4OR6='^nameserver  *[a-fA-F0-9:\.]\{1,46\}\(%[a-zA-Z0-9]\{1,\}\)\{,1\} *$'
++#RE_NSV4OR6='^nameserver  *[a-fA-F0-9:\.]\{1,46\}\(%[a-zA-Z0-9]\{1,\}\)\{,1\} *$'
++RE_NSV4OR6='^nameserver  *[a-fA-F0-9:\.]\{1,46\}\(%[a-zA-Z0-9]\{1,\}\)\{0,1\} *$'
+ 
+ # Count how many IPv6 nameservers we can fit
+ 
+ limit=$RDNSS_LIMIT
+ 
++# Aruba network may not exist /etc/resolv.conf
++if [ ! -f $resolvconf ]; then
++    touch $resolvconf
++fi
++
+ nnsv4=`grep -c "$RE_NSV4" $resolvconf || [ $? -le 1 ]`
+-room=$(($MAXNS - $nnsv4))
++#room=$(($MAXNS - $nnsv4))
++room=`expr $MAXNS - $nnsv4`
+ 
+ if [ $limit -lt $room ]; then
+ 	limit=$room
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/rdnssd/netlink.c ./ndisc6-1.0.2/rdnssd/netlink.c
+--- ./org/ndisc6-1.0.2/rdnssd/netlink.c	2008-01-31 00:52:54.000000000 +0800
++++ ./ndisc6-1.0.2/rdnssd/netlink.c	2013-06-24 10:12:41.078004000 +0800
+@@ -1,6 +1,5 @@
+ /**
+  * netlink.c - NetLink source for ICMPv6 RDNSS
+- * $Id: netlink.c 584 2008-01-30 16:54:05Z remi $
+  */
+ 
+ /*************************************************************************
+@@ -60,6 +59,101 @@ struct nduseroptmsg
+ # define RTNLGRP_ND_USEROPT 20
+ #endif
+ 
++#ifdef __aruba_strverscmp__
++#include <string.h>
++#include <ctype.h>
++
++/* states: S_N: normal, S_I: comparing integral part, S_F: comparing
++           fractional parts, S_Z: idem but with leading Zeroes only */
++#define S_N    0x0
++#define S_I    0x4
++#define S_F    0x8
++#define S_Z    0xC
++
++/* result_type: CMP: return diff; LEN: compare using len_diff/diff */
++#define CMP    2
++#define LEN    3
++
++
++/* ISDIGIT differs from isdigit, as follows:
++   - Its arg may be any int or unsigned int; it need not be an unsigned char.
++   - It's guaranteed to evaluate its argument exactly once.
++   - It's typically faster.
++   POSIX says that only '0' through '9' are digits.  Prefer ISDIGIT to
++   ISDIGIT_LOCALE unless it's important to use the locale's definition
++   of `digit' even when the host does not conform to POSIX.  */
++#define ISDIGIT(c) ((unsigned int) (c) - '0' <= 9)
++
++int strverscmp (const char *s1, const char *s2)
++{
++    const unsigned char *p1 = (const unsigned char *) s1;
++    const unsigned char *p2 = (const unsigned char *) s2;
++    unsigned char c1, c2;
++    int state;
++    int diff;
++
++    /* Symbol(s)    0       [1-9]   others  (padding)
++     Transition   (10) 0  (01) d  (00) x  (11) -   */
++    static const unsigned int next_state[] =
++    {
++      /* state    x    d    0    - */
++      /* S_N */  S_N, S_I, S_Z, S_N,
++      /* S_I */  S_N, S_I, S_I, S_I,
++      /* S_F */  S_N, S_F, S_F, S_F,
++      /* S_Z */  S_N, S_F, S_Z, S_Z
++    };
++
++    static const int result_type[] =
++    {
++      /* state   x/x  x/d  x/0  x/-  d/x  d/d  d/0  d/-
++                 0/x  0/d  0/0  0/-  -/x  -/d  -/0  -/- */
++
++      /* S_N */  CMP, CMP, CMP, CMP, CMP, LEN, CMP, CMP,
++                 CMP, CMP, CMP, CMP, CMP, CMP, CMP, CMP,
++      /* S_I */  CMP, -1,  -1,  CMP,  1,  LEN, LEN, CMP,
++                  1,  LEN, LEN, CMP, CMP, CMP, CMP, CMP,
++      /* S_F */  CMP, CMP, CMP, CMP, CMP, LEN, CMP, CMP,
++                 CMP, CMP, CMP, CMP, CMP, CMP, CMP, CMP,
++      /* S_Z */  CMP,  1,   1,  CMP, -1,  CMP, CMP, CMP,
++                 -1,  CMP, CMP, CMP
++    };
++
++    if (p1 == p2)
++        return 0;
++
++    c1 = *p1++;
++    c2 = *p2++;
++    /* Hint: '0' is a digit too.  */
++    state = S_N | ((c1 == '0') + (ISDIGIT (c1) != 0));
++
++    while ((diff = c1 - c2) == 0 && c1 != '\0')
++    {
++        state = next_state[state];
++        c1 = *p1++;
++        c2 = *p2++;
++        state |= (c1 == '0') + (ISDIGIT (c1) != 0);
++    }
++
++    state = result_type[state << 2 | ((c2 == '0') + (ISDIGIT (c2) != 0))];
++
++    switch (state)
++    {
++        case CMP:
++            return diff;
++        
++        case LEN:
++            while (ISDIGIT (*p1++))
++                if (!ISDIGIT (*p2++))
++                    return 1;
++            return ISDIGIT (*p2) ? -1 : diff;
++        default:
++            return state;
++    }
++
++}
++#endif
++
++
+ static int nl_recv (int fd)
+ {
+ 	unsigned int buf_size = NLMSG_SPACE(65536 - sizeof(struct icmp6_hdr));
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/rdnssd/rdnssd.c ./ndisc6-1.0.2/rdnssd/rdnssd.c
+--- ./org/ndisc6-1.0.2/rdnssd/rdnssd.c	2011-07-20 23:23:28.000000000 +0800
++++ ./ndisc6-1.0.2/rdnssd/rdnssd.c	2013-07-01 15:01:02.936298000 +0800
+@@ -1,6 +1,5 @@
+ /**
+  * rdnssd.c - daemon for DNS configuration from ICMPv6 RA
+- * $Id: rdnssd.c 679 2011-07-20 15:23:27Z remi $
+  */
+ 
+ /*************************************************************************
+@@ -89,7 +88,10 @@ static void write_resolv(const char *res
+ 		return;
+ 	}
+ 
+-	for (size_t i = 0; i < servers.count; i++) {
++    /* ARUBA: for compile without C99 mode */
++    size_t i;
++	//for (size_t i = 0; i < servers.count; i++) {
++	for (i = 0; i < servers.count; i++) {
+ 		char addr[INET6_ADDRSTRLEN];
+ 		inet_ntop(AF_INET6, &servers.list[i].addr, addr, INET6_ADDRSTRLEN);
+ 
+@@ -165,7 +167,11 @@ static void rdnss_update (const struct i
+ 	qsort (servers.list, servers.count, sizeof (rdnss_t), rdnss_older);
+ 
+ #ifndef NDEBUG
+-	for (unsigned i = 0; i < servers.count; i++)
++    /* ARUBA: for compile without C99 mode */
++    {
++    unsigned i;
++    for (i = 0; i < servers.count; i++)
++	//for (unsigned i = 0; i < servers.count; i++)
+ 	{
+ 		char buf[INET6_ADDRSTRLEN];
+ 		inet_ntop (AF_INET6, &servers.list[i].addr, buf,
+@@ -173,6 +179,7 @@ static void rdnss_update (const struct i
+ 		syslog (LOG_DEBUG, "%u: %48s expires at %u\n", i, buf,
+ 		        (unsigned)servers.list[i].expiry);
+ 	}
++    }
+ #endif
+ }
+ 
+@@ -210,7 +217,10 @@ int parse_nd_opts (const struct nd_opt_h
+ 		if (lifetime > INT32_MAX)
+ 			lifetime = INT32_MAX;
+ 
+-		for (struct in6_addr *addr = (struct in6_addr *) (rdnss_opt + 1);
++        /* ARUBA: for compile without C99 mode */
++		struct in6_addr *addr;
++        for (addr = (struct in6_addr *) (rdnss_opt + 1);
++		//for (struct in6_addr *addr = (struct in6_addr *) (rdnss_opt + 1);
+ 		     nd_opt_len >= 2; addr++, nd_opt_len -= 2)
+ 			rdnss_update(addr, ifindex, lifetime);
+ 
+@@ -297,7 +307,10 @@ static int worker (int pipe, const char 
+ 
+ 	sigemptyset (&emptyset);
+ 
+-	for (bool ready = false; termsig == 0;)
++    /* ARUBA: for compile without C99 mode */
++	bool ready;
++    for (ready = false; termsig == 0;)
++	//for (bool ready = false; termsig == 0;)
+ 	{
+ 		struct pollfd pfd =
+ 			{ .fd = sock,  .events = POLLIN, .revents = 0 };
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/rdnssd/rdnssd.h ./ndisc6-1.0.2/rdnssd/rdnssd.h
+--- ./org/ndisc6-1.0.2/rdnssd/rdnssd.h	2007-12-14 23:15:00.000000000 +0800
++++ ./ndisc6-1.0.2/rdnssd/rdnssd.h	2013-06-24 10:13:18.745822000 +0800
+@@ -1,6 +1,5 @@
+ /**
+  * rdnssd.h - daemon for DNS configuration from ICMPv6 RA
+- * $Id: rdnssd.h 545 2007-12-09 07:18:06Z linkfanel $
+  */
+ 
+ /*************************************************************************
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/README ./ndisc6-1.0.2/README
+--- ./org/ndisc6-1.0.2/README	2010-11-01 04:56:30.000000000 +0800
++++ ./ndisc6-1.0.2/README	2013-07-01 14:47:28.574045000 +0800
+@@ -1,6 +1,5 @@
+ NDisc6 : IPv6 diagnostic tools
+ ===============================
+-$Id: README 658 2010-10-31 20:56:30Z remi $
+ Copyright © 2005-2006 Rémi Denis-Courmont.
+ 
+   This package gathers a few diagnostic tools for IPv6 networks:
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/src/addrinfo.c ./ndisc6-1.0.2/src/addrinfo.c
+--- ./org/ndisc6-1.0.2/src/addrinfo.c	2010-05-01 15:49:06.000000000 +0800
++++ ./ndisc6-1.0.2/src/addrinfo.c	2013-06-24 10:20:35.403032000 +0800
+@@ -1,6 +1,5 @@
+ /*
+  * addrinfo.c - converts names to network addresses
+- * $Id: addrinfo.c 646 2010-05-01 07:49:06Z remi $
+  */
+ 
+ /*************************************************************************
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/src/dnssort.in ./ndisc6-1.0.2/src/dnssort.in
+--- ./org/ndisc6-1.0.2/src/dnssort.in	2007-08-08 23:09:38.000000000 +0800
++++ ./ndisc6-1.0.2/src/dnssort.in	2013-06-24 10:21:20.729734000 +0800
+@@ -2,8 +2,6 @@
+ #
+ # Perl script to sort DNS names
+ # 
+-# $Id: dnssort.in 483 2007-08-08 15:09:36Z remi $
+-
+ # *************************************************************************
+ # *  Copyright © 2004-2006 Rémi Denis-Courmont.                           *
+ # *  This program is free software: you can redistribute and/or modify    *
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/src/Makefile.am ./ndisc6-1.0.2/src/Makefile.am
+--- ./org/ndisc6-1.0.2/src/Makefile.am	2010-11-17 03:15:36.000000000 +0800
++++ ./ndisc6-1.0.2/src/Makefile.am	2013-06-24 10:20:19.969452000 +0800
+@@ -1,5 +1,4 @@
+ # Makefile.am - src/ directory Makefile for ndisc6
+-# $Id: Makefile.am 664 2010-11-16 19:15:36Z remi $
+ 
+ # Copyright © 2006-2008 Rémi Denis-Courmont
+ # This file is distributed under the same license as the ndisc6 package.
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/src/ndisc.c ./ndisc6-1.0.2/src/ndisc.c
+--- ./org/ndisc6-1.0.2/src/ndisc.c	2011-02-20 21:48:34.000000000 +0800
++++ ./ndisc6-1.0.2/src/ndisc.c	2013-06-24 10:21:36.533094000 +0800
+@@ -1,6 +1,5 @@
+ /*
+  * ndisc.c - ICMPv6 neighbour discovery command line tool
+- * $Id: ndisc.c 670 2011-02-20 13:48:34Z remi $
+  */
+ 
+ /*************************************************************************
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/src/tcpspray.c ./ndisc6-1.0.2/src/tcpspray.c
+--- ./org/ndisc6-1.0.2/src/tcpspray.c	2010-05-01 16:08:34.000000000 +0800
++++ ./ndisc6-1.0.2/src/tcpspray.c	2013-06-24 10:21:51.634991000 +0800
+@@ -1,7 +1,6 @@
+ /*
+  * tcpspray.c - Address family independant complete rewrite of tcpspray
+  * Plus, this file has a clear copyright statement.
+- * $Id: tcpspray.c 650 2010-05-01 08:08:34Z remi $
+  */
+ 
+ /*************************************************************************
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/src/tcptraceroute.c ./ndisc6-1.0.2/src/tcptraceroute.c
+--- ./org/ndisc6-1.0.2/src/tcptraceroute.c	2007-08-08 23:09:38.000000000 +0800
++++ ./ndisc6-1.0.2/src/tcptraceroute.c	2013-06-24 10:22:08.497811000 +0800
+@@ -1,6 +1,5 @@
+ /*
+  * tcptraceroute.c - tcptraceroute-like wrapper around rltraceroute6
+- * $Id: tcptraceroute.c 483 2007-08-08 15:09:36Z remi $
+  */
+ 
+ /*************************************************************************
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/src/trace-icmp.c ./ndisc6-1.0.2/src/trace-icmp.c
+--- ./org/ndisc6-1.0.2/src/trace-icmp.c	2008-05-01 22:26:10.000000000 +0800
++++ ./ndisc6-1.0.2/src/trace-icmp.c	2013-06-24 10:22:24.541172000 +0800
+@@ -1,6 +1,5 @@
+ /*
+  * trace-icmp.c - ICMP code for IPv6 traceroute tool
+- * $Id: trace-icmp.c 624 2008-05-01 14:26:09Z remi $
+  */
+ 
+ /*************************************************************************
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/src/traceroute.c ./ndisc6-1.0.2/src/traceroute.c
+--- ./org/ndisc6-1.0.2/src/traceroute.c	2010-05-01 16:08:53.000000000 +0800
++++ ./ndisc6-1.0.2/src/traceroute.c	2013-06-24 10:23:21.267497000 +0800
+@@ -1,6 +1,5 @@
+ /*
+  * traceroute.c - TCP/IPv6 traceroute tool
+- * $Id: traceroute.c 651 2010-05-01 08:08:53Z remi $
+  */
+ 
+ /*************************************************************************
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/src/traceroute.h ./ndisc6-1.0.2/src/traceroute.h
+--- ./org/ndisc6-1.0.2/src/traceroute.h	2007-08-08 23:09:38.000000000 +0800
++++ ./ndisc6-1.0.2/src/traceroute.h	2013-06-24 10:23:36.148522000 +0800
+@@ -1,6 +1,5 @@
+ /*
+  * traceroute.h - TCP/IPv6 traceroute tool common header
+- * $Id: traceroute.h 483 2007-08-08 15:09:36Z remi $
+  */
+ 
+ /*************************************************************************
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/src/trace-tcp.c ./ndisc6-1.0.2/src/trace-tcp.c
+--- ./org/ndisc6-1.0.2/src/trace-tcp.c	2008-05-01 22:26:10.000000000 +0800
++++ ./ndisc6-1.0.2/src/trace-tcp.c	2013-06-24 10:22:52.132278000 +0800
+@@ -1,6 +1,5 @@
+ /*
+  * trace-tcp.c - TCP support for IPv6 traceroute tool
+- * $Id: trace-tcp.c 624 2008-05-01 14:26:09Z remi $
+  */
+ 
+ /*************************************************************************
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/src/trace-udp.c ./ndisc6-1.0.2/src/trace-udp.c
+--- ./org/ndisc6-1.0.2/src/trace-udp.c	2008-05-01 22:26:10.000000000 +0800
++++ ./ndisc6-1.0.2/src/trace-udp.c	2013-06-24 10:23:06.497499000 +0800
+@@ -1,6 +1,5 @@
+ /*
+  * traceroute.c - TCP/IPv6 traceroute tool
+- * $Id: trace-udp.c 624 2008-05-01 14:26:09Z remi $
+  */
+ 
+ /*************************************************************************

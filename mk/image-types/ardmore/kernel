@@ -1,0 +1,13 @@
+# export this for include shuffle
+export __ARUBA_KERNEL=2.6.35
+ifdef DEBUG_BUILD
+KERNEL_CONFIG=85xx/aruba_ardmore_debug_defconfig
+else
+KERNEL_CONFIG=85xx/aruba_ardmore_defconfig
+endif
+KERNEL_CONFIG_LTT=85xx/aruba_ardmore_ltt_defconfig
+K_IMG_NAME:=uImage.fit.ardmore
+K_IMG_DIR_SRC=$(KERNEL_SRC)/arch/powerpc/boot
+SYMLINK_KERNEL_INCLUDES_TO_TOOLS:=1
+IMAGE_NAME_BASE:=e500
+

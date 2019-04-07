@@ -1,0 +1,20 @@
+#
+# build tags for the DIRs list.  Build tags for both vi and emacs.
+#
+tags: FRC
+	find ${DIRS} \( -name '*.[chylsS]' -o -name '*.cc' \
+    -o -name '*.cpp' \) > cscope.files; 
+ifndef NO_VI_TAGS
+	ctags  $(CTAGS_OPTIONS) $(DIRS)
+endif
+ifndef NO_EMACS_TAGS
+	ctags  $(ETAGS_OPTIONS) $(DIRS)
+endif
+ifndef NO_CSCOPE_DB
+	rm cscope.out; ${ARUBA_SRC}/tools/bin/cscope ${CSCOPE_OPTIONS}
+endif
+	rm -f cscope.files
+
+alltags: DIRS=
+alltags: tags
+

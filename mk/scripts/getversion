@@ -1,0 +1,56 @@
+#!/bin/sh
+mflag=0
+
+usage()
+{
+	echo "usage: getversion [-m] <sw-name>"
+	exit 1
+}
+
+getversion()
+{
+	if grep ^${name} $verfile >/dev/null 2>&1; then
+		echo $(grep ^${name} ${verfile} | awk '{print $2}')
+	else
+		echo "${name} has no version; using Base" > /dev/stderr
+		if grep ^Base $verfile >/dev/null 2>&1; then
+			echo $(grep ^Base ${verfile} | awk '{print $2}')
+		else
+			echo "No base version defined; epic fail" > /dev/stderr
+			exit 1
+		fi
+	fi
+}
+
+while getopts m C; do
+	case $C in
+	m)
+		mflag=1
+		;;
+	*)
+		usage
+		;;
+	esac
+done
+
+shift $((${OPTIND} - 1))
+
+if [ $# != 1 ]; then
+	usage
+fi
+
+name=$1
+path=$0
+data=$(echo $path | sed 's;scripts/getversion;data;')
+verfile=${data}/release-version
+
+if [ $FAT_AP ]; 
+then 
+   verfile=${data}/release-version-fatap
+fi
+
+ver=$(getversion $1)
+if [ $mflag = 1 ]; then
+	ver=$(echo $ver | sed 's/\([0-9][0-9]*\.[0-9][0-9]*\)\..*/\1/')
+fi
+echo $ver

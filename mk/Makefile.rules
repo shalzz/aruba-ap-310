@@ -1,0 +1,3 @@
+STANDALONE_MAKEFILE_TOP=1 
+
+include $(ARUBA_SRC)/mk/Makefile.top

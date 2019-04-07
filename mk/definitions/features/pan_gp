@@ -1,0 +1,2 @@
+export PAN_GP=yes
+CFLAGS += -DPAN_GP_SUPPORT

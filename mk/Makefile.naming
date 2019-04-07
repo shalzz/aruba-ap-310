@@ -1,0 +1,81 @@
+#
+# this is in a separate file so that Linux can suck it in without too much
+# other stuff
+#
+
+ifndef OEM
+OEM=aruba
+endif
+
+ifndef SW_NAME
+SW_NAME:=ArubaOS
+endif
+SW_NAME_LC := $(shell echo ${SW_NAME} | tr '[A-Z]' '[a-z]')
+
+MODEL=${AMODEL}
+
+ifdef FAT_AP
+IMG=${IAP_SW_NAME}_${IAP_CLASS}
+else
+IMG=${AIMG}
+endif
+
+include ${ARUBA_SRC}/mk/core/path-vars
+-include ${ARUBA_MK_ROOT}/Makefile.oemdefs
+
+ifdef FAT_AP
+# override what was set by Makefile.oemdefs
+CIMG=C_${IAP_SW_NAME}_${IAP_CLASS}
+TIMG=T_${IAP_SW_NAME}_${IAP_CLASS}
+endif
+
+ifdef TBUILD
+IMG=${TIMG}
+endif
+
+ifdef CBUILD
+IMG=${CIMG}
+endif
+
+ifndef FAT_AP
+ifdef FIPS
+ifdef CODE_SIGNER
+BTAG=-FIPS-CSS
+else
+BTAG=-FIPS
+#IMG=${FIMG}
+endif
+endif
+else
+ifdef FIPS_CERTIFIED
+ifndef MANUFACTURING_BUILD
+ifdef CODE_SIGNER
+BTAG=-FIPS-CSS
+else
+BTAG=-FIPS
+endif
+endif
+endif
+endif
+
+ifdef ZVM
+ifndef BTAG
+BTAG=-zvm
+endif
+endif
+
+# Change the image names if a restriction is set
+# For instance, for Israel, set RESTRICTION=IL RESTRICTION_NUM=WIFI_CC_GR
+ifdef RESTRICTION
+IMG=${AIMG}_${RESTRICTION}
+endif
+
+ifdef FAT_AP
+ARUBAMODEL=${IAP_CLASS}
+else
+ARUBAMODEL=${MODEL}
+endif
+
+export IMG
+
+-include ${ARUBA_SRC}/Makefile.local

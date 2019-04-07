@@ -1,0 +1,9 @@
+ARUBA_TOOL_CHAIN=host-toolchain-64
+
+ARUBA_TOOLS        := /usr
+ARUBA_TOOLS_PREFIX := /usr/bin/
+
+ARUBA_GCC_BASE     := -B$(ARUBA_TOOLS) -B$(ARUBA_TOOLS)/lib64
+SYSTEM_LIBS_PATH   := $(ARUBA_TOOLS)/lib64 
+DYNFLAG            := -Wl,--dynamic-linker=/lib64/ld-linux-x86-64.so.2
+

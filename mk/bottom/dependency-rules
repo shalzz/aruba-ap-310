@@ -1,0 +1,17 @@
+# includes dependency files if target is not clean-something, which avoid
+# useless remaking of makefiles on clean.
+ifeq "$(findstring clean,$(MAKECMDGOALS))" ""
+ifdef DEPFILES
+-include $(DEPFILES)
+endif
+
+
+# For Java
+
+$(CLASSDIR)/$(PKGNAME)/%.class : %.java
+	$(JAVAC) $(JAVACFLAGS) $(JAVACFLAGS_LOCAL) -d $(CLASSDIR) -classpath "$(CLASSPATH)$(CLASSPATH_DELIM)$(CLASSPATH_LOCAL)" $(SOURCEPATH) $<
+
+$(CLASSDIR)/%.class : $(JAVASRCDIR)/%.java
+	$(JAVAC) $(JAVACFLAGS) $(JAVACFLAGS_LOCAL) -d $(CLASSDIR) -classpath "$(CLASSPATH)$(CLASSPATH_DELIM)$(CLASSPATH_LOCAL)" $(SOURCEPATH) $<
+
+endif

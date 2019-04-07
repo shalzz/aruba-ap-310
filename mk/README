@@ -1,0 +1,198 @@
+Q: Which Makefiles have to be included in local Makefiles?
+A: Legacy Makefiles still include Makfile.rules; this should not be done
+   for any new Makefiles. New Makefiles include Makefile.top and 
+   Makefile.bottom. A simple example of the later is in aaa, a 
+   more complicated example is in fpapps/lvl7dev/mswitch/build/fpapps.
+
+Q: Why do we have to include 2 Makefiles now???
+   In one word, because otherwise the central Makefiles would be more difficult
+   to understand and local Makefiles would get trickier (it gets necessary to
+   understand how make read a makefile, how make remaking works and the subtleties
+   of = versus := )  This is a non issue with the split approach.  The top 
+   part has mostly environment definitions and things that can be used in the 
+   local files and the bottom part has rules and targets.  As for assignments 
+   of any local files variables, = and := can be used with the same result.
+
+   Note that the include of Makefile.bottom is not always the last thing
+   in a Makefile, as some local overriding of targets can be done after it.
+
+   These files should have really been called Makefile.definitions and
+   Makefile.targets (or rules, but Makefile.rules is a holdover from a long
+   time ago.
+
+Q: How do I write a Makefile for a library?
+   A simple example is in soft-ap/crypto-util/.
+
+Q: How do I customize compilation?
+A: CFLAGS_LOCAL  is intended to add your local compile flags.     It is added at 
+   the end so it will override most default. Note that by default we have -Wall 
+   and -Werror, on in global makefiles; so it is extensively use to override 
+   this.  INCS_LOCAL is extra includes.    Most platforms typically have
+   MINCDIRS and other useful variable set in mk/definitions/platform/<platform>.
+   This will be included automatically by Makefile.top, there are some useful 
+   lists of paths for the most common things.  So often INCS_LOCAL will be set 
+   to $(MINCDIRS) in addition to other extras.
+
+Q: How do I customize libraries?
+A: LIBRARY= is set to the name.  The "lib" prefix is added by the makefile, as 
+   well as .so or .a as needed.  BUILD_DSO=1 will cause only a .so to be 
+   generated.   This will be used to generate, install and link against DSO.
+
+Q: How do I generate a library from files that are in multiple directories?
+A: PART_LIB and LIB_PATH are used for that. See fastpath. Files are added to
+   the archive by the Makefile located in the directory where they are compiled.
+   i.e, a make in largePapi will add the object to the MHApi library.  PART_LIB 
+   does not support DSOs yet.  Another approach is to have one Makefile that
+   pick the CFILES in multiple directories. Works great too, but not as 
+   convenient for development.  vpath is another possibility.
+
+Q: How do I generate an application?
+A: A sample is in aaa.
+
+Q: How do i customize an application?
+A: There are 2 separate variables for libraries:  LIBS_LOCAL_PATH and LIBS_LOCAL.
+   The first one should be a list of -Ldir  and the second one should be the 
+   -llibname.  This will have to be done to do DSOs and to implement 
+   dependencies on libraries in applications.   Over time, we need to go away 
+   from specifying a library file with /path/libfile.a.
+
+   There is an LDFLAGS_LOCAL too.
+
+Q: How does make clean cleans?
+A: It uses the definitions in the local makefiles to find what to remove.   It 
+   is possible to define extra stuff to be removed or even extra targets to be 
+   run.   See mk/core/clean-rules and mk/bottom/clean-rules.
+   To avoid old stuff hanging around, clean also removes .o, .a... etc.
+
+Q: Where did the endless lists of directories in root Makefile go???
+A: The new makefiles have built in directory recursion.
+   This recursion works on clean and all targets; it is easy to add other
+   recursive targets.   mk/bottom/subdir-rules has the recursion targets.
+
+Q: OK, but where did the build directories in the top-level Makefile go?
+A: See mk/platforms/{ap,switch}-platform/build-dirs.
+
+Q: Do we have automated dependency support?
+A: Yes. Nothing to do, it is there for C and C++ code, and soon for yacc.
+
+Q: How do my C files get compiled???
+A: Price to pay for magic: it is a bit wicked.
+   The dependency is an implicit  rule to build a .d from a .c defined in 
+   mk/bottom/implicit-rules.  This is done with the usual gcc -M.  The sed 
+   line in the .d:.c rule is used to add a dependency from source code to 
+   the .d file.   The rules that triggers the compilation of the cfile is 
+   in the generated .d file.  The dependency generation will succeed even 
+   if includes aren't found.    This allows you to see the compiler invocation 
+   for the C files failing.   Dependencies are generated only when they have 
+   too so this speeds up rebuilds a lot..
+
+Q: How are libraries built?
+A: The rule in mk/bottom/library-rules uses the archive member functionality 
+   in makefiles.  So the archive is normally updated after compilation.
+
+Q: How are applications built?
+A: Unfortunately, they depend on object files for now only.   Hopefully, they 
+   will depend on libraries soon.  That is one of the reasons for using 
+   the proper LIBS_LOCAL and LIBS_LOCAL_PATH.
+
+Q: What about arubainstall?
+A: Now arubainstall uses same targets as before. BEWARE: because 
+   Makefile.bottom defines the default target, any local target, including 
+   arubainstall, must appear below the include of Makefile.bottom.    It is 
+   not .bottom after all. 
+
+Q: How do i build/manage many images in one view?
+A: Use 'adu'.
+
+Q: How do i build it all?
+A:   make world  
+
+   ...in the root Makefile will by default build all we have.    this can be 
+   customized in the environment that way:
+
+   export BUILD_LIST="PALOMINO NEBBIOLO"
+
+   will do the obvious.  
+
+Q: How do i avoid to recompile everything if I change Makefiles?
+A: Local Makefiles have a dependency on themselves and all Makefile 
+   infrastructure.  This means that if Makefile.top and Makefile.bottom is 
+   changed, everything will want to recompile.  This can be disabled by setting 
+   NO_MAKEFILE_DEPEND=1 in your environment. Doing so is not recommended.
+
+Q: How do I avoid to recompile the kernel?
+   This comes handy if you need to run make clean and do not want to rebuild
+   kernel. NO_KERNEL_REBUILD=1 will do it. 
+
+Q: How does arubainstall work?
+A:  - arubainstall is now a recursive target.  It can be run anywhere in the 
+      tree recursively.
+    - because of the previous point, the INSTALLDIRS we had on the root
+      Makefile and elsewhere are gone.
+    - By default, aruainstall will install the DSOs, applications and kernel 
+      modules built by local Makefile on the target filesystem.  No 
+      arubainstall local target is needed to accomplish that.
+    - thanks to a kludge from hell, local targets arubainstall are still 
+      allowed in local Makefiles and work just like before.   
+    - despite this, arubainstall runs much faster than before due to some 
+      optimizations and the fact that arubainstall DEPENDENCIES WERE REMOVED.  
+      so arubainstall just tries  to install what is there, it does not 
+      rebuild anything.
+
+Q: What is the cleainstall target?
+A: Should remove what arubainstall puts on the target filesystem.
+
+Q: What is the cleancommon target?
+A: It cleans the directories that are shared between plaforms but still
+   do not support platform specific build products directories.  Useful
+   to deal with multiple platform builds in one tree.
+
+Q: What are the other targets
+A: gdbinit, tags, customclean.  Evolving.
+
+Q: How do I integrated assembly code:
+A: set ASM_FILES, ASFLAGS, and then EXTRA_OBJS for linking.
+
+
+Q: How can we run profiling:
+A: Process is a bit involved for now:
+1- build a regular image.
+2- make clean
+     This looks strange, but this will get you all shared libraries 
+     and binaries installed on the target file system.
+3- Build the binaries to be profiled.
+     export PROFILE_APPLICATION=auth,stm,master   (you get the idea - I would
+                                                   recommend one to start)
+     cd $ARUBA_SRC; make all
+
+     profiling with DSOs does not work.   It is very hard to fix.   So this
+     will generate regular archives and link the apps in the list with them.  
+     It will also link the selected apps with the profiling version of libc,
+     mlord hacked to report all the interesting stuff.
+
+4- This sucks a bit, I will make this better some day.
+   go to every application directory where a profiled application was build:
+   make arubainstall
+5- cd newfs (or syrahfs/ucfs...)
+   make arubainstall             
+   cd $ARUBA_SRC
+   make kernel
+
+There is one known problem I could not fix yet.   Sometimes libwifi.a is not
+generate properly; normally wms fails to link.   if this happens while building 
+profiled apps, go to cmn/wifi, and normally make clean; make will get it right.
+(this is an annoying problem building archives with 2 object files, don't ask :-(
+
+This image should run normally.   Profiling data is generated in /tmp upon
+exit.  I have hacked a certain number of apps to exit on SIGUSR1 or SIGUSR2.    
+Profiling data is normally appname.gprof.
+
+Then you get this file on your compile machine and do this:
+
+gprof ./mswitch_obj/stm {path}/stm.gprof > stm.gprof.out
+
+vi stm.grof.out, enjoy (There is documentation in the output).
+All the versions of gprof I tried work fine, but 2.15 is better.
+
+Beware that the mcount crap is profiling stuff; it is in the report or
+not, it depends on gprof version

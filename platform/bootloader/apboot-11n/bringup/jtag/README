@@ -1,0 +1,23 @@
+- Arran / Tamdhu -> t32 (Lauterbach Trace-32)
+	- installed SW into /home/t32
+	- added .per files from Marvell
+	- added board-specific files
+
+	- lauterbach script runs 'sw' installed in /home/t32 (t32.tar.gz)
+	  - put u-boot (ELF) into /home/t32
+	  - run Arran-6560.cmm or Tamdhu.cmm
+	  - run U-boot-6560.cmm
+	  - pc will be at 0x1080000 (note it used to be lower); run
+	  - boot loader runs in RAM, so can be used to flash the board
+	    using 'upgrade boot' or raw flash commands
+
+- Palomino / Moscato -> majic-mt (Mentor Graphics Majic-MT)
+	- scripts in majic-pal expect sw installed in /opt/epi
+	- settings can be changed via console port using 'serialport' script
+	- doit.102 can be modified to use new IP address
+	- epiflash.cmd flashes the board
+
+- Ardmore/K2 -> code-warrior
+	- init TCL files and flash configs checked in here
+	- sw is licensed to 'beetle', so I didn't bother to check it in;
+	  if problems occur, get FSL account team to help

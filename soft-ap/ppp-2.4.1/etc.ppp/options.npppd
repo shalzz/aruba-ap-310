@@ -1,0 +1,8 @@
+defaultroute
+asyncmap 0
+mru 1464
+mtu 1464
+nopcomp
+deflate 0
+nobsdcomp
+noipdefault

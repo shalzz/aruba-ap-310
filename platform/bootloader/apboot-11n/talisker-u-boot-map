@@ -1,0 +1,17 @@
+pb44:
+	u-boot base	0x83fbc000
+	u-boot stack	0x83f6bf78
+	u-boot arena	0x83f8c000
+	u-boot code	0x83fbc000
+	u-boot top	0x84000000
+0x83000000 -> 0x83ffffff -> boot loader		(16MB)
+0x00000000 -> 0x82ffffff -> reserved for linux	(48MB)
+
+talisker:
+	u-boot base	0x87fbc000
+	u-boot stack	0x87f6bf78
+	u-boot arena	0x87f8c000
+	u-boot code	0x87fbc000
+	u-boot top	0x88000000
+0x87000000 -> 0x87ffffff -> boot loader		(16MB)
+0x00000000 -> 0x86ffffff -> reserved for linux	(112MB)

@@ -1,0 +1,15 @@
+struct alias { int name; unsigned int encoding_index; };
+%struct-type
+%language=ANSI-C
+%define hash-function-name aliases_hash
+%define lookup-function-name aliases_lookup
+%7bit
+%readonly-tables
+%global-table
+%define word-array-name aliases
+%pic
+%%
+ASCII, ei_ascii
+UTF-8, ei_utf8
+CHINESE, ei_gb2312
+GB2312, ei_euc_cn

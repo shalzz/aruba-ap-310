@@ -1,0 +1,21 @@
+# run with chat -Vf modem-mc551-set-mode <>/dev/ttyUSB0 2>/tmp/log >&0
+# Don't add/enable other AT cmd here it'll break the flow 
+
+TIMEOUT 2
+ABORT 'BUSY'
+ABORT 'ERROR'
+ABORT 'NO ANSWER'
+ABORT 'NO CARRIER'
+ABORT 'NO DIAL TONE'
+ABORT DELAYED
+
+# attention
+#'' 'AT'
+# reset to factory default
+#'OK' 'ATZ&F'
+# Set the present preference mode 
+'' 'AT\^SYSCFGEX="02",3FFFFFFF,1,2,LTE_BAND_SUPPORTED,,'
+'OK' 'AT\^SYSINFOEX'
+'OK' 'AT\^DIALMODE?'
+'OK' ''
+

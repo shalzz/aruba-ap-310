@@ -1,0 +1,58 @@
+
+# FIPS is always enabled for FAT AP builds
+ifdef FAT_AP
+    FIPS=yes
+endif
+
+# OpenSSL directory location - see exception case for AP below (search XYSSL)
+ifdef FIPS
+    CFLAGS += -D__FIPS_BUILD__
+    ifdef FAT_AP
+        NO_OPENSSL=1 #uncomment if you want to use something other than OpenSSL. update utils/freeradius/freeradius-server-2.1.9/Make.inc.* also.
+        RNGD_DIR=$(TOP)/utils/rngd/rng-tools-4
+
+        ifdef NO_OPENSSL 
+            CFLAGS += -D__NO_OPENSSL__
+            CYASSL_DIR=$(ARUBA_SRC)/cyassl/wolfssl-3.6.8-fips
+            OPENSSH_DIR=$(ARUBA_SRC)/utils/openssh/openssh-7.1
+
+            ifneq ($(wildcard $(CYASSL_DIR)/Makefile),)
+                CYASSL_FLAGS_MAKEFILE:=$(shell grep SINGLE_THREADED $(CYASSL_DIR)/Makefile |cut -b 13-)
+                DBG_FLAGS = -DNDEBUG -DDEBUG
+                CYASSL_FLAGS = $(filter-out $(DBG_FLAGS),$(CYASSL_FLAGS_MAKEFILE))
+                # Recommended while using fast-math
+                CYASSL_FLAGS += -DTFM_TIMING_RESISTANT
+                # for supporting 4096 bits RSA key
+                CYASSL_FLAGS += -DFP_MAX_BITS=8192
+            endif
+        endif #ifdef NO_OPENSSL
+
+        CFLAGS += $(CYASSL_FLAGS) 
+        CFLAGS += -D_ENFORCE_IMG_SIGN_VERF_
+    endif #ifdef FAT_AP
+
+    ifdef FIPS_FAIL
+        CFLAGS += -D__FIPS_FORCE_FAILURE__
+    endif # FIPS_FAIL
+
+    ifndef NO_OPENSSL
+        OPENSSL_DIR = $(TOP)/openssl-f
+        OPENSSL_CPPFLAGS += -DOPENSSL_FIPS -I$(OPENSSL_DIR)/include
+        CFLAGS += ${OPENSSL_CPPFLAGS}
+        OPENSS_CFLAGS_LOCAL += -DOPENSSL_FIPS
+        CFLAGS += -D_ENFORCE_IMG_SIGN_VERF_
+    endif #ifndef NO_OPENSSL
+
+    ifdef FAT_AP
+        OPENSSL_DIR = $(TOP)/openssl
+        OPENSSL_CPPFLAGS += -I$(OPENSSL_DIR)/include
+        OPENSS_CFLAGS_LOCAL =
+    endif #ifdef FAT_AP
+else # FIPS
+    OPENSSL_DIR = $(TOP)/openssl
+    OPENSSL_CPPFLAGS += -I$(OPENSSL_DIR)/include
+    OPENSS_CFLAGS_LOCAL =
+endif
+
+CFLAGS_LOCAL += $(OPENSS_CFLAGS_LOCAL)
+

@@ -1,0 +1,172 @@
+cmn:                   wms/evparser ${OPENSSL_DIR} sap/flash
+sysmgr:                cmn
+utils/utelnetd-0.1.3:  cmn
+platform:              amapi/build cmn cmn/ncfg/validate/profile cmn/amp sysmgr fastpath/lvl7dev
+fpdist:                cmn
+
+amapi/build:           fpdist cmn/vclock
+
+
+auth:                  amapi/build cmn/ncfg/validate/profile cmn/amp
+wms/wms:               amapi/build wms/evlib cmn/ncfg/validate/profile cmn/amp
+setup:                 amapi/build profmgr/cnodeutils
+l2tpd-0.67:            amapi/build
+ppp-2.4.1/pppd:        amapi/build
+pptpd-1.1.3:           amapi/build
+dhcpd:                 amapi/build cmn/amp
+radvd:                 amapi/build cmn
+radvd/aruba:           amapi/build cmn
+pppoed:                amapi/build
+ntp:                   amapi/build cmn/vclock ${OPENSSL_DIR} cmn
+ssh:                   amapi/build
+sshwrap:               ssh
+ifdef MIPS_XLP_PLATFORM
+ifdef MILAGRO
+pfe/build:             amapi/build platform/xlp7xx9xx
+sos/build:             platform/xlp7xx9xx
+isakmpd:               platform/xlp7xx9xx
+else # MILAGRO
+sos/build:             platform/xlp
+isakmpd:               platform/xlp
+endif # MILAGRO
+isakmpd:               amapi/build
+else # MIPS_XLP_PLATFORM
+isakmpd:               amapi/build
+endif # MIPS_XLP_PLATFORM
+sos/build:             amapi/build ${DPI_DIR} cmn ${DPDK_DIR} platform/x86/rng-mgr
+snmp/src:              amapi/build sysmgr cmn/amp
+ip:          	       amapi/build cmn/amp
+aaa:                   auth
+slb:         	       amapi/build
+pim:         	       amapi/build pim/validate
+ads:         	       amapi/build
+
+stm:                   wms/wms sap utils/jansson-2.7
+ucm:                   amapi/build cmn/ncfg/validate/profile openflow_controller cmn/amp
+ifdef GRENACHE
+am:                    wms/evlib
+sap:                   utils/apcp cmn wms/evlib
+else
+sap:                   utils/apcp wms/evlib
+endif
+slb:                   amapi/build	
+pim:                   amapi/build
+aruba_filter:          amapi/build
+licensemgr:            amapi/build cmn/ncfg/validate/profile
+certmgr:               amapi/build cmn cmn/ncfg/validate/profile
+dbbk:                  amapi/build
+isakmpd:               cmn cmn/amp
+
+
+mobility:              auth
+protocols/mdns:        auth openflow_controller
+
+
+webui:                 cmn profmgr/datastore
+webui/arubacpuload:    webui
+arci:                  webui
+arci/cgi:              aaa java/sc_nbapi sdwan setup webui arci/tools/libharu/src
+arci/cli-helper:       amapi/build fastpath/lvl7dev sysmgr arci/cgi profmgr/cdevice
+arci/webd:             amapi/build fastpath/lvl7dev
+
+fastpath/lvl7dev:      amapi/build mobility webui
+
+cfgm:                  fastpath/lvl7dev upgrademgr cfgdist
+
+java/sc_nbapi:         java/ale/proto tools/protobuf cmn amapi/build cmn/amp nbapi/objects nbapi/publisher
+
+wms/evlib: cmn
+cmn/papisec: cmn cmn/ncfg/validate/profile
+cmn/ofml: cmn
+cmn/ncfg/validate/profile: cmn profmgr/datastore
+cmn/ncfg/validate/non-profile: cmn profmgr/datastore
+cmn/amp: cmn amapi/build
+cmn/ofcommon: cmn
+cmn/syslogdwrap: amapi/build cmn
+profmgr/cnodeutils: cmn
+profmgr/cdevice: profmgr/cnodeutils cmn
+profmgr/datastore: amapi/build
+profmgr: cmn profmgr/datastore cmn/ncfg/validate/profile fastpath/lvl7dev profmgr/cdevice cmn/ncfg/validate/non-profile pim/validate bocmgr/validate protocols/mdns
+arm: cmn amapi/build cmn/amp
+ofa: ${OPENSSL_DIR} cmn cmn/ncfg/validate/profile
+appRF: amapi/build cmn upgrademgr
+dot1x: cmn amapi/build auth
+upload_sync_mgr: amapi/build cmn cmn/ncfg/validate/profile profmgr/cdevice
+wpa3_sae: cmn amapi/build cmn/ncfg/validate/profile cmn/amp
+lagm: cmn ${OPENSSL_DIR} amapi/build fastpath/lvl7dev
+
+fpapps: cmn fastpath/lvl7dev profmgr/cnodeutils
+ifdef PORFIDIO
+fpapps: contrib/marvell/cpss-3.03p1
+endif
+ifdef MILAGRO
+fpapps: platform
+endif
+
+cli: cmn/ncfg/validate/profile cmn fastpath/lvl7dev sysmgr profmgr/cnodeutils
+ctrl-mgmt: amapi/build fastpath/lvl7dev
+cpconsole: cmn amapi/build platform cli/cliauth profmgr/cnodeutils
+upgrademgr: cmn profmgr/datastore cmn/ncfg/validate/profile fastpath/lvl7dev
+cfgdist: cmn cmn/ncfg/validate/profile fastpath/lvl7dev sysmgr profmgr/cnodeutils
+bocmgr/validate: cmn/ncfg/validate/profile amapi/build fastpath/lvl7dev 
+bocmgr: cmn amapi/build bocmgr/validate profmgr/cdevice
+auth/validate: cmn/ncfg/validate/profile
+cmn/ncfg/upgrade: cmn profmgr/datastore cmn/ncfg/validate/profile profmgr/cdevice
+util_proc: cmn amapi/build cmn/ncfg/validate/profile arci/cgi
+rft: cmn cmn/ncfg/validate/profile
+amon: cmn cmn/amp
+ctamon: cmn amapi/build cmn/amp
+misc-proc: cmn cmn/amp
+utild: cmn amapi/build cmn/amp
+ospf: cmn amapi/build cmn/amp
+ip_flow_export: cmn cmn/ncfg/validate/profile fastpath/lvl7dev
+spectrum: cmn amapi/build cmn/amp
+cpsec: cmn amapi/build cmn/ncfg/validate/profile
+lldpd: cmn amapi/build cmn/amp
+phonehome: cmn amapi/build cmn/ncfg/validate/profile sysmgr
+infra: cmn amapi/build
+activate: cmn amapi/build cmn/ncfg/validate/profile fastpath/lvl7dev
+iapmgr: cmn amapi/build
+ha: cmn amapi/build cmn/ncfg/validate/profile sap
+extifmgr: cmn cmn/ncfg/validate/profile
+cluster_mgr: cmn cmn/ncfg/validate/profile cmn/amp profmgr/cdevice
+sc_replication_mgr: cmn amapi/build
+cert_downld_mgr: cmn amapi/build profmgr/cnodeutils
+rsync: cmn/ncfg/validate/profile
+hcm: cmn amapi/build cmn/amp
+ble: cmn cmn/ncfg/validate/profile utils/jansson-2.7
+apache-cp: cmn/ncfg/validate/profile arci/cgi
+web_cc: cmn amapi/build
+tunneled_node_mgr: cmn cmn/ncfg/validate/profile cmn/amp
+central_agent: amapi/build cmn/ncfg/validate/profile cmn/amp
+soft-ap/ppp-2.4.1: ${OPENSSL_DIR} cmn soft-ap/rp-pppoe-3.5/src
+nginx/nginx-1.10.1: apache-cp
+policymgr: cmn cmn/ncfg/validate/profile cmn/amp
+vrrp: cmn fastpath/lvl7dev vrrp/osapi vrrp/vrrpmap
+vrrp/vrrpmap: cmn
+vrrp/osapi: fpapps
+user_visibility: cmn cmn/ncfg/validate/profile cmn/amp
+rtpa: cmn amapi/build
+utils/slog_flash: cmn
+utils/freeradius: ${OPENSSL_DIR} cmn
+misc-proc: amapi/build
+platform/diagd: cmn fastpath/lvl7dev platform
+3rd/gpl: ${OPENSSL_DIR}
+platform/x86/rng-mgr: cmn
+mcell: cmn amapi/build cmn/ncfg/validate/profile cmn/amp
+openflow_controller: amapi/build cmn/ncfg/validate/profile cli/cliauth
+nbapi/publisher: 3rd/gpl nbapi/objects tools/boost
+nbapi/objects: ${OPENSSL_DIR} tools/protobuf
+cluster_upgrade_mgr: cmn amapi/build cmn/ncfg/validate/profile cmn/amp profmgr/cdevice
+sdwan: cmn cmn/ncfg/validate/profile openflow_controller
+mon_serv: cmn amapi/build cmn/ncfg/validate/profile openflow_controller cmn/amp
+im: cmn cmn/ncfg/validate/profile cmn/amp 3rd/non-gpl/python/arubainstall
+pim/validate: cmn
+utils/eject: ${OPENSSL_DIR}
+soft-ap/rp-pppoe-3.5/src: cmn
+utils/utelnetd-0.1.3: cli/cliauth
+tpm: ${CRYPTO_DIR} sap/flash cmn
+
+ifdef DPI_DIR
+${DPI_DIR}: ${DPDK_DIR}
+endif

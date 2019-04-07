@@ -1,0 +1,3 @@
+fs_and_kernel:
+	$(MAKE) -C $(FILESYSTEM) fs_and_kernel __PKG_FILESYSTEM=yes
+	$(MAKE) kernel

@@ -1,0 +1,29 @@
+#!/bin/sh
+export ARUBA_SRC=/home/piddalagi/adu/build/fcs82x/Default/shumway
+TOOLS=${ARUBA_SRC}/aos-cmn/tools/x86_64-unknown-linux-gnu-4.7.2
+SYSROOT=${TOOLS}/x86_64-unknown-linux-gnu/sysroot
+export LD_LIBRARY_PATH=${SYSROOT}/lib:${SYSROOT}/usr/lib
+export PATH=$PATH:$ARUBA_SRC/aos-cmn/tools/x86_64-unknown-linux-gnu-4.7.2/bin/
+export LD_LIBRARY_PATH=$ARUBA_SRC/aos-cmn/tools/x86_64-unknown-linux-gnu-4.7.2/lib/:
+export AS=x86_64-unknown-linux-gnu-as
+export AR=x86_64-unknown-linux-gnu-ar
+export CC=x86_64-unknown-linux-gnu-gcc
+export CXX=x86_64-unknown-linux-gnu-g++
+export CCLD=x86_64-unknown-linux-gnu-gcc
+export CPP=x86_64-unknown-linux-gnu-cpp
+export RANLIB=x86_64-unknown-linux-gnu-ranlib
+export STRIP=x86_64-unknown-linux-gnu-strip
+export RANLIB=${PREFIX}ranlib
+export CPPFLAGS="-g"
+export CFLAGS="-DOPENSSL"
+
+export ac_cv_func_setpgrp_void=no
+export ac_cv_func_setvbuf_reversed=no
+export ac_cv_func_getifaddrs=no
+
+cd ..
+rm config.cache
+./bootstrap
+make clean
+./configure --host=mips64-nlm-linux --target=mips64-nlm-linux --enable-dst-minutes --enable-ignore-dns-errors --enable-ACTS --enable-ARBITER --enable-ARCRON-MSF --enable-AS2201 --enable-ATOM --enable-CHRONOLOG --enable-CHU --enable-DATUM --enable-DUMBCLOCK --enable-FG --enable-HEATH --enable-HOPFSERIAL --enable-HOPFPCI --enable-HPGPS --enable-JJY --enable-LEITCH --enable-LOCAL-CLOCK --enable-NEOCLOCK4X --enable-NMEA --enable-ONCORE --enable-PALISADE --enable-PCF --enable-PST --enable-SHM --enable-SPECTRACOM --enable-TRUETIME --enable-ULINK --enable-ZYFER --enable-accurate-adjtime --enable-tick=VALUE --enable-tickadj=VALUE --enable-kernel-fll-bug --enable-ipv6 --with-openssl-incdir=${ARUBA_SRC}/openssl-regular/openssl-1.0.1c/include --with-openssl-libdir=${ARUBA_SRC}/openssl-regular/openssl-1.0.1c/shumway_obj
+make

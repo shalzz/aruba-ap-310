@@ -1,0 +1,9 @@
+#
+# although this is unlikely to be used, we still support a different version
+# number for each SW name
+# the build database always contains the base version
+#
+Base		8.4.1.0
+AOS-W		8.4.1.0
+HPOS		8.4.1.0
+ArubaOS		8.4.1.0

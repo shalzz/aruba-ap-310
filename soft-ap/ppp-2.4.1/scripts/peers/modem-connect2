@@ -1,0 +1,18 @@
+ECHO ON
+# time out is 40 because sometimes the card takes a little while to initalize
+TIMEOUT 40
+ABORT 'BUSY'
+ABORT 'NO ANSWER'
+ABORT 'NO CARRIER'
+ABORT 'NO DIAL TONE'
+ABORT DELAYED
+# initialize the modem
+SAY 'Initializing USB modem\n'
+'' 'AT'
+'OK' 'ATZ'
+'OK' 'AT&F'
+'OK' 'ATQ0V1E0'
+# Dial the number
+SAY 'Connecting...\n'
+'OK' 'ATDT#777'
+CONNECT CLIENT

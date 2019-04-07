@@ -1,0 +1,15 @@
+make -f Makefile.releng listboards > /tmp/boards$$
+
+dir=/tmp/${P4CLIENT}
+
+mkdir ${dir}
+
+for i in $(cat /tmp/boards); do 
+	make clean unconfig $i; 
+	make; 
+	mkdir ${dir}/$i; 
+	getsizes > ${dir}/$i/sizes; 
+	find . -name '*.o.p' -print | cpio -dump ${dir}/$i; 
+done
+
+rm -f /tmp/boards$$

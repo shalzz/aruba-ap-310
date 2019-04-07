@@ -1,0 +1,19 @@
+# run with chat -Vf modem-e3276-set-setport <>/dev/ttyUSB0 2>/tmp/log >&0
+# Don't add/enable other AT cmd here it'll break the usb_dump output
+
+TIMEOUT 2
+ABORT 'BUSY'
+ABORT 'ERROR'
+ABORT 'NO ANSWER'
+ABORT 'NO CARRIER'
+ABORT 'NO DIAL TONE'
+ABORT DELAYED
+
+# attention
+#'' 'AT'
+# reset to factory default
+#'OK' 'ATZ&F'
+# Get the present preference mode 
+'' 'AT\^SETPORT="A1,A2;12,16,A1,A2"'
+'OK' 'AT\^RESET'
+'OK'

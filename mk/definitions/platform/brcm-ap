@@ -1,0 +1,4 @@
+include ${ARUBA_MK_DEFINITIONS}/platform/anul-ap
+include ${ARUBA_MK_DEFINITIONS}/features/ap-driver-auth-assoc
+BRCM_AP=yes
+CFLAGS += -DSPECTRUM_BRCM_WIFI_WORKAROUND -DAP_USES_BROADCOM_SPECTRUM

@@ -1,0 +1,6 @@
+#
+# we only build bootloaders under the Aruba OEM
+#
+ifndef BOOTLOADER_LIST
+export BOOTLOADER_LIST=idtboot ppcboot u-boot apboot-11n xlp-u-boot xlp7xx9xx-u-boot xlp-x-loader xlp7xx9xx-x-loader apboot-11ac apboot-x4
+endif

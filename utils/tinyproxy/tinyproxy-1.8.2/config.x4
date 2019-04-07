@@ -1,0 +1,27 @@
+include $(ARUBA_SRC)/mk/Makefile.rules
+include $(ARUBA_SRC)/mk/Makefile.toolsdefs
+
+ifdef NO_OPENSSL
+ifeq ($(OEM), siemens)
+D_FLAG += -D__OEM_siemens__
+else
+SSL_DIR=-L$(CYASSL_DIR)/src/.libs -L$(ARUBA_SRC)/cmn/crypto-util/$(OBJDIR)
+SSL_LIB=-lcyassl -laruba-crypto-util
+SSL_INC= -I$(CYASSL_DIR) -I$(CYASSL_DIR)/cyassl -I$(ARUBA_SRC)/cmn/crypto-util/cyassl
+endif
+D_FLAG += -D__NO_OPENSSL__ -D__FAT_AP__
+else
+SSL_INC=-I$(ARUBA_SRC)/openssl/include -I$(ARUBA_SRC)/cmn/crypto-util
+SSL_DIR=-L$(OPENSSL_DIR)/$(OBJDIR) -L$(ARUBA_SRC)/cmn/crypto-util/$(OBJDIR)
+SSL_LIB=-lssl -lcrypto -laruba-crypto-util
+endif
+
+ifdef TBUILD
+D_FLAG += -D__EXPERIMENTAL_BUILD__
+endif
+
+TOOLS_DIR=$(ARUBA_SRC)/aos-cmn/tools/ppce5500-fsl/sysroots
+TOOLS_PREFIX=$(TOOLS_DIR)/x86_64-fslsdk-linux/usr/bin/powerpc-fsl-linux/powerpc-fsl-linux-
+
+myconfig:
+	CC=$(TOOLS_PREFIX)gcc CFLAGS="-B$(TOOLS_DIR) --sysroot=$(TOOLS_DIR)/ppce5500-fsl-linux-uclibc/ -I$(TOOLS_DIR)/usr/lib/powerpc-fsl-linux/gcc/powerpc-fsl-linux/4.8.1/include $(SSL_INC) $(D_FLAG)" CPPFLAGS="-I$(TOOLS_DIR)/usr/lib/powerpc-fsl-linux/gcc/powerpc-fsl-linux/4.8.1/include -I$(ARUBA_SRC)/cmn" LDFLAGS="-Wl,-rpath-link $(ARUBA_SRC)/usr/lib/aruba/$(OBJDIR) -L$(ARUBA_SRC)/cmn/util/$(OBJDIR) -L$(ARUBA_SRC)/sap/flash/$(OBJDIR) $(SSL_DIR) --sysroot=${ARUBA_SYSROOT}" LIBS="$(SSL_LIB)" ./configure --host=powerpc-fsl-linux --enable-transparent=yes --enable-regexcheck=no --prefix=

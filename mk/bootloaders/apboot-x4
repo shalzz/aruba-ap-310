@@ -1,0 +1,2 @@
+apboot-x4:
+	cd platform/bootloader/apboot-x4; ${MAKE} -f Makefile.releng allboards

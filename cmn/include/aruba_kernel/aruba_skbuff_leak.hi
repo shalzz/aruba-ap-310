@@ -1,0 +1,325 @@
+#ifndef ARUBA_SKBUFF_LEAK_HI
+#define ARUBA_SKBUFF_LEAK_HI
+
+/*!
+ * \file
+ * Centralized code for skb-leak functionality.
+ * NOTE: this is inline code that should be included once in skbuff.c.
+ * 
+ * Description: track skb allocation and free to allow skbs older than
+ * skb_leak_track_threshold msec to be displayed (default 10secs).
+ * The feature is enabled/disabled with aruba_skb_leak_track_set() via
+ * sysctl net/core/track_skb.
+ * skb_leak_track_threshold is set via sysctl net/core/track_skb_threshold
+ * /proc/net/alloc_skb  shows the list of "stale" (suspected-leaksed) skbs,
+ * see companion file aruba_skbuff_leak.hi.
+ * 
+ * How it works:
+ * Current status (on/off) is checked with aruba_skb_leak_track_get().
+ * Struct sk_buff has a linux/list.h list_head member, asl_node, which is added to the
+ * tail of the list with skb_leak_alloc and removed with skb_leak_free(). This means
+ * the oldest skb is next to the head and newest is at the tail.
+ * The head of the active list is the global asl_track_head.
+ * Because a standard linux list is used the seq_operations call the corresponding 
+ * standard seq_list_ operations, where appropriate.
+ * During display (after alloc_skb_seq_start has been called) the current position
+ * is tracked by asl_display_pos which is advanced through the list and removed
+ * when display completes. This placeholder is required because skbs may be freed
+ * at anytime so that an actual skb cannot be used to track the display position.
+ * Display completes when an skb newer than skb_leak_track_threshold is found or
+ * there are no more members, and asl_display_pos is then removed so it is empty.
+ * When tracking is disabled destroy_allocated_list() splices the active members
+ * onto asl_discards leaving asl_track_head empty.
+ * Synchronization of the list is via the spin-lock, aruba_skb_allocated_lock.
+ * Display operations are synchronized via the mutex, asl_list_mutex.
+ * 
+ * \author: Aidan Doyle (factoring/rework of work by Ramprakash Mohan, bug 94106).
+ *
+ * \copyright 
+ * Copyright (c) 2002-2017, Aruba Networks, an HPE company.
+ * All Rights Reserved.
+ * This software is an unpublished work and is protected by copyright and 
+ * trade secret law.  Unauthorized copying, redistribution or other use of 
+ * this work is prohibited.
+ *
+ * The above notice of copyright on this source code product does not indicate
+ * any actual or intended publication of such source code.
+ */
+
+#if defined(CONFIG_ARUBA_SKB_LEAK_DEBUGGING)
+#include <linux/spinlock.h>
+#include <linux/mutex.h>
+#include <linux/list.h>
+#include <linux/seq_file.h>
+#include <asm/atomic.h>
+
+static DEFINE_MUTEX(asl_list_mutex);
+LIST_HEAD(asl_track_head); // Main list of tracked skbs.
+LIST_HEAD(asl_discards); // destroy() discards tracked skbs here.
+LIST_HEAD(asl_display_pos); // Track current display entry.
+
+atomic_t aruba_skb_leak_track = ATOMIC_INIT(0);
+unsigned int aruba_skb_allocated_len = 0;
+unsigned int asl_ty = 0; // debug-info on display status.
+unsigned int asl_rpt = 0; // debug-info display iteration.
+static int count_so_far = 0;
+
+extern void touch_nmi_watchdog(void);
+
+//By default dump skbs that are alive for 10 seconds or more. Can be
+//configured by setting /proc/sys/net/core/skb_track_threshold in msecs
+int skb_leak_track_threshold = 10000;
+
+DEFINE_SPINLOCK(aruba_skb_allocated_lock);
+#define ASL_SAVE_IRQ 1
+#if ASL_SAVE_IRQ
+#define ASL_SPIN_LOCK(_lkp, _flags) spin_lock_irqsave(_lkp, _flags)
+#define ASL_SPIN_UNLOCK(_lkp, _flags) spin_unlock_irqrestore(_lkp, _flags)
+#else
+#define ASL_SPIN_LOCK(_lkp, _flags) do { \
+        _flags = 0;                      \
+        spin_lock_bh(_lkp);                 \
+    } while(0)
+#define ASL_SPIN_UNLOCK(_lkp, _flags) do { \
+        spin_unlock_bh(_lkp);                 \
+    } while(0)
+#endif
+
+// INIT_LIST_HEAD/list_empty not working here - instead set next to NULL.
+static inline void asl_node_init(struct list_head *asln)
+{
+    asln->prev = asln->next = NULL;
+}
+static inline bool asl_node_is_empty(struct list_head *asln)
+{ 
+    return (NULL == asln->next);
+}
+
+void *alloc_skb_seq_start(struct seq_file *seq, loff_t *pos) 
+	__acquires(asl_list_mutex)
+{
+    unsigned long flags;
+    static int cnt = 0;
+    void *ret;
+
+    if (unlikely(!atomic_read(&aruba_skb_leak_track))) {
+        return NULL;
+    }
+
+    mutex_lock(&asl_list_mutex);
+    if (0 == *pos) {
+        cnt = 0;
+        asl_rpt = 0;
+        count_so_far = 0;
+        ASL_SPIN_LOCK(&aruba_skb_allocated_lock, flags);
+        if (list_empty(&asl_track_head)) {
+            ret = NULL;
+        } else {
+            list_add(&asl_display_pos, &asl_track_head); // set to start of list.
+            ret = seq_list_start_head(&asl_display_pos, 0); // use 0 to get header in 1st bshow.
+#ifdef ASL_DEBUG
+            seq_printf(seq, "%s: START iter:%d len:%d pos:%lld first-skb:%p\n", 
+                       __func__, ++cnt, aruba_skb_allocated_len, *pos,
+                       list_entry(asl_display_pos.next, struct sk_buff, asl_node));
+#endif
+        }
+    } else {
+        ASL_SPIN_LOCK(&aruba_skb_allocated_lock, flags);
+        if (!list_empty(&asl_display_pos)) {
+            *pos = count_so_far;
+            ret = seq_list_next(&asl_display_pos, &asl_track_head, pos);
+            if (ret) {
+                list_move(&asl_display_pos, asl_display_pos.next); // advance pos by one.
+            } else {
+                list_del_init(&asl_display_pos); // Make empty.
+            }
+            asl_rpt++;
+        } else {
+            ret = NULL;
+            asl_ty = 2;
+        }
+    }
+
+    ASL_SPIN_UNLOCK(&aruba_skb_allocated_lock, flags);
+    return ret;
+}
+EXPORT_SYMBOL(alloc_skb_seq_start);
+
+void *alloc_skb_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+{
+    unsigned long flags;
+    struct list_head *n;
+
+    ASL_SPIN_LOCK(&aruba_skb_allocated_lock, flags);
+    if (!list_empty(&asl_display_pos) && 
+        !list_is_last(&asl_display_pos, &asl_track_head)) {
+        n = seq_list_next(&asl_display_pos, &asl_track_head, pos);
+        if (n) {
+            list_move(&asl_display_pos, asl_display_pos.next); // advance pos by one.
+        } else {
+            list_del_init(&asl_display_pos); // Make empty.
+        }
+    } else {
+        n = NULL;
+    }
+    ASL_SPIN_UNLOCK(&aruba_skb_allocated_lock, flags);
+    return n;
+}
+EXPORT_SYMBOL(alloc_skb_seq_next);
+
+void alloc_skb_seq_stop(struct seq_file *seq, void *v)
+	__releases(asl_list_mutex)
+{
+    unsigned long flags;
+
+    seq_printf(seq, "%d of %d completed asl_ty:%d rpt:%d empty:%d v:%p\n", 
+               count_so_far, aruba_skb_allocated_len, asl_ty, asl_rpt,
+               list_empty(&asl_display_pos), v);
+
+	mutex_unlock(&asl_list_mutex);
+}
+EXPORT_SYMBOL(alloc_skb_seq_stop);
+
+int alloc_skb_seq_show(struct seq_file *seq, void *v)
+{
+    unsigned long flags;
+    BUG_ON(NULL == v);
+
+    ASL_SPIN_LOCK(&aruba_skb_allocated_lock, flags);
+    preempt_disable();
+    if (v == &asl_display_pos) {
+        seq_printf(seq, "%-8s %12s %9s %-8s %-16s          Data-hex-dump (32B-hdr)\n",
+                   "skb-ptr", "    Age(ms)", " Len/Size", " data-ptr", "  Caller");
+    } else {
+        int i = 0, ret;
+        struct sk_buff *s = list_entry(v, struct sk_buff, asl_node);
+        unsigned int age = jiffies_to_msecs(jiffies - s->alloc_jiffies);
+
+        if (age < skb_leak_track_threshold) {
+            list_del_init(&asl_display_pos); // ensure traversal terminates here
+            asl_ty = 1;
+        } else {
+            unsigned char *sd = s->data;
+
+            // Note: formerly included skb_cloned(s) but saw crashes.
+            ret = seq_printf(seq, "%p %10dms %4d/%-4d %p %s "
+                             "%02x%02x%02x%02x%02x%02x%02x%02x "
+                             "%02x%02x%02x%02x%02x%02x%02x%02x "
+                             "%02x%02x%02x%02x%02x%02x%02x%02x "
+                             "%02x%02x%02x%02x%02x%02x%02x%02x \n", 
+                             s, age,
+                             s->len, (s->end - s->head), s->data, s->alloc_caller,
+                             sd[0],  sd[1],  sd[2],  sd[3],  sd[4],  sd[5],  sd[6],  sd[7], 
+                             sd[8],  sd[9],  sd[10], sd[11], sd[12], sd[13], sd[14], sd[15], 
+                             sd[16], sd[17], sd[18], sd[19], sd[20], sd[21], sd[22], sd[23], 
+                             sd[24], sd[25], sd[26], sd[27], sd[28], sd[29], sd[30], sd[31]);
+            count_so_far++;
+        }
+    }
+    preempt_enable();
+    ASL_SPIN_UNLOCK(&aruba_skb_allocated_lock, flags);
+    return 0;
+}
+EXPORT_SYMBOL(alloc_skb_seq_show);
+
+static void destroy_allocated_list(void)
+{
+    list_splice_init(&asl_track_head, &asl_discards);
+}
+
+int aruba_skb_leak_track_get(void)
+{
+    return atomic_read(&aruba_skb_leak_track)? 1 : 0;
+}
+void aruba_skb_leak_track_set(int val)
+{
+    unsigned long flags = 0;
+
+    ASL_SPIN_LOCK(&aruba_skb_allocated_lock, flags);
+    if(val) {
+        if (!atomic_read(&aruba_skb_leak_track)) {
+            atomic_set(&aruba_skb_leak_track, 1);
+        }
+    } else {
+        if (atomic_read(&aruba_skb_leak_track)) {
+            atomic_set(&aruba_skb_leak_track, 0);
+            destroy_allocated_list();
+        }
+    }
+    ASL_SPIN_UNLOCK(&aruba_skb_allocated_lock, flags);
+    printk(KERN_DEBUG "skb leak track set (%d)\n", val);
+}
+EXPORT_SYMBOL(aruba_skb_leak_track_set);
+
+void skb_leak_alloc(struct sk_buff *skb, const char *caller)
+{
+    unsigned long flags;
+    if (likely(!atomic_read(&aruba_skb_leak_track))) {
+        asl_node_init(&skb->asl_node);
+        return;
+    }
+    ASL_SPIN_LOCK(&aruba_skb_allocated_lock, flags);
+    if (likely(atomic_read(&aruba_skb_leak_track))) {
+#if 0
+        {
+            //XXX: Sanity check. If this log is seen, it means either:
+            // 1. skb was freed without hitting the skb_leak_free somehow
+            //                        OR
+            // 2. skb's control fields were cleaned up before calling
+            // skb_leak_free. This is possible if the function
+            // gfar_clean_reclaim_skb is called (for example) before calling
+            // skb_leak_free
+            struct sk_buff *s = allocated;
+            while (s) {
+                if (s == skb) {
+                    ASL_SPIN_UNLOCK(&skb_leak_lock, flags);
+                    printk(KERN_ERR "Found %p already\n", skb);
+                    printk(KERN_ERR "---> alloced from %s\n", s->alloc_caller);
+                    printk(KERN_ERR "---> asl_node.next: %p\n", s->asl_node.next);
+                    printk(KERN_ERR "---> alloc_again: %d\n", s->alloc_again);
+                    printk(KERN_ERR "---> now from %s\n", caller);
+                    return;
+                }
+                s = s->asl_node.next;
+            }
+        }
+#endif
+        /* Just a magic number to add some logic to detect double frees later */
+        skb->alloc_again = ARUBA_SKB_MAGIC;
+        skb->alloc_jiffies = jiffies;
+        skb->alloc_caller = caller;
+
+        /* add skb to allocated list */
+        list_add_tail(&skb->asl_node, &asl_track_head);
+        ++aruba_skb_allocated_len;
+    }
+    ASL_SPIN_UNLOCK(&aruba_skb_allocated_lock, flags);
+}
+
+void skb_leak_free(struct sk_buff *skb, const char *caller)
+{
+    unsigned long flags;
+
+    if (likely(asl_node_is_empty(&skb->asl_node))) {
+        return;
+    }
+    ASL_SPIN_LOCK(&aruba_skb_allocated_lock, flags);
+    if (likely(skb->asl_node.prev && skb->asl_node.next)) {
+        __list_del_entry(&skb->asl_node);
+    }
+    asl_node_init(&skb->asl_node);
+    if (list_empty_careful(&asl_track_head)) {
+        aruba_skb_allocated_len = 0;
+    } else {
+        --aruba_skb_allocated_len;
+    }
+    skb->alloc_again = 0;
+    skb->alloc_caller = NULL;
+    ASL_SPIN_UNLOCK(&aruba_skb_allocated_lock, flags);
+}
+#else
+#define skb_leak_alloc(skb, caller)
+#define skb_leak_free(skb, caller)
+#endif /* CONFIG_ARUBA_SKB_LEAK_DEBUGGING */
+
+#endif

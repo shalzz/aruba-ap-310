@@ -1,0 +1,33 @@
+ifndef HOST_APPLICATION
+#
+# Shared libraries are installed in $(INSTALL_LIBS_DIR) on the host. 
+# This options allows ld to link DSOs that depend on other DSOs without the need 
+# to # specify them on the command line. Traditionally we have dumped some extra 
+# libs # in $(TOOLS)/lib.  It Seems like when we link a DSO that would depend on 
+# another # DSO in there, that the system directory needs to be specified in 
+# rpath-link.  Silly.
+#
+LDFLAGS += -Wl,-rpath-link $(INSTALL_LIBS_DIR) -Wl,-rpath-link $(ARUBA_SYSROOT)/lib  
+
+ifdef OPUSONE
+#libzmq should be made available at INSTALL_LIBS_DIR. Till then...
+LDFLAGS += -Wl,-rpath,/mswitch/lib
+endif
+
+ifdef MIPS_XLP_PLATFORM
+ifdef MILAGRO
+LDFLAGS += -Wl,-rpath-link $(ARUBA_SYSROOT)/../lib64
+LDFLAGS += -Wl,-rpath,/lib64
+else
+LDFLAGS += -Wl,-rpath-link $(ARUBA_SYSROOT)/../lib
+endif
+LDFLAGS += -Wl,-rpath,/mswitch/lib
+endif
+
+endif
+
+ifdef LINUX_APP
+CFLAGS += -m32
+LDFLAGS += -m32 -L$(INSTALL_LIBS_DIR)
+endif
+

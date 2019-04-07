@@ -1,0 +1,49 @@
+#
+# This basically replaces legacy Makefile.rules.  This will allow the remaining 
+# legacy Makefiles to include Makefile.top via Makefile.rules 
+#
+ifdef STANDALONE_MAKEFILE_TOP
+
+.NOTPARALLEL:
+
+CFLAGS += -I. -I$(ARUBA_SRC) -I$(ARUBA_SRC)/cmn/include -I$(ARUBA_SRC)/cmn
+  # OPENSSL_DIR is not defined when cyassl is used (on FATAP)
+  ifdef OPENSSL_DIR 
+    CFLAGS += -I$(OPENSSL_DIR)/include  -I$(OPENSSL_DIR)
+  endif
+CFLAGS += -I${ARUBA_INCLUDE_DIR}/usr/include
+
+ifndef AP_PLATFORM
+# lots of badness with stuff using Makefile.rules
+CFLAGS += -Wno-error 
+else
+CFLAGS += -Werror 
+endif
+ifdef FIPS
+CFLAGS += -D__FIPS_BUILD__
+ifdef FIPS_FAIL
+CFLAGS += -D__FIPS_FORCE_FAILURE__
+endif #FIPS_FAIL
+endif
+LDFLAGS += 
+
+#
+# Make sure that whatever includes Makefile.Rules have the compiler finding
+# it's stuff.
+#
+ifneq (${ARUBA_SYSROOT},${ARUBA_TOOLS})
+CC := $(CC)  -B$(ARUBA_TOOLS) -B$(ARUBA_TOOLS)/lib --sysroot=${ARUBA_SYSROOT} -B${ARUBA_SYSROOT}/lib
+else
+CC := $(CC)  -B$(ARUBA_TOOLS) -B$(ARUBA_TOOLS)/lib
+endif
+
+.c.o:
+	$(CC) $(INCS) $(CFLAGS) -c $<
+
+.cpp.o:
+	$(CC) $(INCS) $(CFLAGS) -c $<
+
+$(ARCHDIR)/%.o : %.c
+	$(CC) $(INCS) $(CFLAGS) -c $< -o $@ 
+
+endif	# STANDALONE_MAKEFILE_TOP

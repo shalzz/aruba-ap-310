@@ -1,0 +1,43 @@
+ARFLAGS := cru
+
+# LIBRARY_PATH is specifies with PART_LIB, to build one LIB from 
+# many sources.
+ifneq "$(strip $(LIBRARY_PATH))" ""
+LIBRARY_PATH := $(LIBRARY_PATH)/$(OBJDIR)
+else
+LIBRARY_PATH := $(OBJDIR)
+endif
+
+#
+# DSOs are built from the static library. As it is not possible to 
+# to build a .a suitable for use as archive and as input to build
+# a DSO, a lib built to build a DSO has a .al extension.
+ifdef NEVER_BUILD_DSO
+STATIC_LIBRARY_NAME := $(addsuffix .a,$(addprefix lib,$(LIBRARY)))
+else
+ifdef BUILD_DSO
+STATIC_LIBRARY_NAME := $(addsuffix .al,$(addprefix lib,$(LIBRARY)))
+DONT_EXPORT_ARCHIVE=1 
+else
+STATIC_LIBRARY_NAME := $(addsuffix .a,$(addprefix lib,$(LIBRARY)))
+endif
+endif
+
+ifneq "$(strip $(STATIC_LIBRARY_NAME))" ""
+STATIC_LIBRARY := $(LIBRARY_PATH)$(STATIC_LIBRARY_NAME)
+endif
+ifndef NEVER_BUILD_DSO
+ifdef BUILD_DSO
+ifndef PART_LIB
+SHARED_LIBRARY_NAME := $(addsuffix .so,$(addprefix lib,$(LIBRARY)))
+ifneq "$(strip $(SHARED_LIBRARY_NAME))" ""
+SHARED_LIBRARY := $(OBJDIR)$(SHARED_LIBRARY_NAME)
+endif
+ifndef ALLOW_UNDEF
+_NO_UNDEF=-Wl,--no-undefined
+endif
+ALLLDFLAGS += -shared ${_NO_UNDEF} -Wl,--fatal-warnings
+endif  #ifndef PART_LIB
+ALLCFLAGS += -fPIC
+endif
+endif

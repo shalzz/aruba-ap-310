@@ -1,0 +1,11 @@
+# run with chat -Vf modem-signal-cdma <>/dev/ttyUSBx 2>/tmp/log >&0
+
+TIMEOUT 1
+ABORT 'BUSY'
+ABORT 'ERROR'
+
+# 75 - 105
+'' 'AT!RSSI?'
+# wait for answer
+'OK'
+

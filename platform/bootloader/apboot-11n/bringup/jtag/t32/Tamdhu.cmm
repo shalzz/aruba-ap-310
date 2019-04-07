@@ -1,0 +1,114 @@
+; initialize system
+;SYStem.RESet
+
+
+; disable the id check because the cpu does not send the debugger the pattern the debugger expects
+sys.option noircheck on
+    
+; other 946 cpu bug fix seen also on 926
+sys.option MULTIPLESFIX on
+
+ 
+   
+   SYStem.CPU 88FR331
+   SYStem.Option BigEndian OFF
+   
+   ;start debugger. This will also reset the board.
+   SYStem.JtagClock 1MHz
+   SYStem.mode attach
+   SYStem.Up
+
+   SYStem.JtagClock 10MHz
+   Data.Set C15:1 %LONG 0x00052078
+
+    ; dram init
+
+    d.s 0xD0001400 %LONG 0x43015040;
+    d.s 0xD0001404 %LONG 0xBA803000;
+    d.s 0xD0001408 %LONG 0x55157663;
+    d.s 0xD000140c %LONG 0x1600023A;
+    d.s 0xD0001410 %LONG 0x04000011;
+    d.s 0xD0001424 %LONG 0x0000314F;
+    d.s 0xD0001428 %LONG 0x000D6720;
+    d.s 0xD000147c %LONG 0x0000B571;
+    d.s 0xD0001494 %LONG 0x00010000;
+    d.s 0xD000149c %LONG 0x00000001;
+    d.s 0xD0001504 %LONG 0x0FFFFFF1;
+    d.s 0xD0001508 %LONG 0x10000000;
+    d.s 0xD000150C %LONG 0x00000000;
+    d.s 0xD0001510 %LONG 0x10000000;
+    d.s 0xD0001514 %LONG 0x00000000;
+    d.s 0xD0001518 %LONG 0x10000000;
+    d.s 0xD000151C %LONG 0x00000000;
+    d.s 0xD000141c %LONG 0x00000672;
+    d.s 0xD0001420 %LONG 0x00000004;
+    d.s 0xD00015D0 %LONG 0x00000630;
+    d.s 0xD00015D4 %LONG 0x00000044;
+    d.s 0xD00015D8 %LONG 0x00000008;
+    d.s 0xD00015DC %LONG 0x00000000;
+    d.s 0xD00015E0 %LONG 0x00000001;
+    d.s 0xD00015E4 %LONG 0x00203C18;
+    d.s 0xD0001620 %LONG 0x00680000;
+    d.s 0xD00014C0 %LONG 0x1AAA24C9;
+    d.s 0xD00014C4 %LONG 0x0AAA24C9;
+    d.s 0xD00014B0 %LONG 0x00000007;
+    d.s 0xD0001480 %LONG 0x00000001;
+    d.s 0xD0020204 %LONG 0x00000000 ;  Main IRQ Interrupt Mask Register
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "                   
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s	0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+    d.s 0xD0020204 %LONG 0x00000000 ;              "
+
+; set program counter at program start
+Register.Set pc 0xFFFF0000
+ 
+; open some windows
+ winpos 0% 0% 100% 50%
+ Data.List
+ winpos 0% 50% 50% 50%
+ SYStem
+ 
+ enddo
+
+
+
+
+
+
+
+
+
+
+

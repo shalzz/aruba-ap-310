@@ -1,0 +1,18 @@
+#
+# this target cleans the kernel and the the directories in COMMON_DIR,
+# which are different for some platforms but that can't be built in their
+# own directory.
+# 
+# Redefining MAKECMDGOALS is not recommended though.
+#
+ifneq "$(findstring cleancommon,$(MAKECMDGOALS))" ""
+DIRS = $(COMMON_DIRS)
+MAKECMDGOALS=clean
+endif
+
+ifneq "$(findstring cleancustom,$(MAKECMDGOALS))" ""
+DIRS = $(MYCLEAN)
+MAKECMDGOALS=clean
+endif
+
+EXTRA_CLEAN_TARGET := image_clean

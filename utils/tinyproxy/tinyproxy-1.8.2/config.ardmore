@@ -1,0 +1,24 @@
+include $(ARUBA_SRC)/mk/Makefile.rules
+include $(ARUBA_SRC)/mk/Makefile.toolsdefs
+
+ifdef NO_OPENSSL
+ifeq ($(OEM), siemens)
+D_FLAG += -D__OEM_siemens__
+else
+SSL_DIR=-L$(CYASSL_DIR)/src/.libs -L$(ARUBA_SRC)/cmn/crypto-util/$(OBJDIR)
+SSL_LIB=-lcyassl -laruba-crypto-util
+SSL_INC= -I$(CYASSL_DIR) -I$(CYASSL_DIR)/cyassl -I$(ARUBA_SRC)/cmn/crypto-util/cyassl
+endif
+D_FLAG += -D__NO_OPENSSL__ -D__FAT_AP__
+else
+SSL_INC=-I$(ARUBA_SRC)/openssl/include -I$(ARUBA_SRC)/cmn/crypto-util
+SSL_DIR=-L$(OPENSSL_DIR)/$(OBJDIR) -L$(ARUBA_SRC)/cmn/crypto-util/$(OBJDIR)
+SSL_LIB=-lssl -lcrypto -laruba-crypto-util
+endif
+
+ifdef TBUILD
+D_FLAG += -D__EXPERIMENTAL_BUILD__
+endif
+
+myconfig:
+	CC=$(ARUBA_SRC)/aos-cmn/tools/powerpc-linux-gnu-uClibc-0.9.30/usr/bin/powerpc-linux-gcc CFLAGS='-B$(ARUBA_SRC)/aos-cmn/tools/powerpc-linux-gnu-uClibc-0.9.30/lib -B$(ARUBA_SRC)/aos-cmn/tools/powerpc-linux-gnu-uClibc-0.9.30 $(D_FLAG) --sysroot=${ARUBA_SYSROOT} -I$(ARUBA_SRC)/aos-cmn/tools/powerpc-linux-gnu-uClibc-0.9.30/usr/include $(SSL_INC)' CPPFLAGS="-I$(ARUBA_SRC)/aos-cmn/tools/powerpc-linux-gnu-uClibc-0.9.30/usr/include -I$(ARUBA_SRC)/cmn" LDFLAGS="-Wl,-rpath-link $(ARUBA_SRC)/usr/lib/aruba/$(OBJDIR) -B$(ARUBA_SRC)/tools/powerpc-linux-gnu-uClibc-0.9.30/lib -L$(ARUBA_SRC)/cmn/util/$(OBJDIR) -L$(ARUBA_SRC)/sap/flash/$(OBJDIR) $(SSL_DIR) --sysroot=${ARUBA_SYSROOT}" LIBS="$(SSL_LIB)"  ./configure --host=powerpc-linux --enable-transparent=yes --enable-regexcheck=no --prefix=

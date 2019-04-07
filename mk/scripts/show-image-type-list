@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# Copyright (C) 2002-2011 by Aruba Networks, Inc.
+# All Rights Reserved.
+# 
+# This software is an unpublished work and is protected by copyright and 
+# trade secret law.  Unauthorized copying, redistribution or other use of 
+# this work is prohibited.
+#
+# The above notice of copyright on this source code product does not indicate
+# any actual or intended publication of such source code.
+#
+set -- ${ARUBA_IMAGES}
+while [ $# -gt 0 ]; do
+	uc=$(echo $1 | tr a-z A-Z)
+	if [ $# -gt 1 ]; then
+		echo ${uc}","
+	else
+		echo ${uc}
+	fi
+	shift
+done
+exit 0

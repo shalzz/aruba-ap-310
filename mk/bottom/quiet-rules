@@ -1,0 +1,68 @@
+#
+# Objective:
+# the entire MAKE process should be streamlined. Also, the
+# objective is to make developers aware of the number of
+# warnings being introduced into the source tree (either
+# with or without their knowledge)
+#
+# Problem:
+# Currently(prior to this effort), the warnings produced
+# by the compiler are mixed with the 'echo' of the commands
+# being made. As a result, it becomes tough to identify
+# and fix all the warnings. 
+#
+# Solution:
+# Except explicitly passed through an environment variable,
+# by default, the echo-ing will be turned OFF unless the
+# make is for either 
+#	(a) daily builds or, 
+#	(b) production/release builds.
+# This way, developers can cleanly identify and (whenever
+# their time permits) clean up the warnings introduced.
+#
+# Methodology:
+# A methodology similar to the way LINUX kernel is built
+# has been adopted. Since, things should be shown at the
+# flick of a flag, some more variables have been introduced.
+# A sincere request to the Aruba Folks is to prepend the
+# $(ARQUIET) to all subsequent makefiles being written. This
+# way, going further, we can hope to have a 'warning-free' 
+# code.
+# 
+# TODO: Fix this problem in a correct manner. Also, reflect
+# similar changes in the deeper Makefiles which spew out a
+# lot of gunk while 'make'ng them.
+# 
+# ARUBA_MAKE_VERBOSE=1
+#
+ifndef ARUBA_MAKE_VERBOSE
+MAKEFLAGS += --no-print-directory -s
+aruba_print_dir = "Dir: $(shell basename ${CURDIR})/$@\n"
+aruba_print_compile_src = "  CC      $(subst ${ARUBA_SRC}/,,${CURDIR})/$(notdir $<)\n"
+aruba_print_compile_cpp = "  CPP     $(subst ${ARUBA_SRC}/,,${CURDIR})/$(notdir $<)\n"
+aruba_print_compile_asm = "  AS      $(subst ${ARUBA_SRC}/,,${CURDIR})/$(notdir $<)\n"
+aruba_print_compile_yac = "  YACC    $(subst ${ARUBA_SRC}/,,${CURDIR})/$(notdir $<)\n"
+aruba_print_compile_syn = "  TAB     $(subst ${ARUBA_SRC}/,,${CURDIR})/$(notdir $<)\n"
+aruba_print_compile_xml = "  XML     $(subst ${ARUBA_SRC}/,,${CURDIR})/$(notdir $<)\n"
+aruba_print_convert =     "  SPL     $(subst ${ARUBA_SRC}/,,${CURDIR})/$(notdir $<)\n"
+#aruba_print_dependency = "\t\t\t $(subst ${ARUBA_SRC}/,,${CURDIR})/$(subst .c,.d,$(notdir $<))\n"
+aruba_print_depedency =
+aruba_print_generate = "\t\tGenerating $(subst ${ARUBA_SRC}/,,${CURDIR})/$(notdir $@)\n"
+aruba_print_builddir = "Building $(subst ${ARUBA_SRC}/,,${CURDIR})/$(notdir $<)\n"
+ARQUIET = @
+else
+aruba_print_dir =
+aruba_print_compile_src =
+aruba_print_compile_cpp =
+aruba_print_compile_asm =
+aruba_print_compile_yac =
+aruba_print_compile_syn =
+aruba_print_compile_xml = "generating dependency: $(notdir $<)\n"
+aruba_print_compile =
+aruba_print_convert =
+aruba_print_dependency = "generating dependency: $(notdir $<)\n"
+aruba_print_generate =
+aruba_print_builddir = 
+ARQUIET =
+endif
+export ARQUIET

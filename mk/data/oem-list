@@ -1,0 +1,34 @@
+#
+# we disgustingly stick OEM_ on the front to separate allimage and allworlds
+# processing; by the time this is processed, OEM_ will have been stripped off
+# see mk/core/oem-rules
+#
+ifndef OEM_LIST
+export OEM_LIST=OEM_aruba OEM_alcatel OEM_dell OEM_siemens
+endif
+
+## Do not build the EIGER platform for any of the OEM build types except "aruba"
+#ifneq (${OEM},aruba)
+#BLIST_FILTERED := $(filter-out EIGER,${BUILD_LIST})
+#export BUILD_LIST = ${BLIST_FILTERED}
+#endif
+
+# Only build the EIGER platform when OEM build type is "ericsson"
+ifeq (${OEM},ericsson)
+export BUILD_LIST=EIGER
+endif
+
+# Only build the OCTOMORE platform when OEM build type is "siemens"
+ifeq (${OEM},siemens)
+export BUILD_LIST=OCTOMORE
+endif
+
+#
+# SW_NAME will be generated from these
+#
+OEM_SW_NAME_aruba=ArubaOS
+OEM_SW_NAME_alcatel=AOS-W
+OEM_SW_NAME_dell=ArubaOS
+OEM_SW_NAME_hp=HPOS
+OEM_SW_NAME_ericsson=ArubaOS
+OEM_SW_NAME_siemens=SIEOS

@@ -1,0 +1,130 @@
+# PPP top-level Makefile for Linux.
+
+ifndef ARUBA_MAKE_VERBOSE
+export ARQUIET=@
+export MAKEFLAGS=-s
+endif
+
+BINDIR = $(DESTDIR)/usr/sbin
+MANDIR = $(DESTDIR)/usr/man
+ETCDIR = $(DESTDIR)/etc/ppp
+
+include $(ARUBA_SRC)/mk/Makefile.rules
+PPPD_BASE = $(ARUBA_SRC)/soft-ap/ppp-2.4.1
+
+# prefix to differentiate between the l2tp version of pppd
+ifneq ($(or $(GRENACHE),$(PORFIDIO)),)
+	PPP_PREFIX = n
+else
+	PPP_PREFIX =
+endif
+
+# uid 0 = root
+INSTALL= install
+
+# The emake parallel build app needs dependencies to determine 
+# the proper order in which targets are invoked.
+ifdef ARUBA_EMAKE
+    arubainstall_deps = $(PPPD_BASE)/pppd/pppd $(PPPD_BASE)/chat/chat
+ifndef MERLOT
+ifeq ($(and $(FAT_AP),$(TALISKER)),)
+    arubainstall_deps += $(PPPD_BASE)/pppdump/pppdump $(PPPD_BASE)/pppstats/pppstats
+endif
+endif
+endif
+
+all:
+	${ARQUIET}$(MAKE) -C chat $(MFLAGS) all
+	${ARQUIET}$(MAKE) -C pppd $(MFLAGS) all
+ifndef MERLOT
+ifeq ($(and $(FAT_AP),$(TALISKER)),)
+	${ARQUIET}$(MAKE) -C pppstats $(MFLAGS) all
+	${ARQUIET}$(MAKE) -C pppdump $(MFLAGS) all
+endif
+endif
+
+arubainstall: $(arubainstall_deps)
+	@echo "  INST    pppd";
+	${ARQUIET}cp $(PPPD_BASE)/pppd/pppd $(DESTDIR)/../usr/sbin/$(PPP_PREFIX)pppd
+	${ARQUIET}cp $(PPPD_BASE)/chat/chat $(DESTDIR)/../usr/sbin
+ifndef MERLOT
+ifeq ($(and $(FAT_AP),$(TALISKER)),)
+	${ARQUIET}cp $(PPPD_BASE)/pppdump/pppdump $(DESTDIR)/../usr/sbin
+	${ARQUIET}cp $(PPPD_BASE)/pppstats/pppstats $(DESTDIR)/../usr/sbin
+endif
+endif
+	${ARQUIET}$(STRIP) $(DESTDIR)/../usr/sbin/$(PPP_PREFIX)pppd
+	${ARQUIET}$(STRIP) $(DESTDIR)/../usr/sbin/chat
+ifndef MERLOT
+ifeq ($(and $(FAT_AP),$(TALISKER)),)
+	${ARQUIET}$(STRIP) $(DESTDIR)/../usr/sbin/pppdump
+	${ARQUIET}$(STRIP) $(DESTDIR)/../usr/sbin/pppstats
+endif
+endif
+	@echo "  INST    dial scripts";
+	${ARQUIET}mkdir -p $(DESTDIR)/../etc/ppp/peers
+	${ARQUIET}cp -af $(PPPD_BASE)/scripts/peers/* $(DESTDIR)/../etc/ppp/peers
+	${ARQUIET}chmod a+w $(DESTDIR)/../etc/ppp/peers/*
+ifneq ($(or $(GRENACHE),$(PORFIDIO)),)
+	${ARQUIET}sed -i "s/defaultroute/nodefaultroute/g" $(DESTDIR)/../etc/ppp/peers/modem 
+	${ARQUIET}cp -f $(PPPD_BASE)/scripts/ppp-dial $(DESTDIR)/../etc/ppp
+	${ARQUIET}cp -f $(PPPD_BASE)/scripts/test-modem $(DESTDIR)/../usr/sbin
+	${ARQUIET}cp -f $(PPPD_BASE)/scripts/usb-eject $(DESTDIR)/../usr/sbin
+	${ARQUIET}cp -f $(PPPD_BASE)/scripts/renumerate $(DESTDIR)/../usr/sbin
+	${ARQUIET}cp -f $(PPPD_BASE)/etc.ppp/options.npppd $(DESTDIR)/../etc/ppp
+else
+	${ARQUIET}echo "/dev/modem" >> $(DESTDIR)/../etc/ppp/peers/modem
+endif
+
+savesymbols:
+
+install: $(BINDIR) $(MANDIR)/man8 install-progs install-etcppp
+
+install-progs:
+	cd chat; $(MAKE) BINDIR=$(BINDIR) MANDIR=$(MANDIR) $(MFLAGS) install
+	cd pppd; $(MAKE) BINDIR=$(BINDIR) MANDIR=$(MANDIR) $(MFLAGS) install
+ifndef MERLOT
+ifeq ($(and $(FAT_AP),$(TALISKER)),)
+	cd pppstats; $(MAKE) BINDIR=$(BINDIR) MANDIR=$(MANDIR) $(MFLAGS) install
+	cd pppdump; $(MAKE) BINDIR=$(BINDIR) MANDIR=$(MANDIR) $(MFLAGS) install
+endif
+endif
+
+install-etcppp: $(ETCDIR) $(ETCDIR)/options $(ETCDIR)/pap-secrets \
+	$(ETCDIR)/chap-secrets
+
+$(ETCDIR)/options:
+	$(INSTALL) -c -m 644 etc.ppp/options $@
+$(ETCDIR)/pap-secrets:
+	$(INSTALL) -c -m 600 etc.ppp/pap-secrets $@
+$(ETCDIR)/chap-secrets:
+	$(INSTALL) -c -m 600 etc.ppp/chap-secrets $@
+
+$(BINDIR):
+	$(INSTALL) -d -m 755 $@
+$(MANDIR)/man8:
+	$(INSTALL) -d -m 755 $@
+$(ETCDIR):
+	$(INSTALL) -d -m 755 $@
+
+clean:
+	@echo "  CLEAN   ppp-2.4.1"
+	${ARQUIET}rm -f `find . -name '*.[oas]' -print`
+	${ARQUIET}rm -f `find . -name 'core' -print`
+	${ARQUIET}rm -f `find . -name '*~' -print`
+	${ARQUIET}cd chat; $(MAKE) clean
+	${ARQUIET}cd pppd; $(MAKE) clean
+ifndef MERLOT
+ifeq ($(and $(FAT_AP),$(TALISKER)),)
+	${ARQUIET}cd pppstats; $(MAKE) clean
+	${ARQUIET}cd pppdump; $(MAKE) clean
+endif
+endif
+
+cleaninstall:
+
+dist-clean:	clean
+	rm -f Makefile `find . -name Makefile -print`
+
+#kernel:
+#	cd linux; ./kinstall.sh

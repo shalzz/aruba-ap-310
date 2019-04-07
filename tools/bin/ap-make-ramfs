@@ -1,0 +1,80 @@
+#!/bin/sh
+
+# utility functions
+index () {	# index string c
+	eval "I=\${1%$2*}"
+	eval echo "\${#I}"
+}
+math () {
+	eval echo "\$(($*))"
+}
+
+TMPFILE=`mktemp -d /tmp/junk.XXXXXX` #exit 1
+
+EXCLUDE_FILE=merlot.exclude
+
+cd $1
+
+echo "  RAMFS   $PWD"
+echo "  MKTMP   $TMPFILE"
+
+\rm -rf $TMPFILE
+mkdir -p $TMPFILE
+
+\cp -a . $TMPFILE
+if [ -f "$EXCLUDE_FILE" ]; then
+    cat "$EXCLUDE_FILE" | \
+        while read x; do
+        firs=$(echo $x | gawk '{print $1}')
+        if [ -f ${TMPFILE}/$firs ]; then
+            echo "  RM      $firs"
+            rm ${TMPFILE}/$firs
+        fi
+    done
+fi
+
+# uname -n > $TMPFILE/etc/syslog.conf
+mkdir -p $TMPFILE/dev/pts >> ../output 2>&1
+mkdir -p $TMPFILE/dev/net
+chmod 777 $TMPFILE/dev/net
+
+CPIO_LIST_SCRIPT=${KERNEL_SRC}/scripts/gen_initramfs_list.sh
+CPIO_EXEC_FILE=${ARUBA_SRC}/tools/bin/ap-gen-init-cpio
+CPIO_LIST_FILE=${KERNEL_SRC}/usr/initramfs_list
+CPIO_DATA_FILE=${KERNEL_SRC}/usr/initramfs_data.cpio
+DEVICE_FILE=${ARUBA_MK_IMAGE_TYPES}/${ARUBA_IMAGE_TYPE}/device-nodes
+
+echo "  DEV     $DEVICE_FILE"
+
+export CPIO_LIST_FILE
+export CPIO_DATA_FILE
+export CPIO_EXEC_FILE
+
+echo "  CPIO    $CPIO_DATA_FILE"
+
+\rm -f $CPIO_DATA_FILE
+odir=$PWD
+cd $TMPFILE;
+
+#echo "  LIST  $PWD"
+
+#find . -depth -print | cpio -ov -H newc > $CPIO_SRC_FILE
+$CPIO_LIST_SCRIPT -u `id -u` -g `id -g` -D $DEVICE_FILE . > $CPIO_LIST_FILE
+
+#echo "  GEN Exec:"$CPIO_EXEC_FILE" with list:"$CPIO_LIST_FILE" to generate" $CPIO_DATA_FILE
+
+$CPIO_EXEC_FILE $CPIO_LIST_FILE > $CPIO_DATA_FILE
+if [ $? -ne 0 ]; then
+      #\rm -rf $TMPFILE /tmp/1z9-$$
+      cd $odir
+      echo "ERROR: Generating cpio"
+      echo "ERROR: Generating cpio" >> ../output
+      exit 1
+fi
+
+cd $odir
+
+#cat $CPIO_LIST_FILE
+
+echo "  RM      $TMPFILE"
+\rm -rf $TMPFILE

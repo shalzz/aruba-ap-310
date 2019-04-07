@@ -1,0 +1,7 @@
+
+
+
+$(INSTALL_LIBS_BASE_DIR): soft-ap
+$(TOOLS):              $(INSTALL_LIBS_BASE_DIR)
+
+$(PPP_SRCDIR):	$(PPPOE_SRCDIR)

@@ -1,0 +1,12 @@
+
+ECHO ON
+TIMEOUT 10
+ABORT 'BUSY'
+ABORT 'ERROR'
+
+'' 'at!keyon=700,0,0'
+'OK' 'at!keyon=700,0,1'
+'OK' 'at!keyon=1100,1,0'
+'OK' 'at!keyon=1100,1,1'
+'OK' 'at!keyoff'
+'OK' ''

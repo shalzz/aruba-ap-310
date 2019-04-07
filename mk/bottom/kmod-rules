@@ -1,0 +1,9 @@
+#
+# KISS.  Links kernel modules
+#
+$(KERNEL_MOD) : $(OBJFILES)
+ifdef OBJDIR
+	@mkdir -p $(OBJDIR)
+endif
+	$(LD) -r  $(OBJFILES)  -o $(OBJDIR)$@
+

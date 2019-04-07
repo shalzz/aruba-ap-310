@@ -1,0 +1,9 @@
+export __ARUBA_KERNEL=4.4.60
+KERNEL_CONFIG=aruba_kilchoman_defconfig
+K_IMG_NAME:=uImage.fit.kilchoman
+K_IMG_DIR_SRC=$(KERNEL_SRC)/arch/arm64/boot
+IMAGE_NAME_BASE:=ipq807x
+
+# Will copy/install kernel headers in 32-bits toolchain sysroot
+export KERNEL_HEADERS_INSTALL_PATH=${ARUBA_INCLUDE_DIR}
+

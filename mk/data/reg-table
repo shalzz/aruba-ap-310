@@ -1,0 +1,7 @@
+ifndef REG_TABLE
+export REG_TABLE=$(ARUBA_SRC)/aos-cmn/regulatory/table/blessed/master-reg-table
+# use the temporary REG_TABLE directory before we get the official reg_table under the official REG_TABLE directory
+# export REG_TABLE=$(ARUBA_SRC)/aos-cmn/regulatory/table/blessed/master-reg-table
+#export REG_TABLE=$(ARUBA_SRC)/cmn/tmp-reg-table/regulatory
+endif
+

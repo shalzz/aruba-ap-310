@@ -1,0 +1,26 @@
+include ${ARUBA_MK_DEFINITIONS}/platform/all-platforms
+include ${ARUBA_MK_DEFINITIONS}/platform/amp-platform
+include ${ARUBA_MK_DEFINITIONS}/features/ipv6
+include ${ARUBA_MK_DEFINITIONS}/features/timer-wheel
+
+FILESYSTEM = amp/ucfs
+DESTDIR     = $(ARUBA_SRC)/$(FILESYSTEM)
+
+SKIP_NNM=yes
+LOCATION_SERVER= yes
+AMP_PLATFORM= yes
+X86_TARGET_PLATFORM = yes
+ARUBA_PLATFORM_TYPE_LC=amp
+
+CFLAGS += -DAMP_PLATFORM -DLOCATION_SERVER
+#CFLAGS += -m32
+#CCFLAGS += -m32
+#LDFLAGS += -m32
+
+WERROR=-Wall
+
+LDFLAGS += -Wl,-rpath-link $(INSTALL_LIBS_DIR) -Wl,-rpath-link $(TOOLS)/lib64
+
+__PATH := ${PATH}
+PATH=${ARUBA_SRC}/external/x86_64/bin:${__PATH}
+#PATH=${ARUBA_SRC}/tools/python64/python-2.7.2/bin:${__PATH}

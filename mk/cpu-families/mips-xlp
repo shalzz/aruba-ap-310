@@ -1,0 +1,27 @@
+MAIN_ARCH=mips
+MAIN_ARCH_MOCANA=MIPS
+export MIPS_XLP_PLATFORM=yes
+
+CFLAGS += -DMIPS_XLP_PLATFORM -D__EXPORTED_HEADERS__
+
+ifndef HOST_APPLICATION
+CFLAGS += -fdiagnostics-show-option
+CFLAGS += -Wno-error=cast-align
+
+ifdef FORTIFY_SOURCE_ENABLE
+FORTIFY_SOURCE_OPTION = -D_FORTIFY_SOURCE=2
+CFLAGS += $(FORTIFY_SOURCE_OPTION)
+endif
+
+ifdef MILAGRO
+ABI_FLAGS ?= -mabi=64 -msym32 -fPIC
+else
+ABI_FLAGS ?= -mabi=32
+endif
+
+# Moving user apps to o32 due to issues in 4.5.1 toolchain from Netlogic
+
+CFLAGS += ${ABI_FLAGS} -march=xlp
+#-Wl,-mabi=32 -Wl,-march=xlp
+LDFLAGS += ${ABI_FLAGS} -march=xlp
+endif

@@ -1,0 +1,23 @@
+menu "Aruba options"
+config OCTOMORE
+       bool "Octomore AP"
+       default n
+config ARUBA_NET
+       bool "Aruba AP Platform Support (legacy)"
+config ARUBA_AP
+	bool "platform is an Aruba AP"
+	select ARUBA_NET
+	select WIRELESS_EXT
+	select WEXT_PRIV
+	select WEXT_CORE
+	default n
+config ARUBA_DIAG
+	bool "Enable Aruba diagnostic support"
+	default n
+config ARUBA_DEBUG
+	bool "Enable Aruba debug logging"
+	default n
+config EIGER
+       bool "Eiger AP"
+       default n
+endmenu

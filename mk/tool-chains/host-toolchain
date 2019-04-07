@@ -1,0 +1,12 @@
+ARUBA_TOOLS        :=
+ARUBA_TOOLS_PREFIX :=
+
+ARUBA_SYSROOT      :=
+ARUBA_INCLUDE_DIR  :=
+
+ARUBA_GCC_BASE     :=
+SYSTEM_LIBS_PATH   :=
+DYNFLAG            :=
+SOLID_ROOT         :=
+SOLID_LIB          :=
+LIBXML2_INCLUDE	   :=

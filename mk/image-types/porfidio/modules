@@ -1,0 +1,8 @@
+include ${ARUBA_MK_MODULES}/porfidio_usb
+include ${ARUBA_MK_MODULES}/porfidio_kprobes
+
+modules_porfidio:
+ifndef DIAGNOSTIC_BUILD
+	${MAKE} modules_usb
+	${MAKE} modules_kprobes
+endif

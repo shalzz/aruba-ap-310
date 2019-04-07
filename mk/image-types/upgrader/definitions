@@ -1,0 +1,18 @@
+include ${ARUBA_MK_DEFINITIONS}/platform/all-platforms
+include ${ARUBA_MK_DEFINITIONS}/platform/switch-platform
+include ${ARUBA_MK_DEFINITIONS}/features/ipv6
+
+FILESYSTEM = upgrader
+DESTDIR = $(ARUBA_SRC)/$(FILESYSTEM)
+NEVER_BUILD_DSO = 1
+
+ifndef HOST_APPLICATION
+UC_CROSS=yes
+export UC_CROSS
+endif
+
+UPGRADER_PLATFORM=yes
+ARUBA_PLATFORM_TYPE_LC=upgrader
+
+CFLAGS += -DUC_CROSS  # I think I am gonna vomit.
+CFLAGS += -DX86_PLATFORM

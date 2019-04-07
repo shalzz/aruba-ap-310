@@ -1,0 +1,424 @@
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/rdnssd/rdnssd.c ./ndisc6-1.0.2/rdnssd/rdnssd.c
+--- ./org/ndisc6-1.0.2/rdnssd/rdnssd.c	2013-07-01 15:01:02.000000000 +0800
++++ ./ndisc6-1.0.2/rdnssd/rdnssd.c	2013-07-01 17:14:29.006965000 +0800
+@@ -63,6 +63,14 @@ typedef struct
+ 	time_t          expiry;
+ } rdnss_t;
+ 
++#define MAX_DOMAINLEN 256 // Maximum length according to resolv.conf(5)
++
++typedef struct
++{   
++    char    domain[MAX_DOMAINLEN + 1];
++    time_t  expiry;
++} dnssl_t;
++
+ #define MAX_RDNSS MAXNS
+ 
+ static struct
+@@ -71,6 +79,12 @@ static struct
+ 	rdnss_t list[MAX_RDNSS];
+ } servers = { .count = 0 };
+ 
++static struct
++{
++    size_t  count;
++    dnssl_t list[MAXDNSRCH]; // MAXDNSRCH defined in resolv.h
++} domains = { .count = 0 };
++
+ /* The code */
+ 
+ static void write_resolv(const char *resolvpath)
+@@ -78,6 +92,7 @@ static void write_resolv(const char *res
+ 	FILE *resolv;
+ 	int rval;
+ 	char tmpfile[strlen(resolvpath) + sizeof(".tmp")];
++    size_t i;
+ 
+ 	sprintf(tmpfile, "%s.tmp", resolvpath);
+ 
+@@ -88,8 +103,19 @@ static void write_resolv(const char *res
+ 		return;
+ 	}
+ 
++    if (domains.count > 0) {
++        fprintf(resolv, "search");
++        
++        /* ARUBA: for compile without C99 mode */
++        //for (size_t i = 0; i < domains.count; i++) {
++        for (i = 0; i < domains.count; i++) {
++            fprintf(resolv, " %s", domains.list[i].domain);
++        }
++        
++        fprintf(resolv, "\n");
++    }
++    
+     /* ARUBA: for compile without C99 mode */
+-    size_t i;
+ 	//for (size_t i = 0; i < servers.count; i++) {
+ 	for (i = 0; i < servers.count; i++) {
+ 		char addr[INET6_ADDRSTRLEN];
+@@ -114,11 +140,27 @@ static void write_resolv(const char *res
+ 
+ static void trim_expired (void)
+ {
++    while (domains.count > 0
++           && domains.list[domains.count - 1].expiry <= now)
++        domains.count--;
++
+ 	while (servers.count > 0
+ 	       && servers.list[servers.count - 1].expiry <= now)
+ 		servers.count--;
+ }
+ 
++static int dnssl_older (const void *a, const void *b)
++{
++    time_t ta = ((const dnssl_t *)a)->expiry;
++    time_t tb = ((const dnssl_t *)b)->expiry;
++
++    if (ta < tb)
++        return 1;
++    if (ta > tb)
++        return -1;
++    return 0;
++}
++
+ static int rdnss_older (const void *a, const void *b)
+ {
+ 	time_t ta = ((const rdnss_t *)a)->expiry;
+@@ -131,6 +173,56 @@ static int rdnss_older (const void *a, c
+ 	return 0;
+ }
+ 
++static void dnssl_update (const char *domain, time_t expiry)
++{
++    size_t i;
++
++    /* Does this entry already exist? */
++    for (i = 0; i < domains.count; i++)
++    {
++        if (strcmp (domain, domains.list[i].domain) == 0)
++            break;
++    }
++
++    /* Add a new entry */
++    if (i == domains.count)
++    {
++        if (expiry == now)
++            return; /* Do not add already expired entry! */
++
++        if (domains.count < MAXDNSRCH)
++            i = domains.count++;
++        else
++        {
++            /* No more room? replace the most obsolete entry */
++            if ((expiry - domains.list[MAXDNSRCH - 1].expiry) >= 0)
++                i = MAXDNSRCH - 1;
++            else
++                /* Do not write after end of the table */
++                return;
++        }
++    }
++
++    /* MAX_DOMAINLEN added only as "to be sure" check, such entry should not get here */
++    strncpy (domains.list[i].domain, domain, MAX_DOMAINLEN);
++    domains.list[i].expiry = expiry;
++
++    qsort (domains.list, domains.count, sizeof (dnssl_t), dnssl_older);
++
++#ifndef NDEBUG
++    /* ARUBA: for compile without C99 mode */
++    {
++    unsigned i;
++    //for (unsigned i = 0; i < domains.count; i++)
++    for (i = 0; i < domains.count; i++)
++    {
++        syslog (LOG_DEBUG, "%u: %s expires at %u\n", i, domains.list[i].domain,
++                (unsigned)domains.list[i].expiry);
++    }
++    }
++#endif
++}
++
+ static void rdnss_update (const struct in6_addr *addr, unsigned int ifindex, time_t expiry)
+ {
+ 	size_t i;
+@@ -157,6 +249,9 @@ static void rdnss_update (const struct i
+ 			/* No more room? replace the most obsolete entry */
+ 			if ((expiry - servers.list[MAX_RDNSS - 1].expiry) >= 0)
+ 				i = MAX_RDNSS - 1;
++            else
++                /* Do not write after end of the table */
++                return;
+ 		}
+ 	}
+ 
+@@ -170,8 +265,8 @@ static void rdnss_update (const struct i
+     /* ARUBA: for compile without C99 mode */
+     {
+     unsigned i;
+-    for (i = 0; i < servers.count; i++)
+ 	//for (unsigned i = 0; i < servers.count; i++)
++    for (i = 0; i < servers.count; i++)
+ 	{
+ 		char buf[INET6_ADDRSTRLEN];
+ 		inet_ntop (AF_INET6, &servers.list[i].addr, buf,
+@@ -183,25 +278,15 @@ static void rdnss_update (const struct i
+ #endif
+ }
+ 
+-int parse_nd_opts (const struct nd_opt_hdr *opt, size_t opts_len, unsigned int ifindex)
++void parse_rdnss (const struct nd_opt_hdr *opt, unsigned int ifindex)
+ {
+-	for (; opts_len >= sizeof(struct nd_opt_hdr);
+-	     opts_len -= opt->nd_opt_len << 3,
+-	     opt = (const struct nd_opt_hdr *)
+-		   ((const uint8_t *) opt + (opt->nd_opt_len << 3))) {
+ 		struct nd_opt_rdnss *rdnss_opt;
+ 		size_t nd_opt_len = opt->nd_opt_len;
+ 		uint64_t lifetime;
+ 
+-		if (nd_opt_len == 0 || opts_len < (nd_opt_len << 3))
+-			return -1;
+-
+-		if (opt->nd_opt_type != ND_OPT_RDNSS)
+-			continue;
+-
+ 		if (nd_opt_len < 3 /* too short per RFC */
+ 			|| (nd_opt_len & 1) == 0) /* bad (even) length */
+-			continue;
++        return;
+ 
+ 		rdnss_opt = (struct nd_opt_rdnss *) opt;
+ 
+@@ -218,11 +303,130 @@ int parse_nd_opts (const struct nd_opt_h
+ 			lifetime = INT32_MAX;
+ 
+         /* ARUBA: for compile without C99 mode */
++    //for (struct in6_addr *addr = (struct in6_addr *) (rdnss_opt + 1);
+ 		struct in6_addr *addr;
+         for (addr = (struct in6_addr *) (rdnss_opt + 1);
+-		//for (struct in6_addr *addr = (struct in6_addr *) (rdnss_opt + 1);
+ 		     nd_opt_len >= 2; addr++, nd_opt_len -= 2)
+ 			rdnss_update(addr, ifindex, lifetime);
++}
++
++void parse_dnssl (const struct nd_opt_hdr *opt, unsigned int ifindex)
++{
++    struct nd_opt_dnssl *dnssl_opt;
++    size_t nd_opt_len = opt->nd_opt_len;
++    uint64_t lifetime;
++    char *dom_list;
++    size_t last_dom_len = 0;
++
++    dnssl_opt = (struct nd_opt_dnssl *) opt;
++
++    if (nd_opt_len < 2) /* too short per RFC */
++        return;
++
++    {
++        struct timespec ts;
++        mono_gettime (&ts);
++        now = ts.tv_sec;
++    }
++
++    lifetime = (uint64_t)now +
++        (uint64_t)ntohl(dnssl_opt->nd_opt_dnssl_lifetime);
++
++    if (lifetime > INT32_MAX)
++        lifetime = INT32_MAX;
++
++    /* We need exact length of the option in bytes */
++    nd_opt_len = (nd_opt_len - 1) << 3;
++    /* We jump right after the header where the domain names are */
++    dom_list = (char *) (dnssl_opt + 1);
++
++    while (nd_opt_len > 0)
++    {
++        char domain[MAX_DOMAINLEN];
++        size_t total_length = 0;
++        while (*dom_list != '\0')
++        {
++            /* extract the length of next label */
++            size_t len = * (uint8_t *) dom_list;
++            dom_list++;
++            nd_opt_len--;
++
++            /* exit if longer than option */
++            if(len > nd_opt_len)
++            {
++                syslog (LOG_ERR, _("Incorrect option length."));
++                return;
++            }
++
++            /* check the space in domain[] */
++            if((total_length + len + 1) > MAX_DOMAINLEN)
++            {
++                syslog (LOG_ERR, _("Domain name too long."));
++                return;
++            }
++
++            /* if this is not the first label */
++            if (total_length > 0)
++            {
++                /* put dot before the label */
++                domain[total_length] = '.';
++                /* be sure to make room for a dot */
++                total_length++;
++                /* it will be put instead of the trailing zero byte
++                 * character but for that we will reallocate now anyway */
++            }
++
++            /* copy next label */
++            strncpy(domain + total_length, dom_list, len);
++
++            /* move all the pointers and numbers */
++            total_length += len;
++            dom_list += len;
++            nd_opt_len -= len;
++        }
++
++        /* if the length was zero */
++        if (total_length == 0)
++        {
++            /* move to next byte */
++            nd_opt_len--;
++            dom_list++;
++        }
++        else
++        { /* otherwise we actually extracted something, so
++             * we put zero byte at the end of the domain name instead of dot */
++            domain[total_length] = '\0';
++            /* and update the table */
++            dnssl_update(domain, lifetime);
++        }
++
++    }
++
++}
++
++int parse_nd_opts (const struct nd_opt_hdr *opt, size_t opts_len, unsigned int ifindex)
++{
++	for (; opts_len >= sizeof(struct nd_opt_hdr);
++	     opts_len -= opt->nd_opt_len << 3,
++	     opt = (const struct nd_opt_hdr *)
++		   ((const uint8_t *) opt + (opt->nd_opt_len << 3))) {
++
++        if (opt->nd_opt_len == 0 || opts_len < (opt->nd_opt_len << 3))
++			return -1;
++
++        switch (opt->nd_opt_type)
++		{
++        case ND_OPT_RDNSS:
++            parse_rdnss(opt, ifindex);
++            break;
++
++        case ND_OPT_DNSSL:
++            parse_dnssl(opt, ifindex);
++            break;
++
++        default:
++            continue;
++		}
+ 
+ 	}
+ 
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/rdnssd/rdnssd.h ./ndisc6-1.0.2/rdnssd/rdnssd.h
+--- ./org/ndisc6-1.0.2/rdnssd/rdnssd.h	2013-06-24 10:13:18.000000000 +0800
++++ ./ndisc6-1.0.2/rdnssd/rdnssd.h	2013-07-01 16:47:07.797130000 +0800
+@@ -30,16 +30,26 @@ extern const rdnss_src_t rdnss_netlink, 
+ 
+ /* Belongs in <netinet/icmp6.h> */
+ #define ND_OPT_RDNSS 25
++#define ND_OPT_DNSSL 31
+ 
+ struct nd_opt_rdnss
+ {
+ 	uint8_t nd_opt_rdnss_type;
+ 	uint8_t nd_opt_rdnss_len;
+-	uint16_t nd_opt_rdnss_resserved1;
++	uint16_t nd_opt_rdnss_reserved;
+ 	uint32_t nd_opt_rdnss_lifetime;
+ 	/* followed by one or more IPv6 addresses */
+ };
+ 
++struct nd_opt_dnssl
++{
++    uint8_t nd_opt_dnssl_type;
++    uint8_t nd_opt_dnssl_len;
++    uint16_t nd_opt_dnssl_reserved;
++    uint32_t nd_opt_dnssl_lifetime;
++    /* followed by one or more domain names */
++};
++
+ # ifdef __cplusplus
+ extern "C" {
+ # endif
+diff -buNpr -x config.arm -x config.mips -x config.powerpc ./org/ndisc6-1.0.2/src/ndisc.c ./ndisc6-1.0.2/src/ndisc.c
+--- ./org/ndisc6-1.0.2/src/ndisc.c	2013-06-24 10:21:36.000000000 +0800
++++ ./ndisc6-1.0.2/src/ndisc.c	2013-07-01 17:06:04.665629000 +0800
+@@ -208,6 +208,54 @@ buildsol (solicit_packet *ns, struct soc
+ 	return sizeof (*ns);
+ }
+ 
++static int
++parsednssl (const uint8_t *opt)
++{
++    const uint8_t *base;
++    uint8_t optlen = opt[1];
++    if (optlen < 2)
++        return -1;
++
++    printf (_(" DNS search list          : "));
++
++    optlen *= 8;
++    optlen -= 8;
++    base = opt + 8;
++
++    for (unsigned i = 0; i < optlen; i++)
++    {
++        char str[256];
++
++        if (!base[i])
++            break;
++
++        do
++        {
++            if (base[i] + i + 1 >= optlen)
++            {
++                printf("\n");
++                return -1;
++            }
++
++            memcpy (str, &base[i + 1], base[i]);
++            str[base[i]] = 0;
++
++            i += base[i] + 1;
++
++            printf ("%s%s", str, base[i] ? "." : "");
++
++        } while (base[i]);
++
++        printf (" ");
++
++    }
++
++    printf("\n");
++
++    fputs (_("  DNS search list lifetime: "), stdout);
++    print32time (((const uint32_t *)opt)[1]);
++    return 0;
++}
+ 
+ static int
+ parseadv (const uint8_t *buf, size_t len, const struct sockaddr_in6 *tgt,
+@@ -516,6 +564,9 @@ parseadv (const uint8_t *buf, size_t len
+ 			case 25: // RFC5006
+ 				parserdnss (ptr);
+ 				break;
++            case 31: // RFC6106
++                parsednssl (ptr);
++                break;
+ 		}
+ 		/* skips unrecognized option */
+ 

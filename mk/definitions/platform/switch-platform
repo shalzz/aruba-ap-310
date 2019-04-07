@@ -1,0 +1,62 @@
+#
+# Some More useful definitions for mswitch applications.
+#
+
+ifdef PROFILE_APPLICATION
+MLIBDIRS :=  \
+	-L$(ARUBA_SRC)/freeswan-1.95/gmp/$(OBJDIR) \
+
+else
+MLIBDIRS :=  \
+	-L${OPENSSL_DIR}/${OBJDIR} \
+	-L$(ARUBA_SRC)/freeswan-1.95/gmp/$(OBJDIR) \
+
+endif
+
+ifdef MIPS_XLP_PLATFORM
+ifdef MILAGRO
+MLIBDIRS +=  \
+	-L$(ARUBA_SRC)/tools/mipscross-xlp/lib64
+else
+MLIBDIRS +=  \
+	-L$(ARUBA_SRC)/tools/mipscross-xlp/lib
+endif
+endif
+
+ifdef X86_TARGET_PLATFORM 
+MLIBDIRS +=  \
+	-L$(ARUBA_SRC)/tools/$(OBJDIR)/mysql/lib/mysql
+endif
+
+# fix ordering issue with FP_SRC due to := on MINCDIRS
+include ${ARUBA_MK_DEFINITIONS}/core/fastpath
+MINCDIRS :=  -I. \
+	-I$(ARUBA_SRC) \
+	-I${OPENSSL_DIR} \
+	-I${OPENSSL_DIR}/include \
+	-I$(ARUBA_SRC)/cmn \
+        -I$(ARUBA_SRC)/cmn/util \
+        -I$(ARUBA_SRC)/cmn/dispatcher \
+        -I$(ARUBA_SRC)/cmn/papi \
+        -I$(ARUBA_SRC)/cmn/largePapi \
+	-I$(ARUBA_SRC)/cmn/largeReply \
+        -I$(ARUBA_SRC)/cmn/sapi \
+        -I$(ARUBA_SRC)/cmn/webauth \
+        -I$(ARUBA_SRC)/cmn/tavl  \
+        -I$(ARUBA_SRC)/cmn/syslog \
+        -I$(ARUBA_SRC)/cmn/dbgutils \
+        -I$(ARUBA_SRC)/cmn/mgmt \
+        -I$(ARUBA_SRC)/cmn/auth \
+	-I$(ARUBA_SRC)/cmn/include \
+	-I$(ARUBA_SRC)/cmn/fpappsutils\
+        -I$(ARUBA_SRC)/amapi\
+        -I$(ARUBA_SRC)/amapi \
+        -I$(ARUBA_SRC)/amapi/cmn \
+	-I$(ARUBA_SRC)/mysql/include \
+        -I$(FP_SRC)/mgmt/emweb/linux \
+        -I$(FP_SRC)/mgmt/emweb/config.linux \
+        -I$(FP_SRC)/mgmt/emweb/lib \
+        -I$(FP_SRC)/mgmt/emweb/websrc/include \
+        -I$(FP_SRC)/mgmt/emweb/websrc/telnet \
+        -I$(FP_SRC)/mgmt/emweb/websrc/server \
+        -I$(FP_HWSRC)/include 

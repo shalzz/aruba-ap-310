@@ -1,0 +1,6 @@
+ifdef ARUBA_DEBUG
+CFLAGS += -DARUBA_DEBUG
+else
+CFLAGS += -DDISABLE_LOG
+endif
+

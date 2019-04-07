@@ -1,0 +1,19 @@
+#!/bin/sh
+
+#
+# Checkout
+# - Makefile
+# - config.log
+# - config.status
+#
+
+# to build image
+ARUBA_TOOLS="/opt/sdk/targets/armeb-mv5sft-linux-gnueabi/cross/"
+export ARUBA_TOOL_PREFIX="${ARUBA_TOOLS}/bin/armeb-mv5sft-linux-gnueabi"
+
+export CC="${ARUBA_TOOL_PREFIX}-gcc"
+export CXX="${ARUBA_TOOL_PREFIX}-c++"
+export AR="${ARUBA_TOOL_PREFIX}-ar"
+export LD="${ARUBA_TOOL_PREFIX}-ld"
+
+./configure --host=armeb-linux --target=armeb-linux

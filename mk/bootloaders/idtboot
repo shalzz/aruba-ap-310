@@ -1,0 +1,2 @@
+idtboot:
+	cd platform/bootloader/idtboot/build; ${MAKE}

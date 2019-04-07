@@ -1,0 +1,30 @@
+#!/bin/sh
+# usb-eject sr0
+
+usage="Usage: $0 <port>"
+
+if [ $# -ne 1 ]; then
+  echo $usage
+  exit 1
+fi
+rm /tmp/ejectlog
+
+echo `date` ejecting $1 > /tmp/ejectlog
+
+for i in 1 2 3 4 5 6 7 8 9 10 
+do
+  eject $1
+  sleep 1
+  ls -l /dev/$1 >> /tmp/ejectlog
+  if [ $? -eq 0 ]; then 
+    echo "eject $i unsuccessful" >> /tmp/ejectlog
+  else
+    echo "eject $i successful" >> /tmp/ejectlog
+    exit 0
+  fi
+  sleep 1
+done
+
+echo "eject failed" >> /tmp/ejectlog
+exit 1
+

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devices>
+    <default version="1.0">
+        <manufacturerName> Macronix </manufacturerName>
+        <deviceAlgorithm>SPI flash</deviceAlgorithm>
+        <maxBitrate>85000</maxBitrate>
+        <addressWidth>3</addressWidth>
+        <readDummyBytes>1</readDummyBytes>
+        <writeSize>256</writeSize>
+        <eraseSize>4*1024</eraseSize>
+        <writeTime>1400</writeTime>
+        <eraseTime>60000</eraseTime>
+        <hasEraseAll>true</hasEraseAll>
+        <readInstruction>0x0b</readInstruction>
+        <readDeviceIdInstruction>0x9f</readDeviceIdInstruction>
+        <eraseInstruction>0x20</eraseInstruction>
+        <eraseAllInstruction>0xc7</eraseAllInstruction>
+    </default>
+
+    <device version="1.0">
+        <deviceName>MX25L512</deviceName>
+        <deviceDescription>
+            Macronix MX25L512 64 Kilobyte SPI Flash
+        </deviceDescription>
+        <capacity>64*1024</capacity>
+        <blockProtectBits>0x0c</blockProtectBits>
+        <eraseAllTime>1000000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x10</expectedDeviceId>
+        <deviceConnectedBits>0x00</deviceConnectedBits>
+        <deviceConnectedMask>0x70</deviceConnectedMask>
+    </device>
+
+    <device version="1.0">
+        <deviceName>MX25L1005</deviceName>
+        <deviceDescription>
+            Macronix MX25L1005 128 Kilobyte SPI Flash
+        </deviceDescription>
+        <capacity>128*1024</capacity>
+        <blockProtectBits>0x0c</blockProtectBits>
+        <eraseAllTime>1000000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x11</expectedDeviceId>
+        <deviceConnectedBits>0x00</deviceConnectedBits>
+        <deviceConnectedMask>0x70</deviceConnectedMask>
+    </device>
+
+    <device version="1.0">
+        <deviceName>MX25L2005</deviceName>
+        <deviceDescription>
+            Macronix MX25L2005 256 Kilobyte SPI Flash
+        </deviceDescription>
+        <capacity>256*1024</capacity>
+        <blockProtectBits>0x0c</blockProtectBits>
+        <eraseAllTime>1800000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x12</expectedDeviceId>
+        <deviceConnectedBits>0x00</deviceConnectedBits>
+        <deviceConnectedMask>0x70</deviceConnectedMask>
+    </device>
+
+    <device version="1.0">
+        <deviceName>MX25L4005A</deviceName>
+        <deviceDescription>
+            Macronix MX25L4005A 512 Kilobyte SPI Flash
+        </deviceDescription>
+        <capacity>512*1024</capacity>
+        <blockProtectBits>0x1c</blockProtectBits>
+        <eraseAllTime>3500000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x13</expectedDeviceId>
+        <deviceConnectedBits>0x00</deviceConnectedBits>
+        <deviceConnectedMask>0x60</deviceConnectedMask>
+    </device>
+
+    <device version="1.0">
+        <deviceName>MX25L8005</deviceName>
+        <deviceDescription>
+            Macronix MX25L8005 1 Megabyte SPI Flash
+        </deviceDescription>
+        <maxBitrate>70000</maxBitrate>
+        <capacity>1024*1024</capacity>
+        <blockProtectBits>0x1c</blockProtectBits>
+        <eraseAllTime>7000000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x14</expectedDeviceId>
+        <deviceConnectedBits>0x00</deviceConnectedBits>
+        <deviceConnectedMask>0x60</deviceConnectedMask>
+    </device>
+
+    <device version="1.0">
+        <deviceName>MX25L1605</deviceName>
+        <deviceDescription>
+            Macronix MX25L1605 2 Megabyte SPI Flash
+        </deviceDescription>
+        <maxBitrate>50000</maxBitrate>
+        <capacity>2*1024*1024</capacity>
+        <blockProtectBits>0x1c</blockProtectBits>
+        <eraseSize>64*1024</eraseSize>
+        <writeTime>2400</writeTime>
+        <writeStatusRegisterTime>90000</writeStatusRegisterTime>
+        <eraseTime>800000</eraseTime>
+        <eraseAllTime>25000000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x15</expectedDeviceId>
+        <deviceConnectedBits>0x00</deviceConnectedBits>
+        <deviceConnectedMask>0x20</deviceConnectedMask>
+    </device>
+
+    <device version="1.0">
+        <deviceName>MX25L1605A</deviceName>
+        <deviceDescription>
+            Macronix MX25L1605A 2 Megabyte SPI Flash
+        </deviceDescription>
+        <capacity>2*1024*1024</capacity>
+        <blockProtectBits>0x1c</blockProtectBits>
+        <eraseAllTime>14000000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x15</expectedDeviceId>
+        <deviceConnectedBits>0x00</deviceConnectedBits>
+        <deviceConnectedMask>0x60</deviceConnectedMask>
+    </device>
+
+    <device version="1.0">
+        <deviceName>MX25L3205</deviceName>
+        <deviceDescription>
+            Macronix MX25L3205 4 Megabyte SPI Flash
+        </deviceDescription>
+        <maxBitrate>50000</maxBitrate>
+        <capacity>4*1024*1024</capacity>
+        <blockProtectBits>0x1c</blockProtectBits>
+        <eraseSize>64*1024</eraseSize>
+        <writeTime>2400</writeTime>
+        <writeStatusRegisterTime>90000</writeStatusRegisterTime>
+        <eraseTime>800000</eraseTime>
+        <eraseAllTime>51000000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x16</expectedDeviceId>
+        <deviceConnectedBits>0x00</deviceConnectedBits>
+        <deviceConnectedMask>0x20</deviceConnectedMask>
+    </device>
+
+    <device version="1.0">
+        <deviceName>MX25L3205A</deviceName>
+        <deviceDescription>
+            Macronix MX25L3205A 4 Megabyte SPI Flash
+        </deviceDescription>
+        <maxBitrate>50000</maxBitrate>
+        <capacity>4*1024*1024</capacity>
+        <blockProtectBits>0x1c</blockProtectBits>
+        <eraseSize>64*1024</eraseSize>
+        <writeTime>2400</writeTime>
+        <writeStatusRegisterTime>90000</writeStatusRegisterTime>
+        <eraseTime>800000</eraseTime>
+        <eraseAllTime>51000000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x16</expectedDeviceId>
+        <deviceConnectedBits>0x00</deviceConnectedBits>
+        <deviceConnectedMask>0x20</deviceConnectedMask>
+    </device>
+
+    <device version="1.0">
+        <deviceName>MX25L6405</deviceName>
+        <deviceDescription>
+            Macronix MX25L6405 8 Megabyte SPI Flash
+        </deviceDescription>
+        <maxBitrate>50000</maxBitrate>
+        <capacity>8*1024*1024</capacity>
+        <blockProtectBits>0x3c</blockProtectBits>
+        <eraseSize>64*1024</eraseSize>
+        <writeTime>2400</writeTime>
+        <writeStatusRegisterTime>90000</writeStatusRegisterTime>
+        <eraseTime>800000</eraseTime>
+        <eraseAllTime>102000000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x17</expectedDeviceId>
+    </device>
+
+    <device>
+        <deviceName>MX25L1605D</deviceName>
+        <deviceDescription>
+            Macronix MX25L1605D 2 Megabyte SPI Flash
+        </deviceDescription>
+        <capacity>2*1024*1024</capacity>
+        <blockProtectBits>0x3c</blockProtectBits>
+        <writeStatusRegisterTime>40000</writeStatusRegisterTime>
+        <eraseAllTime>14000000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x15</expectedDeviceId>
+    </device>
+
+    <device>
+        <deviceName>MX25L3205D</deviceName>
+        <deviceDescription>
+            Macronix MX25L3205D 4 Megabyte SPI Flash
+        </deviceDescription>
+        <capacity>4*1024*1024</capacity>
+        <blockProtectBits>0x3c</blockProtectBits>
+        <writeStatusRegisterTime>40000</writeStatusRegisterTime>
+        <eraseAllTime>25000000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x16</expectedDeviceId>
+    </device>
+
+    <device>
+        <deviceName>MX25L6405D</deviceName>
+        <deviceDescription>
+            Macronix MX25L6405D 8 Megabyte SPI Flash
+        </deviceDescription>
+        <capacity>8*1024*1024</capacity>
+        <blockProtectBits>0x3c</blockProtectBits>
+        <writeStatusRegisterTime>40000</writeStatusRegisterTime>
+        <eraseAllTime>50000000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x17</expectedDeviceId>
+    </device>
+
+    <device>
+        <deviceName>MX25L12805D</deviceName>
+        <deviceDescription>
+            Macronix MX25L6405D 16 Megabyte SPI Flash
+        </deviceDescription>
+        <capacity>16*1024*1024</capacity>
+        <blockProtectBits>0x3c</blockProtectBits>
+        <writeStatusRegisterTime>40000</writeStatusRegisterTime>
+        <eraseAllTime>50000000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x18</expectedDeviceId>
+    </device>
+
+    <device>
+        <deviceName>MX25L25635F</deviceName>
+        <deviceDescription>
+            Macronix MX25L25635F 32 Megabyte SPI Flash
+        </deviceDescription>
+        <capacity>32*1024*1024</capacity>
+        <blockProtectBits>0x3c</blockProtectBits>
+        <writeStatusRegisterTime>40000</writeStatusRegisterTime>
+	<addressWidth>4</addressWidth>
+	<extendedAddressingEnableInstruction>0xB7</extendedAddressingEnableInstruction>
+        <eraseAllTime>50000000</eraseAllTime>
+        <expectedDeviceId>\xc2\x20\x19</expectedDeviceId>
+    </device>
+
+</devices>

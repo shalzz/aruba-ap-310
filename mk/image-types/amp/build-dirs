@@ -1,0 +1,22 @@
+TOOLS_UNITY_SRC=tools/unity/unity-2.3.0-b119/src
+
+DIRS= \
+    ${CMOCK_TOOLS}           \
+    ${UNITY_TOOLS}/src       \
+    sysdef \
+    wms/evparser \
+    cmn/syslogutils \
+    cmn/util \
+    cmn/dispatcher \
+    cmn/papi \
+    cmn/msgHandler 
+
+ifneq (,$(findstring clean, $(MAKECMDGOALS)))
+DIRS += amp
+endif
+
+DIRS += rpm
+
+ifdef LABELID
+DIRS += iso
+endif

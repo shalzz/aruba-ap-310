@@ -1,0 +1,62 @@
+#
+# Compile and link definitions, gathering info from local makefiles.
+#
+OBJFILES := 
+
+ifdef CFILES
+CFILES += ${CFILES_yes}
+EXCLUDE_CFILES += ${EXCLUDE_CFILES_yes}
+_CFILES := $(filter-out ${EXCLUDE_CFILES},$(CFILES))
+OBJFILES += $(_CFILES:%.c=$(OBJDIR)%.o)
+endif 
+
+ifdef CPPFILES
+CPPFILES += ${CPPFILES_yes}
+EXCLUDE_CPPFILES += ${EXCLUDE_CPPFILES_yes}
+_CPPFILES := $(filter-out ${EXCLUDE_CPPFILES},$(CPPFILES))
+OBJFILES += $(_CPPFILES:%.cpp=$(OBJDIR)%.o)
+endif 
+
+ifdef CCFILES
+CCFILES += ${CCFILES_yes}
+EXCLUDE_CCFILES += ${EXCLUDE_CCFILES_yes}
+_CCFILES := $(filter-out ${EXCLUDE_CCFILES},$(CCFILES))
+OBJFILES += $(_CCFILES:%.cc=$(OBJDIR)%.o)
+endif 
+
+ifdef ASMFILES
+ASMFILES += ${ASMFILES_yes}
+EXCLUDE_ASMFILES += ${EXCLUDE_ASMFILES_yes}
+_ASMFILES := $(filter-out ${EXCLUDE_ASMFILES},$(ASMFILES))
+OBJFILES += $(_ASMFILES:%.S=$(OBJDIR)%.o)
+endif 
+
+MSG_HEADERS := $(MSGFILES:%.xml=%.h)
+#.SECONDARY: $(MSG_HEADERS)
+
+ifdef GENERATED_CFILES
+#
+# .SECONDARY is used to avoid generated c h code to be deleted after Makefile
+# Remaking.  
+.SECONDARY: $(GENERATED_CFILES)
+.SECONDARY: $(GENERATED_HFILES)
+
+OBJFILES += $(GENERATED_CFILES:%.c=$(OBJDIR)%.o)
+endif
+
+ifdef GENERATED_CCFILES
+#
+# .SECONDARY is used to avoid generated cc h code to be deleted after Makefile
+# Remaking.  
+.SECONDARY: $(GENERATED_CCFILES)
+.SECONDARY: $(GENERATED_HFILES)
+
+OBJFILES += $(GENERATED_CCFILES:%.cc=$(OBJDIR)%.o)
+endif
+
+# For Java
+ifdef JAVAFILES
+  ifndef CLASSFILES
+CLASSFILES	:= $(JAVAFILES:%.java=$(CLASSDIR)/$(PKGNAME)/%.class)
+  endif
+endif

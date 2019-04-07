@@ -1,0 +1,47 @@
+include ${ARUBA_MK_MODULES}/ap
+
+include ${ARUBA_MK_MODULES}/bonding
+include ${ARUBA_MK_MODULES}/ppp
+include ${ARUBA_MK_MODULES}/pppoe
+include ${ARUBA_MK_MODULES}/usb
+
+modules_dalmore:
+	${MAKE} modules_ap
+	${MAKE} modules_bonding
+	${MAKE} modules_ppp
+	${MAKE} modules_pppoe
+	${MAKE} modules_usb
+
+#	cp -f -p $(KERNEL_SRC)/drivers/net/ag7100/ag7100_mod.$(KMOD) $(DESTDIR)/../lib
+#	-$(STRIP) $(DESTDIR)/../lib/ag7100_mod.$(KMOD)
+#	cp -f -p $(KERNEL_SRC)/drivers/net/ag7240/ag7240_mod.$(KMOD) $(DESTDIR)/../lib
+#	-$(STRIP) $(DESTDIR)/../lib/ag7240_mod.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/drivers/net/ag934x/athrs_gmac.$(KMOD) $(DESTDIR)/../lib
+	-$(STRIP) $(DESTDIR)/../lib/athrs_gmac.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/drivers/net/qca955x/qca955x.$(KMOD) $(DESTDIR)/../lib
+	-$(STRIP) $(DESTDIR)/../lib/qca955x.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/drivers/usb/host/ehci-hcd.$(KMOD) $(DESTDIR)/../lib
+	-$(STRIP) $(DESTDIR)/../lib/ehci-hcd.$(KMOD)
+ifdef FAT_AP 
+ifdef DALMORE_LTE
+	cp -f -p $(KERNEL_SRC)/$(KERNEL_4G_USB_MODULE_PATH)/qcnet/GobiNet.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/GobiNet.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/drivers/usb/serial/GobiSerial.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/GobiSerial.$(KMOD)
+endif
+endif
+
+ifdef REGULATORY_TESTING
+	cp -f -p $(KERNEL_SRC)/drivers/scsi/sd_mod.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/sd_mod.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/fat/fat.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/fat.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/fat/vfat.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/vfat.$(KMOD)
+#	cp -f -p $(KERNEL_SRC)/fs/nls/nls_base.$(KMOD) $(DESTDIR)/../lib
+#	$(STRIP) $(DESTDIR)/../lib/nls_base.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/nls/nls_cp437.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/nls_cp437.$(KMOD)
+	cp -f -p $(KERNEL_SRC)/fs/nls/nls_iso8859-1.$(KMOD) $(DESTDIR)/../lib
+	$(STRIP) $(DESTDIR)/../lib/nls_iso8859-1.$(KMOD)
+endif

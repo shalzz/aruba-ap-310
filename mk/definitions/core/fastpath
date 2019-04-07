@@ -1,0 +1,8 @@
+FP_SRC := $(ARUBA_SRC)/fastpath/lvl7dev/src
+export FP_SRC
+
+# Weird, but this is required to compile amapi which runs on APs...  
+ifndef	FP_HWSRC
+export FP_HWSRC  = $(ARUBA_SRC)/fastpath/lvl7dev/null_hw/src
+endif
+

@@ -1,0 +1,13 @@
+CHECK_SYMBOLS_FILELIST:=${ARUBA_IMAGE_TYPE}tmp_list_for_check_symbols.txt
+
+check-symbols: $(ARUBA_MK_SCRIPTS)/check_symbols.sh
+	# add kernel image to list
+	# add all installed kernel modules from the target directory.
+	# Note: vfat.ko fails the test, but this module is not used, so the find command excludes it.
+	@echo ${KERNEL_SRC}/vmlinux >${CHECK_SYMBOLS_FILELIST} && \
+	find $(abspath $(DESTDIR)/..) -iname '*.ko' -a \! -name vfat.ko >>${CHECK_SYMBOLS_FILELIST} && \
+	${ARUBA_MK_SCRIPTS}/check_symbols.sh ${CHECK_SYMBOLS_FILELIST} && \
+	rm -f ${CHECK_SYMBOLS_FILELIST}
+	@echo "Kernel symbol check successful"
+
+.PHONY: check-symbols

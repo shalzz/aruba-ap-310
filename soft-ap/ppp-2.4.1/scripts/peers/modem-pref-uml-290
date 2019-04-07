@@ -1,0 +1,17 @@
+# run with chat -Vf modem-pref <>/dev/modem 2>/tmp/log >&0
+# Don't add/enable other AT cmd here it'll break the usb preference 
+
+TIMEOUT 2
+ABORT 'BUSY'
+ABORT 'ERROR'
+ABORT 'NO ANSWER'
+ABORT 'NO CARRIER'
+ABORT 'NO DIAL TONE'
+ABORT DELAYED
+
+# attention
+#'' 'AT'
+# Preference mode for LTE UML 290 modem 
+'' 'AT\^PREFMODE?'
+'OK' ''
+

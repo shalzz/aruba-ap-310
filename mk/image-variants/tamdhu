@@ -1,0 +1,15 @@
+BASE_IMAGE_TYPE=arran
+TAMDHU=yes
+FAT_AP=yes
+FAT_AP_14MB=yes
+
+CFLAGS += -DCONFIG_TAMDHU
+
+IMAGE_NAME_BASE:=armv5te-14mb
+
+export TAMDHU
+export FAT_AP_14MB FAT_AP
+export BASE_IMAGE_TYPE IMAGE_NAME_BASE
+ifdef FAT_AP
+include ${ARUBA_MK_DEFINITIONS}/features/dpi-ap
+endif

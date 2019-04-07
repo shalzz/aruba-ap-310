@@ -1,0 +1,26 @@
+ECHO ON
+# time out is 40 because sometimes the card takes a little while to initalize
+TIMEOUT 40
+ABORT 'BUSY'
+ABORT 'NO ANSWER'
+ABORT 'NO CARRIER'
+ABORT 'NO DIAL TONE'
+ABORT DELAYED
+# query the network parameters
+SAY 'Querying USB modem network parameters\n'
+# display operator
+'' 'AT+COPS?'
+# display available APNs
+'' 'AT+CGDCONT?'
+# display wireless network (12 GSM (GERAN) , 22 UTRAN, 25 3GPP (GERAN and UTRAN))
+'' 'AT+WS46?'
+# initialize the modem
+SAY 'Initializing USB modem\n'
+'' 'AT'
+'OK' 'ATQ0V1E0'
+'OK' 'ATZ'
+'OK' 'AT&F'
+# Dial the number
+SAY 'Connecting...\n'
+'OK' 'ATDT#777'
+CONNECT CLIENT

@@ -1,0 +1,26 @@
+ifdef LABELID
+ARUBA_TOOLS        := /usr/
+ARUBA_TOOLS_PREFIX := /usr/bin/
+else
+ARUBA_TOOLS        := /usr
+ARUBA_TOOLS_PREFIX := /usr/bin/
+endif
+# ifdef LABELID
+# ARUBA_TOOLS        := $(ARUBA_SRC)/../../Vendors/redhat/i386-redhat-linux
+# ARUBA_TOOLS_PREFIX := $(ARUBA_SRC)/../../Vendors/redhat/i386-redhat-linux/bin/
+# else
+# ARUBA_TOOLS        := $(ARUBA_SRC)/Vendors/redhat/i386-redhat-linux
+# ARUBA_TOOLS_PREFIX := $(ARUBA_SRC)/Vendors/redhat/i386-redhat-linux/bin/
+# endif
+
+ARUBA_SYSROOT      := ${ARUBA_TOOLS}
+ARUBA_INCLUDE_DIR  := ${ARUBA_TOOLS}
+
+ARUBA_GCC_BASE     := -B$(ARUBA_TOOLS) -B$(ARUBA_TOOLS)/lib -B${ARUBA_TOOLS}/usr/lib
+SYSTEM_LIBS_PATH   := $(ARUBA_TOOLS)/lib 
+DYNFLAG            := -Wl,--dynamic-linker=/lib/ld-linux.so.2
+SOLID_ROOT         := $(ARUBA_SRC)/tools/Solid4.5/linux
+SOLID_LIB          := $(SOLID_ROOT)/lib/solidodbca.a
+LIBXML2_INCLUDE	   := -I$(ARUBA_TOOLS)/include/libxml2
+
+KERNEL_TOOLS_PREFIX = ${ARUBA_TOOLS_PREFIX}

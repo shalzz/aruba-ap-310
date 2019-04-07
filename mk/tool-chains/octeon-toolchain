@@ -1,0 +1,17 @@
+  ifdef PROFILE_APPLICATION
+ARUBA_TOOLS         := $(ARUBA_SRC)/tools/mips64-octeon-linux-gnu-4.3.3
+  else # PROFILE_APPLICATION
+ARUBA_TOOLS         := $(ARUBA_SRC)/tools/mips64-octeon-linux-gnu-4.3.3
+  endif # PROFILE_APPLICATION
+ARUBA_SYSROOT      := ${ARUBA_TOOLS}
+ARUBA_INCLUDE_DIR  := ${ARUBA_TOOLS}
+ARUBA_TOOLS_PREFIX  := $(ARUBA_TOOLS)/bin/mips64-octeon-linux-gnu-
+SYSTEM_LIBS_PATH    := $(ARUBA_TOOLS)/mips64-octeon-linux-gnu-4.3.3/mips64-octeon-linux/gnu/sys-root/lib
+ARUBA_GCC_BASE     := -B$(ARUBA_TOOLS) -B${SYSTEM_LIBS_PATH} -B$(ARUBA_TOOLS)/lib -B${ARUBA_TOOLS}/usr/lib
+PREFIX = mips64-octeon-linux-gnu-
+export PREFIX
+STRIP_OPTIONS := -R .pdr --strip-debug --strip-unneeded
+
+COMPAT_CFLAGS += -Wno-pointer-sign
+
+KERNEL_TOOLS_PREFIX = ${ARUBA_TOOLS_PREFIX}

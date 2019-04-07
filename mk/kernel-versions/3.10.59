@@ -1,0 +1,7 @@
+__KERNELRELEASE=3.10.59
+ASM_INCLUDES_UNDER_ARCH:=1
+__COMPILE_H_BASE := include/generated/compile.h
+__VERSION_H_BASE := include/linux/version.h
+KERNEL_4G_USB_MODULE_PATH := drivers/net/usb
+KERNEL_PPP_MODULE_PATH := drivers/net/ppp
+KERNEL_SLHC_MODULE_PATH := drivers/net/slip

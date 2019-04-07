@@ -1,0 +1,11 @@
+modules_ppp:
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_PPP_MODULE_PATH)/ppp_async.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/ppp_async.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_PPP_MODULE_PATH)/ppp_deflate.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/ppp_deflate.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_PPP_MODULE_PATH)/ppp_generic.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/ppp_generic.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/$(KERNEL_SLHC_MODULE_PATH)/slhc.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/slhc.$(KMOD)
+	-cp -f -p $(KERNEL_SRC)/lib/crc-ccitt.$(KMOD) $(DESTDIR)/../lib
+	-$(KSTRIP) $(DESTDIR)/../lib/crc-ccitt.$(KMOD)

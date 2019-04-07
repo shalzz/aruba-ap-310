@@ -1,0 +1,2 @@
+xlp7xx9xx-u-boot:
+	cd platform/bootloader/netlogic/u-boot7xx9xx; ${MAKE} -f Makefile.releng allboards

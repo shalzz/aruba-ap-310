@@ -1,0 +1,29 @@
+include ${ARUBA_MK_MODULES}/ap
+
+include ${ARUBA_MK_MODULES}/bonding
+include ${ARUBA_MK_MODULES}/ppp
+include ${ARUBA_MK_MODULES}/pppoe
+include ${ARUBA_MK_MODULES}/usb
+ifdef REGULATORY_TESTING
+include ${ARUBA_MK_MODULES}/char
+endif
+
+ifdef REGULATORY_TESTING
+modules_kilchoman:
+
+	${MAKE} modules_ap
+	${MAKE} modules_bonding
+	${MAKE} modules_ppp
+	${MAKE} modules_pppoe
+	${MAKE} modules_usb
+	${MAKE} modules_char
+else
+modules_kilchoman:
+
+	${MAKE} modules_ap
+	${MAKE} modules_bonding
+	${MAKE} modules_ppp
+	${MAKE} modules_pppoe
+	${MAKE} modules_usb
+	cp -f -p $(KERNEL_SRC)/drivers/net/phy/firmware/aqr_kilchoman_ap555.cld $(DESTDIR)/../lib/firmware/
+endif

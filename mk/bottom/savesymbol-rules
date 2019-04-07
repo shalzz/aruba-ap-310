@@ -1,0 +1,20 @@
+#
+# This target will archive what is necessary to run GDB
+# on a released image for core dumps analysis.
+#
+savesymbols:
+
+savesymbols_this_dir:
+ifndef HOST_APPLICATION
+ifdef TARGET_APPLICATION
+	$(INSTALL) $(TARGET_APPLICATION) $(SYMBOLS_DIR)
+endif
+ifdef SHARED_LIBRARY
+	$(INSTALL) $(SHARED_LIBRARY) $(SYMBOLS_DIR)
+endif
+ifdef SAVE_KERNEL_OBJECTS
+	-for i in *.ko; do \
+		${INSTALL} $$i ${SYMBOLS_DIR} ; \
+	done
+endif
+endif

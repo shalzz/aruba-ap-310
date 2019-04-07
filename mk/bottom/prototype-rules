@@ -1,0 +1,18 @@
+#
+# For C prototypes genereation used in /sap/*
+#
+
+ifdef PROTOS_CFILES
+define do_protos
+mkdir -p $(PROTOS_DIR)
+# SCA; N.B: keep make happy with double $ to get $$ (PID) in path
+# also note use of ;\ to keep value of $$ the same for all three commands
+@echo -en $(aruba_print_builddir);
+$(ARQUIET)$(PERL) $(PERLOPTS) $(GENPROTOS) $< $(ALLCFLAGS) > /tmp/1z$$$$ ; \
+$(ARQUIET)$(INSTALL) -C /tmp/1z$$$$ $(PROTOS_DIR)/$(basename $<)_protos.h  ; \
+rm -f /tmp/1z$$$$
+endef
+else
+define do_protos
+endef
+endif

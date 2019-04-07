@@ -1,0 +1,96 @@
+#
+# Copyright (C) 2002-2011 by Aruba Networks, Inc.
+# All Rights Reserved.
+# 
+# This software is an unpublished work and is protected by copyright and 
+# trade secret law.  Unauthorized copying, redistribution or other use of 
+# this work is prohibited.
+#
+# The above notice of copyright on this source code product does not indicate
+# any actual or intended publication of such source code.
+#
+# Global rules and target, first part. 
+# Contains mostly global definitions. 
+#
+# See Makefile.bottom for info on Variables and
+# targets.
+#
+ifndef __MAKEFILE_TOP__
+__MAKEFILE_TOP__= 1
+
+SHELL = /bin/bash
+
+include $(ARUBA_SRC)/mk/core/path-vars
+include ${ARUBA_MK_ROOT}/Makefile.toolsdefs
+include ${ARUBA_MK_DATA}/targets-with-no-image-type
+include ${ARUBA_MK_DATA}/reg-table
+
+TOP = $(ARUBA_SRC)
+
+include ${ARUBA_MK_CORE}/aruba-image-type
+include ${ARUBA_MK_ROOT}/Makefile.naming
+include ${ARUBA_MK_ROOT}/Makefile.kernel
+include ${ARUBA_MK_TOP}/naming-flags
+
+#
+# set FIPS/openssl first, before platform definitions because
+# MLIBDIRS and MINCDIRS are once-only assignments; this can be cleaned
+# up after the file moves are done
+#
+include ${ARUBA_MK_DEFINITIONS}/core/fips
+
+#
+# set CPU family, if necessary
+#
+ifneq "${ARUBA_IMAGE_TYPE}" ""
+include ${ARUBA_MK_IMAGE_TYPES}/${ARUBA_IMAGE_TYPE}/cpu-family
+ifneq "${ARUBA_CPU_FAMILY}" ""
+include ${ARUBA_MK_CPU_FAMILIES}/${ARUBA_CPU_FAMILY}
+endif
+#
+# then include platform definitions, which may be different per platform,
+# and in some cases, per CPU family
+#
+include ${ARUBA_MK_IMAGE_TYPES}/${ARUBA_IMAGE_TYPE}/definitions
+endif
+
+# now set XYSSL based on the platform selection
+include ${ARUBA_MK_DEFINITIONS}/core/xyssl
+include ${ARUBA_MK_DEFINITIONS}/core/c-build
+include ${ARUBA_MK_DEFINITIONS}/core/t-build
+include ${ARUBA_MK_DEFINITIONS}/core/engg-build
+include ${ARUBA_MK_DEFINITIONS}/core/swatch
+
+INSTALL_DIR=${DESTDIR}
+
+#
+# Build platform
+#
+ifdef FEDORA
+CFLAGS += -DOS_FEDORA
+endif
+
+include ${ARUBA_MK_DEFINITIONS}/core/mvc
+include ${ARUBA_MK_TOP}/check-for-one-target
+include ${ARUBA_MK_TOP}/set-objdir
+include ${ARUBA_MK_TOP}/compiler-flags
+include ${ARUBA_MK_DEFINITIONS}/core/aruba-debug
+include ${ARUBA_MK_DEFINITIONS}/core/mem-watch
+include ${ARUBA_MK_TOP}/profile-application
+include ${ARUBA_MK_TOP}/install-definitions
+include ${ARUBA_MK_TOP}/ctags-options
+include ${ARUBA_MK_TOP}/set-symbols-dir
+include ${ARUBA_MK_TOP}/misc-tools
+include ${ARUBA_MK_TOP}/linker-flags
+include ${ARUBA_MK_TOP}/database-type
+
+include ${ARUBA_MK_DEFINITIONS}/core/fastpath
+include ${ARUBA_MK_DEFINITIONS}/core/zvm
+include ${ARUBA_MK_DEFINITIONS}/core/manufacturing-build
+
+# this needs to be after ZVM
+include ${ARUBA_MK_TOP}/set-tools
+
+include ${ARUBA_MK_TOP}/standalone-top
+
+endif	# __MAKEFILE_TOP__

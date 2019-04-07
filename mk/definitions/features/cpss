@@ -1,0 +1,1 @@
+export CPSS_DIR = $(TOP)/contrib/marvell/cpss-3.03p1

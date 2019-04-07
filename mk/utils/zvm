@@ -1,0 +1,3 @@
+ifndef ZVM_RELEASE
+    ZVM_RELEASE:=zvm-release
+endif

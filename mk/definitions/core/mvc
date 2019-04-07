@@ -1,0 +1,3 @@
+ifdef MVC_SERVER
+CFLAGS += -DCONFIG_MVC_SERVER
+endif

@@ -1,0 +1,8 @@
+COMMON_DIRS := 
+
+DIRS= \
+    ${CMOCK_TOOLS}       \
+    ${UNITY_TOOLS}/src   \
+    sysdef               \
+    wms/evparser         \
+    cmn

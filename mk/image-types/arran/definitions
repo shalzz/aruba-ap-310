@@ -1,0 +1,16 @@
+include ${ARUBA_MK_PLATFORM_TYPES}/${ARUBA_PLATFORM_TYPE}/definitions
+include ${ARUBA_MK_DEFINITIONS}/platform/11n-aps
+include ${ARUBA_MK_DEFINITIONS}/features/spectrum-fft
+include ${ARUBA_MK_DEFINITIONS}/platform/arm-platform
+include ${ARUBA_MK_DEFINITIONS}/features/tpm
+include ${ARUBA_MK_DEFINITIONS}/features/ipv6
+include ${ARUBA_MK_DEFINITIONS}/features/atheros-edma
+include ${ARUBA_MK_DEFINITIONS}/features/sysfs-temp-sensors
+include ${ARUBA_MK_DEFINITIONS}/features/4g_lte_only
+include ${ARUBA_MK_DEFINITIONS}/features/usb-storage
+ifndef FAT_AP
+include ${ARUBA_MK_DEFINITIONS}/features/sdn-ap
+endif
+ifdef TAMDHU
+include ${ARUBA_MK_IMAGE_VARIANTS}/tamdhu
+endif

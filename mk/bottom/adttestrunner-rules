@@ -1,0 +1,75 @@
+# A target to run unit tests with adt-test-runner
+#
+ifneq ($(filter test alltests,$(MAKECMDGOALS)),)
+# matches both "test" and "alltests" targets.
+
+# This allows the developper to override the path to adt-test-runner
+ifndef ADT_TEST_RUNNER_CMD
+ADT_TEST_RUNNER_CMD = $(ADT_TOOLS)/adt-test-runner
+endif
+
+# Makefile fragment with a random default port number between 10000 and 14000
+# This allows to test multiple platforms at the same time 
+$(ARUBA_SRC)/mk/bottom/adttestrunner-rules.port:
+	@echo "ifndef ADT_TEST_RUNNER_PORT" >$@
+	@echo "ADT_TEST_RUNNER_PORT=`perl -e 'print int(rand(4000)) + 10000'`" >>$@
+	@echo "endif" >>$@
+
+ifndef ADT_TEST_RUNNER_USE_SERVER
+ifeq ($(findstring qemu,$(ADT_TEST_RUNNER_ARGS)),qemu)
+# when using QEMU, use the adt-test-runner's server mode by default to avoid restarting the VM.
+ADT_TEST_RUNNER_USE_SERVER = yes
+else
+ADT_TEST_RUNNER_USE_SERVER = no
+endif
+endif
+
+ifeq ($(strip $(ADT_TEST_RUNNER_USE_SERVER)),yes)
+# When testing, include the generated file with the temporary port.
+-include $(ARUBA_SRC)/mk/bottom/adttestrunner-rules.port
+ADT_TEST_RUNNER_SERVER_URL = http://127.0.0.1:${ADT_TEST_RUNNER_PORT}/
+ADT_TEST_RUNNER_CLIENT_ARGS += client --server-url $(ADT_TEST_RUNNER_SERVER_URL)
+ADT_TEST_RUNNER_SERVER_ARGS = runserver ${ADT_TEST_RUNNER_ARGS}  --http-port ${ADT_TEST_RUNNER_PORT}
+ifdef ADT_TEST_RUNNER_PID_FILE
+ADT_TEST_RUNNER_SERVER_ARGS += --pid-file $(ADT_TEST_RUNNER_PID_FILE)
+endif
+
+adttestrunner_start_server:
+	# check if a server instance is already running. If it doesn't respond, start it now and wait for it to become ready. 
+	if ! curl ${ADT_TEST_RUNNER_SERVER_URL}status &>/dev/null ; then ${ADT_TEST_RUNNER_CMD} ${ADT_TEST_RUNNER_SERVER_ARGS} ; fi;
+	for i in {1..30} ; do  if curl ${ADT_TEST_RUNNER_SERVER_URL}status &>/dev/null ; then break ; else sleep 1 ; fi ; done
+	if ! curl ${ADT_TEST_RUNNER_SERVER_URL}status &>/dev/null ; then echo "adt-test-runner server is not responding" && false ; fi  
+else
+adttestrunner_start_server: ;
+endif
+
+ifdef TARGET_UNITTEST_APP
+adttestrunner_current_test: adttestrunner_start_server
+ifndef ADT_TEST_RUNNER_ARGS
+	@echo "You must define ADT_TEST_RUNNER_ARGS to use adt-test-runner" && false
+endif
+	if [ ! -e ${TARGET_UNITTEST_APP} ] ;  then  echo "You must build the tests first" && false ; fi ;
+	${ADT_TEST_RUNNER_CMD} ${ADT_TEST_RUNNER_CLIENT_ARGS} ${ADT_TEST_RUNNER_ARGS} --test ${TARGET_UNITTEST_APP} --aos-build-dir ${ARUBA_SRC} --aos-target-dir ${DESTDIR}/..
+else
+# nothing to do here
+adttestrunner_current_test: ;
+endif
+
+# process subdirs / sections
+adttestrunner: adttestrunner_current_test subdirs sections
+
+ALL_UNITTTESTS_DIR = $(abspath $(DESTDIR)/../../unittests)
+alltests:
+	${ADT_TEST_RUNNER_CMD} ${ADT_TEST_RUNNER_ARGS} --test ${ALL_UNITTTESTS_DIR} --aos-build-dir ${ARUBA_SRC} --aos-target-dir ${DESTDIR}/..
+test: adttestrunner
+ifeq ($(ADT_TEST_RUNNER_USE_SERVER),yes)
+ifeq ($(MAKELEVEL),0)
+	# shutdown the adt-test-runner local server instance
+	if curl ${ADT_TEST_RUNNER_SERVER_URL}status &>/dev/null ; then curl -X POST --data '' ${ADT_TEST_RUNNER_SERVER_URL}shutdown &>/dev/null ; fi ;
+endif
+endif
+	true # just to make sure that the test target is not empty
+
+.PHONY: test adttestrunner adttestrunner_current_test adttestrunner_start_server
+endif
+CLEANFILES += $(ARUBA_SRC)/mk/bottom/adttestrunner-rules.port

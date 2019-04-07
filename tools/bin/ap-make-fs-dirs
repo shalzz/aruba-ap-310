@@ -1,0 +1,19 @@
+#!/bin/sh
+
+Mkdir()
+{
+	if [ ! -d $1 ]; then
+		echo "  MKDIR   $1"
+		mkdir -p $1
+	fi
+	# always do the chmod in case only the permissions changed
+	chmod $2 $1
+}
+
+target=$2
+Mkdir $target 755
+
+cat $1 | while read foo; do
+	set -- $foo
+	Mkdir $target/$1 $2
+done

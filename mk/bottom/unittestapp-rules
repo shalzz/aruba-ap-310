@@ -1,0 +1,49 @@
+#
+# Explicit Target for linking unit test applications.
+# Supports dependencies from libraries
+#
+# vpath is mysterious and annoying but it is the best way to support 
+# library dependencies.   This uses target dependencies on -lname;
+# vpath is then searched for libraries.
+
+LIBS_LOCAL_PATH += ${LIBS_LOCAL_PATH_yes}
+EXCLUDE_LIBS_LOCAL_PATH += ${EXCLUDE_LIBS_LOCAL_PATH_yes}
+_LIBS_LOCAL_PATH := $(filter-out ${EXCLUDE_LIBS_LOCAL_PATH_yes},${LIBS_LOCAL_PATH})
+LIBS_LOCAL_PATH = ${_LIBS_LOCAL_PATH}
+
+LIBS_LOCAL += ${LIBS_LOCAL_yes}
+EXCLUDE_LIBS_LOCAL += ${EXCLUDE_LIBS_LOCAL_yes}
+_LIBS_LOCAL := $(filter-out ${EXCLUDE_LIBS_LOCAL_yes},${LIBS_LOCAL})
+LIBS_LOCAL = ${_LIBS_LOCAL}
+
+
+vpath %.a $(subst -L,,$(LIBS_LOCAL_PATH)) $(SYSTEM_LIBS_PATH) $(INSTALL_LIBS_DIR)
+vpath %.so $(subst -L,,$(LIBS_LOCAL_PATH)) $(SYSTEM_LIBS_PATH) $(INSTALL_LIBS_DIR)
+vpath %.lib $(subst -L,,$(LIBS_LOCAL_PATH)) $(SYSTEM_LIBS_PATH) $(INSTALL_LIBS_DIR)
+vpath %.dll $(subst -L,,$(LIBS_LOCAL_PATH)) $(SYSTEM_LIBS_PATH) $(INSTALL_LIBS_DIR)
+
+# Well, this CIRCULAR_ is used when libraries start to refer each other and no
+# proper library order can be given to the linker.   This causes the linker
+# to search all libs for symbols.   
+ifdef CIRCULAR_DEPENDENCIES_HOTBED
+ALLLIBS := -L$(INSTALL_LIBS_DIR) $(LIBS_LOCAL_PATH) -Wl,--start-group $(LIBS_LOCAL) -Wl,--end-group 
+else
+ifdef HOST_APPLICATION
+ALLLIBS :=  $(LIBS_LOCAL_PATH) $(LIBS_LOCAL)
+else
+ALLLIBS :=  $(LIBS_LOCAL_PATH) -L$(INSTALL_LIBS_DIR) $(LIBS_LOCAL)
+endif
+endif
+
+ALL_APP_OBJS := $(OBJFILES) $(CLASSFILES) $(EXTRA_OBJS)
+
+$(TARGET_UNITTEST_APP): $(ALL_APP_OBJS) $(LIBS_LOCAL)
+ifdef OBJDIR
+	@mkdir -p $(OBJDIR)
+endif
+ifneq "$(findstring $(UNITTEST_APP),$(PURIFY_APPLICATION))" ""
+	purify $(CC) $(ALLLDFLAGS) $(ALL_APP_OBJS) $(ALLLIBS) -o $(TARGET_UNITTEST_APP)
+else
+	@echo -e "  EXE     $(subst ${OBJDIR},,${TARGET_UNITTEST_APP})"
+	$(ARQUIET)$(CC) $(ALLLDFLAGS) $(ALL_APP_OBJS) $(ALLLIBS) -o $(TARGET_UNITTEST_APP)
+endif

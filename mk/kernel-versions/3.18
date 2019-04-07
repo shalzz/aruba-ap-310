@@ -1,0 +1,7 @@
+__KERNELRELEASE=3.18
+ASM_INCLUDES_UNDER_ARCH:=1
+__COMPILE_H_BASE := include/generated/compile.h
+__VERSION_H_BASE := include/linux/version.h
+__KERNEL_PREFIX_TMP := aos-cmn/		# must have trailing '/'
+__KERNEL_PREFIX := $(strip ${__KERNEL_PREFIX_TMP})
+KERNEL_4G_USB_MODULE_PATH := drivers/net/usb

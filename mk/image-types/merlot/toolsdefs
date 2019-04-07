@@ -1,0 +1,4 @@
+ARUBA_TOOL_CHAIN=mips-toolchain
+KERNEL_TOOLS         := $(ARUBA_SRC)/tools/nebbiolo/toolchains/mipscross-1.00/crosstool/gcc-3.4.3-glibc-2.3.6/mipsisa32-xlr-linux/
+_KERNEL_TOOLS_PREFIX  := ${KERNEL_TOOLS}/bin/mipsisa32-xlr-linux-
+override KERNEL_TOOLS_PREFIX = ${_KERNEL_TOOLS_PREFIX}

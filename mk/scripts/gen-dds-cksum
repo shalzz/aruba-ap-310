@@ -1,0 +1,24 @@
+#!/bin/sh
+
+DDS_DIRS="$ARUBA_SRC/cmn/gsm $ARUBA_SRC/infra/dds"
+
+echo "#ifndef __dds_cksum_h__" 
+echo "#define __dds_cksum_h__" 
+echo 
+echo -n "#define DDS_DATA_CKSUM	\"" 
+
+if [ -z "$ARUBA_MAKE_VERBOSE" ] 
+then
+    XARGS="xargs"
+else
+    XARGS="xargs -t"
+fi
+ 
+#set -x
+
+# use ! -type d rather than -f for ADU support
+find ${DDS_DIRS} ! -type d -print | egrep -v 'dds-cksum.h|_obj' | egrep '\.c|\.h|\.xml|\.pm|\.pl|\.xsd'| \
+$XARGS cat | sha256sum | awk '{printf ("%s\"\n", $1)}' 
+
+echo 
+echo '#endif /* __dds_cksum_h__ */' 

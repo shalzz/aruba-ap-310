@@ -1,0 +1,38 @@
+test: python_test
+
+python_test: python_test_this_dir subdirs sections
+python_test: ; # useful only for dependencies
+
+ifdef PYTHON_TEST_DIRS
+# determine python version to use
+ifndef PYTHON_TEST_PYTHON
+PYTHON_TEST_PYTHON = $(ARUBA_SRC)/tools/python/python-2.7.8/bin/python2
+PYTHON_TEST_PYTHONHOME = $(ARUBA_SRC)/tools/python/python-2.7.8
+endif
+
+# determine test harness to use
+ifndef PYTHON_TEST_HARNESS:
+PYTHON_TEST_HARNESS = $(PYTHON_TEST_PYTHON) -m pytest $(PYTHON_TEST_PYTEST_EXTRA_ARGS)
+endif
+ifndef PYTHON_TEST_HARNESS_PYTHONPATH:
+PYTHON_TEST_HARNESS_PYTHONPATH = $(ARUBA_SRC)/tools/python/pytest-3.0.4:$(ARUBA_SRC)/tools/python/py-1.4.31:$(ARUBA_SRC)/tools/python/python-2.7.8/lib/python2.7/site-packages/six-1.10.0-py2.7.egg
+endif
+
+ifndef PYTHON_TEST_PYTHONPATH
+PYTHON_TEST_PYTHONPATH:=$(PYTHON_TEST_HARNESS_PYTHONPATH)
+else
+PYTHON_TEST_PYTHONPATH:=$(PYTHON_TEST_PYTHONPATH):$(PYTHON_TEST_HARNESS_PYTHONPATH)
+endif
+
+ifndef PYTHON_TEST_CWD
+PYTHON_TEST_CWD:= .
+endif
+
+python_test_this_dir:
+	cd ${PYTHON_TEST_CWD} && PYTHONHOME=${PYTHON_TEST_PYTHONHOME} PYTHONPATH=${PYTHON_TEST_PYTHONPATH} ${PYTHON_TEST_HARNESS} ${PYTHON_TEST_DIRS}
+else
+# nothing to do here
+python_test_this_dir: ;
+endif
+
+.PHONY: alltests test python_test python_test_this_dir

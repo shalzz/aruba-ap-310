@@ -1,0 +1,42 @@
+STRIP = strip
+
+#
+# Include the make variables (CC, etc...)
+#
+LD      = ld
+CC      = gcc
+OBJCOPY = objcopy
+OBJDUMP = objdump
+CP = cp
+
+
+CFLAGS  = -DMV_CPU_LE
+LDFLAGS =
+
+BIN     = doimage
+
+all:	$(BIN)
+doimage:      doimage.o  
+		$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+		 $(STRIP) $@
+		$(CP) doimage ../
+doimage.o:	doimage.c
+		$(CC) -g $(CFLAGS) -c $<
+	
+
+clean:	
+	find . -type f \
+                \( -name 'core' -o -name '*.bak' -o -name '*~' \
+                -o -name '*.o'  -o -name '*.a'  \) -print \
+                | xargs rm -f
+	rm -f $(ELF) $(SREC) $(BIN) $(DIS) bootstrap.map
+	
+
+
+
+
+
+
+
+	
+

@@ -1,0 +1,2 @@
+ppcboot:
+	cd platform/bootloader/ppcboot; ${MAKE} allboards

@@ -1,0 +1,79 @@
+#!/bin/sh
+#
+# Make ramdisk as small as possible by leverage space that we can reclaim
+# by deleting one time use files. The idea is to zip up the webui directory,
+# then unzip it after deleting files we no longer need (AP images etc). 
+# 2.4 kernel does not have dynamic ramdisk which is why we have to do this.
+# 
+
+vacate=0
+pad=0
+cd $1   # change to target/mswitch directory
+
+echo Packaging WebUI directory...
+echo
+
+# calculate the size we can vacate. First candidate is sos.elf
+vacate=`expr ${vacate} + $(ls -s bin/sos.elf | awk '{print $1}')`
+vacate=`expr ${vacate} + $(ls -s bin/ncfg_upgrader | awk '{print $1}')`
+
+echo Removable binaries: ${vacate}k
+
+# Then add in AP images
+mkdir -p sap/hdr
+for foo in `grep -w yes sap/AP-images`
+do
+  set -- $foo
+  fn=sap/$1
+  if [ -f ${fn} ]; then 
+    vacate=`expr ${vacate} + 1 + $(ls -s ${fn} | awk '{print $1}')`
+  fi
+done
+echo Removable files \(AP images + binaries\): ${vacate}k
+
+
+# Now zip the webUI directory to see how much we can save
+fn=webui.tar
+if [ ! -d webui ]; then
+  if [ -f ${fn}.gz ]; then 
+    tar zxf ${fn}.gz 
+  else 
+    echo Error: Webui directory does not exist. Please run arubainstall 
+    echo from top level to rebuild it - Tony Lin
+    echo
+    exit 1
+  fi
+fi
+
+rm -f ${fn} ${fn}.gz
+orig_size=`du -s webui | awk '{print $1}'`
+
+tar cf ${fn} webui 
+gzip -f -9 ${fn}
+rm -rf webui
+
+new_size=`ls -s ${fn}.gz | awk '{print $1}'`
+echo WebUI directory size: ${orig_size}k. Zipped: ${new_size}k
+
+# ramdisk has smaller overhead than ext filesystem, especially when it's
+# lots of small files. It's to the order of 10% smaller to unzip. We
+# adjust the original size 10% smaller then add 200k to be safe 
+# TODO overhead can be tightened down to 100k if necessary
+needed=`expr $orig_size \* 9 \/ 10 + 200`  # hack to have expr multiply by .9
+delta=`expr $new_size + $vacate - $needed`
+echo Space needed to restore WebUI directory: `expr ${needed} - ${new_size}`k 
+
+# Make sure we have enough room to relocate back, pad if necessary
+fn=sap/padding
+rm -f ${fn}
+if [ ${delta} -lt 0 ]; then 
+  pad=`expr $delta \* -1` 
+  echo Insufficient room to relocate. Padding ramdisk by ${pad}k
+  dd if=/dev/zero of=${fn} bs=1024 count=${pad} > /dev/null 2>&1
+fi
+
+cp -f $ARUBA_SRC/platform/memory/unzipui .
+
+echo We saved `expr $(expr $orig_size - $new_size - $pad) \* 9 \/ 10`k through this exercise
+echo 
+exit 0

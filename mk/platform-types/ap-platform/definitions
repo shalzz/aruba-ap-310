@@ -1,0 +1,34 @@
+include ${ARUBA_MK_DEFINITIONS}/platform/all-platforms
+include ${ARUBA_MK_DEFINITIONS}/platform/ap-platform
+include ${ARUBA_MK_DEFINITIONS}/features/xyssl
+include ${ARUBA_MK_DEFINITIONS}/features/image-signing
+include ${ARUBA_MK_DEFINITIONS}/features/debug
+ifdef FAT_AP
+# for now, we won't enable timer-wheel support for thin APs
+include ${ARUBA_MK_DEFINITIONS}/features/timer-wheel
+endif
+
+ARUBA_BUILD_DIRS=${ARUBA_MK_PLATFORM_TYPES}/${ARUBA_PLATFORM_TYPE}/build-dirs
+FILESYSTEM = ${ARUBA_SRC}/build/ap-fs
+TARGET_FILESYSTEM = ${ARUBA_SRC}/build/ap-fs/${ARUBA_IMAGE_TYPE}/target
+DESTDIR   = ${TARGET_FILESYSTEM}/aruba
+
+AP_PLATFORM=yes
+export AP_PLATFORM	# for openssl
+ARUBA_PLATFORM_TYPE_LC=ap-platform
+
+ifdef FAT_AP
+ifeq ($(and $(ARRAN),$(TAMDHU)),)
+AP_DAL_DB_SUPPORT=yes
+export AP_DAL_DB_SUPPORT
+CFLAGS += -DAP_DAL_DB_SUPPORT
+endif
+endif
+
+ifneq ($(or $(OCTOMORE),$(X4),$(GLENMORANGIE),$(MASTERSON)),)
+AP_WPA3_SUPPORT=yes
+export AP_WPA3_SUPPORT
+CFLAGS += -DAP_WPA3_SUPPORT
+endif
+
+CFLAGS += -DAP_PLATFORM

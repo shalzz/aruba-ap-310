@@ -1,0 +1,8 @@
+modules_kprobes:
+	$(MAKE) -C $(KERNEL_SRC) distclean 
+	$(MAKE) -C $(KERNEL_SRC) $(KERNEL_CONFIG) MAKEFLAGS="$(shell echo ${MAKEFLAGS} | sed -e 's/-s//g')" ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+	rm -f $(KERNEL_SRC)/.version; echo $(VERSION) > $(KERNEL_SRC)/.version ; chmod 444 $(KERNEL_SRC)/.version
+	${MAKE} -C $(KERNEL_SRC) modules ARCH=${MAIN_ARCH} CROSS_COMPILE=${KERNEL_TOOLS_PREFIX}
+
+	echo "`${ARUBA_MK_SCRIPTS}/getversion ${SW_NAME}`$(BTAG)" > $(DESTDIR)/../etc/aruba_version
+	chmod 644 $(DESTDIR)/../etc/aruba_version

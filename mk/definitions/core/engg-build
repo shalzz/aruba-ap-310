@@ -1,0 +1,6 @@
+ifdef ENGG_BUILD
+CFLAGS += -D__ENGG_DEBUG_BUILD__
+ifdef LHM_TEST_STUB
+CFLAGS += -D__LHM_TEST_STUB__
+endif
+endif

@@ -1,0 +1,12 @@
+################################################################################
+#                                                                              #     
+#   Aruba ignores NTP Leap second flag and do not add the additional second.   # 
+#   The time is adjusted at the next NTP update.                               #
+#                                                                              #
+################################################################################
+
+
+1. To buld NTP ignoring leap second, please use "CONFIG_IGNORELEAP" under BUILD.platform script.
+
+2. As of the BUILD.porfidio has been updated with this config.
+

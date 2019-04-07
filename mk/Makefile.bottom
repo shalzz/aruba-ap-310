@@ -1,0 +1,162 @@
+#
+# Copyright (C) 2002-2011 by Aruba Networks, Inc.
+# All Rights Reserved.
+# 
+# This software is an unpublished work and is protected by copyright and 
+# trade secret law.  Unauthorized copying, redistribution or other use of 
+# this work is prohibited.
+#
+# The above notice of copyright on this source code product does not indicate
+# any actual or intended publication of such source code.
+#
+# Global rules and target, second part.
+# Contains target definition, implicit rules,
+# directory recursion.
+#
+
+# Guide to local makefiles variables
+# 
+# CFILES          defines C source files
+# MSGFILES        xml files containing messages logging definitions.
+# CFLAGS_LOCAL    for local C flags; those take precedence over predefined ones
+# INCS_LOCAL      additional include dirs.
+# ARMK_FLAGS      Short for ARubaMake-Flags. This is introduced to enable 
+# 		  introducing -Werror in a phased manner. Since Makefile.bottom 
+#		  is included in every Makefile, we wanted a special mechanism 
+#		  to pass variables to the sub-makes. Though CFLAGS & the like 
+#		  do get passed on, we didn't want to "misuse" them. By using 
+#		  ARMK_FLAGS, we could introduce -Werror in a controlled 
+#		  environment. Just use it in a Makefile at the top of 
+#	          the hierarchy which you want to make warning-free and you 
+#		  should be good to go. Once we've entire building with no 
+#		  warnings, we can enable it
+#                 at the ${ARUBA_SRC}/Makefile and we're all set
+# ARMK_LFLAGS     Short for ARubaMake-(local) Flags. This is introduced to enable
+#                 support for local flags.
+#
+# LIBRARY         library name, will build libname.a or libname.so depending on 
+#		  the next.
+#
+# BUILD_DSO       When defined, will build a DSO (.so) for LIBRARY.
+#                 For libraries built from multiple directories, this
+#                 has to be specified with PART_LIB in all the directories
+#                 where there are sources (for -fPIC).  It must be specified
+#                 without PART_LIB in the archive directory, to actually link it.
+#                 DSOs are built from an archive with a .la extension.
+#
+#                 NOTE: currently, this make does not have direct support for 
+#                 building both a .a and a .so  
+#
+# PART_LIB        Facility for building an archive or a DSO
+#                 from objects in multiple directories.  Intended for 
+#                 vendor code, should not be used for new code.
+#
+# APPLICATION     Main application name
+# LIBS_LOCAL_PATH libraries paths,a list of -Ldir  
+# LIBS_LOCAL      libraries, a list of -lname
+# LDFLAGS_LOCAL   Additional linking flags.
+#
+# CIRCULAR_DEPENDENCIES_HOTBED  See below.  This uses a linker option to search 
+#	          for symbols all the way through each time.  Useful for 
+#		  libraries mutually referring each other (werk!)
+#
+# SECTIONS        Mostly For backward compatibility.  Intended to build multiple 
+#		  targets in one directory.   It works by simply re-running the 
+#	          local Makefile for with each string defined in section defined.
+#
+# Guide to common targets
+# all             default target, builds .o, .a, .so, and binaries
+#                 recursively from current dir.
+# clean           
+# mostlyclean     Customizable recursive clean
+# arubainstall    copies files to the target file system. arubainstall should 
+#		  not have a dependency on all
+# alltags         Generates cscope and tags recursively from current dir.
+# tags            Generates cscope and tags recursively from current dir for
+#		  directories relevant to the current platform.
+#
+
+#
+# Recursive targets, This will invoke the targets
+# specified in the dependancy list in all directories
+# specified in DIRS
+#
+# This "masterpiece" of simplicity has 2 things going for it:
+#    - First of the recursion is implemented with dependencies 
+#      on the targets.   This means that if there is any local target 
+#      with the same name in any directory, this will execute them in
+#      addition of doing the directory recursion.  Note that in addition
+#      to recursion, those targets support the SECTION directive
+#    - Unlike the shell 'for loop', they stop on error AND support parallel
+#      builds.
+#
+include ${ARUBA_SRC}/mk/core/path-vars
+include ${ARUBA_MK_BOTTOM}/quiet-rules
+include ${ARUBA_MK_BOTTOM}/targets
+include ${ARUBA_MK_BOTTOM}/tags-rules
+include ${ARUBA_MK_BOTTOM}/cmock-rules
+include ${ARUBA_MK_BOTTOM}/unity-rules
+include ${ARUBA_MK_BOTTOM}/subdir-rules
+include ${ARUBA_MK_BOTTOM}/section-rules
+
+#
+# This allows make -j to only run parallel build from the
+# root makefile.
+#
+ifneq ($(ENABLE_PARALLEL),1)
+.NOTPARALLEL:
+else
+export ENABLE_PARALLEL=0
+endif
+
+include ${ARUBA_MK_BOTTOM}/gcov-rules
+include ${ARUBA_MK_BOTTOM}/file-rules
+include ${ARUBA_MK_BOTTOM}/flag-rules
+include ${ARUBA_MK_BOTTOM}/dso-rules
+
+ifdef APPLICATION
+TARGET_APPLICATION:=$(OBJDIR)$(APPLICATION)
+endif
+
+ifdef NONIMAGE_APP
+TARGET_NONIMAGE_APP:=$(OBJDIR)$(NONIMAGE_APP)
+endif
+
+ifdef UNITTEST_APP
+TARGET_UNITTEST_APP:=$(OBJDIR)$(UNITTEST_APP)
+endif
+
+DEPFILES := $(CFILES:%.c=$(OBJDIR)%.d) $(GENERATED_CFILES:%.c=$(OBJDIR)%.d) ${CPPFILES:%.cpp=${OBJDIR}%.d}
+DEPFILES += ${CCFILES:%.cc=${OBJDIR}%.d} ${GENERATED_CCFILES:%.cc=${OBJDIR}%.d}
+
+#
+# This keeps the timestamps of installed libraries in sync with the library
+# as compiled in its directory.   Avoids unnecessary re building of some targets.
+INSTALL_OPTIONS := -p
+
+include ${ARUBA_MK_BOTTOM}/default-target
+include ${ARUBA_MK_BOTTOM}/makefile-dependencies
+include ${ARUBA_MK_BOTTOM}/implicit-rules
+include ${ARUBA_MK_BOTTOM}/application-rules
+include ${ARUBA_MK_BOTTOM}/nonimageapp-rules
+include ${ARUBA_MK_BOTTOM}/unittestapp-rules
+include ${ARUBA_MK_BOTTOM}/kmod-rules
+include ${ARUBA_MK_BOTTOM}/library-rules
+include ${ARUBA_MK_BOTTOM}/clean-rules
+include ${ARUBA_MK_BOTTOM}/install-rules
+include ${ARUBA_MK_BOTTOM}/savesymbol-rules
+include ${ARUBA_MK_BOTTOM}/prototype-rules
+include ${ARUBA_MK_BOTTOM}/adttestrunner-rules
+include ${ARUBA_MK_BOTTOM}/python-test-rules
+
+checkextra checkmissing:
+	@${ARUBA_SRC}/tools/bin/$@ ${ARUBA_SRC}
+
+#
+.PHONY: not_implemented
+not_implemented:
+	@echo "Sorry, not implemented yet"
+
+FRC:
+
+include ${ARUBA_MK_BOTTOM}/dependency-rules
